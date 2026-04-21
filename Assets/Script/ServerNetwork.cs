@@ -182,6 +182,8 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 
         return networkRunner;
     }
+
+
 }
 public enum Command : byte
 {
@@ -208,4 +210,11 @@ public enum Command : byte
     BattleBanPickInfo,
     BattleSceneLoaded,
     LoginWithFakeAccount,
+    AnnouncementResponse,
+    RequestAnnouncement,
+    GemBundleResponse,
+    RequestGemBundle,
+    OrderResponse,
+    RequestBuyBundle,
+    RequestOrderStatus,
 }

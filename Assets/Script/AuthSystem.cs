@@ -31,9 +31,9 @@ public class AuthSystem : BaseSystem
     {
         client.Player = new Player
         {
-            Name =  $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
-        };  
-        ServerNetwork.Instance.SendToClient(client,Service.SendLoginResponse(client.Player.Name) ,Service.LoadLobbyScene());
+            Name = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
+        };
+        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.Player.Name), Service.LoadLobbyScene());
     }
 
 
@@ -100,9 +100,21 @@ public class AuthSystem : BaseSystem
                 Name = user.lastName
             };
 
+            AnnouncementResponse[] announcements = await ApiService.GetAllAnnouncement(client);
+
+            if (announcements == null)
+            {
+                Debug.LogError("[SERVER] Announcements is NULL");
+            }
+            else
+            {
+                Debug.Log($"[SERVER] Got {announcements.Length} announcements");
+            }
+
             ServerNetwork.Instance.SendToClient(
                 client,
                 Service.SendLoginResponse(user.lastName),
+                Service.SendAnnouncementResponse(announcements),
                 Service.LoadLobbyScene());
         }
         catch (Exception exception)
