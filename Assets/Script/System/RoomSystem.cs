@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Script.System;
 using UnityEngine;
 
 public class RoomSystem : BaseSystem
@@ -20,6 +22,7 @@ public class RoomSystem : BaseSystem
 
     public override void HandlePackage(Client client, Command messageType, string payload)
     {
+        base.HandlePackage(client, messageType, payload);
         switch (messageType)
         {
             case Command.RequestRoomList:
@@ -32,8 +35,7 @@ public class RoomSystem : BaseSystem
                 KickPlayerOutOfRoom(client, JsonUtility.FromJson<KickPlayerRequest>(payload));
                 break;
             case Command.LeaveRoom:
-                LeaveRoomRequest request = JsonUtility.FromJson<LeaveRoomRequest>(payload);
-                LeaveRoom(client, request.RoomName);
+                LeaveRoom(client);
                 break;
             case Command.JoinRoom:
                 JoinRoom(client, JsonUtility.FromJson<JoinRoomRequest>(payload));
@@ -41,9 +43,22 @@ public class RoomSystem : BaseSystem
             case Command.PlayerReady:
                 SetPlayerReadyStatus(client, JsonUtility.FromJson<PlayerReadyRequest>(payload));
                 break;
+            case Command.MapIndexSelected:
+                HandleMapIdSelected(client, payload);
+                break;
             default:
                 break;
         }
+    }
+
+    private void HandleMapIdSelected(Client client, string payload)
+    {
+        if (client.CurrentRoomId <= 0 || !TryGetRoomById(client.CurrentRoomId, out Room room))
+        {
+            return;
+        }
+        room.MapIndexSelected = JsonUtility.FromJson<SelectedMapIndexRequest>(payload).Index;
+        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(p => p.Client).ToArray());
     }
 
     private void KickPlayerOutOfRoom(Client client, KickPlayerRequest kickPlayerRequest)
@@ -76,7 +91,7 @@ public class RoomSystem : BaseSystem
 
     public void CreateRoom(Client client, CreateRoomRequest createRoomRequest)
     {
-        if (TryGetRoomByName(createRoomRequest.RoomName, out _))
+        if (TryGetRoomByName(createRoomRequest.RoomName, out _) || client.CurrentRoomId > 0)
         {
             Debug.LogError("Room already exists!");
             return;
@@ -87,7 +102,6 @@ public class RoomSystem : BaseSystem
         {
             Name = client.Player.Name,
             IsHost = true,
-            IsReady = true,
             Client = client,
         };
 
@@ -100,10 +114,11 @@ public class RoomSystem : BaseSystem
         };
 
         client.CurrentRoomId = roomId;
-        ServerNetwork.Instance.SendToClient(
-            client,
-            Service.LoadRoomScene(),
-            Service.UpdateRoom(rooms[roomId]));
+        client.PendingPacket.Enqueue(() =>
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.UpdateRoom(rooms[roomId]));
+        });
+        ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
 
@@ -165,7 +180,7 @@ public class RoomSystem : BaseSystem
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
 
-    public void LeaveRoom(Client client, string roomName)
+    public void LeaveRoom(Client client)
     {
         if (client == null || client.CurrentRoomId < 0)
         {
@@ -212,9 +227,8 @@ public class RoomSystem : BaseSystem
 
     public void SetPlayerReadyStatus(Client client, PlayerReadyRequest request)
     {
-        if (!TryGetRoomByName(request.RoomName, out Room room))
+        if (!TryGetRoomById(client.CurrentRoomId, out Room room))
         {
-            Debug.LogWarning($"[ROOM] Room {request.RoomName} not found.");
             return;
         }
 
@@ -226,6 +240,13 @@ public class RoomSystem : BaseSystem
         }
 
         roomPlayer.IsReady = !roomPlayer.IsReady;
-        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
+        if (room.Players.All(x => x.IsReady))
+        {
+            BattleSystem.CreateBattle(client, room.Name);
+        }
+        else
+        {
+            ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
+        }
     }
 }

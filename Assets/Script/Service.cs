@@ -26,13 +26,15 @@ public static class Service
         return ReliableMessage.Build(Command.RoomListResponse, payload);
     }
 
-    public static byte[] SendLoginResponse(string playerName)
+    public static byte[] SendLoginResponse(string playerName, string avatarUrl)
     {
         LoginResponse loginResponse = new LoginResponse
         {
             Success = true,
-            PlayerName = playerName
+            PlayerName = playerName,
+            PlayerAvatarUrl = avatarUrl
         };
+        Debug.Log(avatarUrl);
         return ReliableMessage.Build(Command.LoginResponse, loginResponse);
     }
 
@@ -52,11 +54,6 @@ public static class Service
         {
             Message = message
         });
-    }
-
-    private static byte[] GetData(object obj)
-    {
-        return Encoding.UTF8.GetBytes(JsonUtility.ToJson(obj));
     }
 
     public static byte[] UpdateRoomInfo(RoomInfo roomInfo)
@@ -97,5 +94,42 @@ public static class Service
             Message = message
         };
         return ReliableMessage.Build(Command.RegisterResponse, registerResponse);
+    }
+
+    public static byte[] SendPlayerTurnToDeploy(int currentTurnCount, string name)
+    {
+        return ReliableMessage.Build(Command.PlayerTurnToDeploy, new PlayerTurnToDeploy
+        {
+            TurnCount = currentTurnCount,
+            Name = name
+        });
+    }
+
+    public static byte[] SendBanPickTurnCountDown(float currentCountDown)
+    {
+        return ReliableMessage.Build(Command.BanPickTurnCountDown, new BanPickTurnCountDown
+        {
+            TimeLeft = currentCountDown
+        });
+    }
+
+    public static byte[] SendBattlePlayerInfo(BattlePlayer player)
+    {
+        return ReliableMessage.Build(Command.BattlePlayerInfo, new BattlePlayerInfo
+        {
+            Name = player.Name,
+            DeployedUnitIds = player.DeployedUnitIds.ToList(),
+            BannedUnitIds = player.BannedUnitIds.ToList()
+        });
+    }
+
+    public static byte[] LoadLoginScene()
+    {
+        return ReliableMessage.Build(Command.LoadLoginScene, new byte[0]);
+    }
+
+    public static byte[] LoadDeploymentPhase(DeploymentPhaseInfo deploymentPhaseInfo)
+    {
+        return ReliableMessage.Build(Command.LoadDeploymentPhase, deploymentPhaseInfo);
     }
 }

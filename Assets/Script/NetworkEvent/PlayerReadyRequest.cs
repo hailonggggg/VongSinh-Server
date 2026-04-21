@@ -7,6 +7,5 @@ using System.Threading.Tasks;
 [Serializable]
 public class PlayerReadyRequest
 {
-    public string RoomName;
     public string PlayerName;
 }

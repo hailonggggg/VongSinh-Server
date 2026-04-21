@@ -1,6 +1,9 @@
 using Assets.Script;
 using Fusion;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.Search;
 using UnityEngine;
 
 public class Client : IEquatable<Client>
@@ -14,6 +17,8 @@ public class Client : IEquatable<Client>
     public int CurrentBattleId = -1;
 
     public string Token;
+
+    public Queue<Action> PendingPacket = new();
 
     public Client(PlayerRef playerRef)
     {

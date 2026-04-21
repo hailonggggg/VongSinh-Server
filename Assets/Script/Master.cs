@@ -21,6 +21,11 @@ public class Master : MonoBehaviour
         battleSystem = new BattleSystem();
     }
 
+    void Update()
+    {
+        battleSystem?.Tick(Time.deltaTime);
+    }
+
 
     public void ClearClientResource(Client client)
     {
@@ -31,7 +36,7 @@ public class Master : MonoBehaviour
 
         if (RoomSystem.TryGetRoomById(client.CurrentRoomId, out Room room))
         {
-            roomSystem.LeaveRoom(client, room.Name);
+            roomSystem.LeaveRoom(client);
         }
     }
 }

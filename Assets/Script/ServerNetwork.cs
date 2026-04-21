@@ -208,4 +208,14 @@ public enum Command : byte
     BattleBanPickInfo,
     BattleSceneLoaded,
     LoginWithFakeAccount,
+    UnitDeploySelected,
+    BanPickSelected,
+    BattlePlayerInfo,
+    PlayerTurnToDeploy,
+    BanPickTurnCountDown,
+    MapIndexSelected,
+    SceneLoadDone,
+    Logout,
+    LoadLoginScene,
+    LoadDeploymentPhase
 }

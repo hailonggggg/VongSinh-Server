@@ -8,4 +8,5 @@ public class LoginApiResponse
     public string token;
     public string Email;
     public string Role;
+    public string avatarUrl;
 }

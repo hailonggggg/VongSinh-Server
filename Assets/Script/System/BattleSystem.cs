@@ -8,24 +8,71 @@ namespace Assets.Script.System
     public class BattleSystem : BaseSystem
     {
         private static int nextBattleId = 1;
-        private readonly ConcurrentDictionary<int, Battle> battles = new ConcurrentDictionary<int, Battle>();
+        private readonly static ConcurrentDictionary<int, Battle> battles = new ConcurrentDictionary<int, Battle>();
+
+        public void Tick(float deltaTime)
+        {
+            foreach (Battle battle in battles.Values)
+            {
+                battle.Tick(deltaTime);
+            }
+        }
 
         public override void HandlePackage(Client client, Command messageType, string payload)
         {
+            base.HandlePackage(client, messageType, payload);
             switch (messageType)
             {
-                case Command.CreateBattle:
-                    string roomName = payload;
-                    CreateBattle(client, roomName);
+                case Command.UnitDeploySelected:
+                    HandleUnitDeploySelected(client, payload);
                     break;
-                case Command.BattleSceneLoaded:
-                    Debug.Log("BattleSceneLoaded");
-                    BattleSceneLoaded(client);
+                case Command.BanPickSelected:
+                    HandleBanPickSelected(client, payload);
                     break;
             }
         }
 
-        private void BattleSceneLoaded(Client client)
+        private void HandleBanPickSelected(Client client, string payload)
+        {
+            if (client == null || client.CurrentBattleId < 0)
+            {
+                return;
+            }
+
+            if (!battles.TryGetValue(client.CurrentBattleId, out Battle battle))
+            {
+                return;
+            }
+            if (!int.TryParse(payload, out int unitBanId))
+            {
+                return;
+            }
+
+            battle.HandleBanPickSelected(client.PlayerRef, unitBanId);
+        }
+
+        private void HandleUnitDeploySelected(Client client, string payload)
+        {
+            if (client == null || client.CurrentBattleId < 0)
+            {
+                return;
+            }
+
+            if (!battles.TryGetValue(client.CurrentBattleId, out Battle battle))
+            {
+                return;
+            }
+
+            UnitDeployInfo unitDeployInfo = JsonUtility.FromJson<UnitDeployInfo>(payload);
+
+            if (!battle.HandleUnitDeploySelected(client.PlayerRef, unitDeployInfo.UnitId))
+            {
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Không thể triển khai đơn vị này. Hãy chắc chắn rằng bạn đã chọn đúng đơn vị và chưa vượt quá giới hạn triển khai."));
+            }
+
+        }
+
+        private static void BattleSceneLoaded(Client client)
         {
             if (client == null || client.CurrentBattleId < 0)
             {
@@ -42,22 +89,10 @@ namespace Assets.Script.System
                 return;
             }
 
-            foreach (BattlePlayer battlePlayer in battle.Players)
-            {
-                Client battleClient = ClientManager.TryGetClient(battlePlayer.PlayerRef);
-                if (battleClient == null)
-                {
-                    continue;
-                }
-
-                ServerNetwork.Instance.SendToClient(battleClient, Service.SendBanPickStartInfo(new BattleBanPickInfo
-                {
-                    AllowCharacterSelectables = battle.GetAllowCharacterSelectables()
-                }));
-            }
+            battle.BroadcastBanPickInfo();
         }
 
-        public void CreateBattle(Client host, string roomName)
+        public static void CreateBattle(Client host, string roomName)
         {
             if (host == null || host.CurrentRoomId < 0)
             {
@@ -78,6 +113,9 @@ namespace Assets.Script.System
             bool hasPlayerAlreadyInBattle = room.Players.Any(p => p.Client.CurrentBattleId >= 0);
             if (!isAllPlayerReady || room.Players.Count < 2 || hasPlayerAlreadyInBattle)
             {
+                ServerNetwork.Instance.SendToClient(
+                    host,
+                    Service.ShowNotification("Không đủ điều kiện để bắt đầu trận đấu. Hãy chắc chắn rằng tất cả người chơi đã sẵn sàng, có ít nhất 2 người chơi và không có ai đang trong trận đấu khác."));
                 return;
             }
 
@@ -95,6 +133,10 @@ namespace Assets.Script.System
             foreach (RoomPlayer roomPlayer in room.Players)
             {
                 roomPlayer.Client.CurrentBattleId = battleId;
+                roomPlayer.Client.PendingPacket.Enqueue(() =>
+                {
+                    BattleSceneLoaded(roomPlayer.Client);
+                });
                 ServerNetwork.Instance.SendToClient(roomPlayer.Client, Service.LoadBattleScene());
             }
         }

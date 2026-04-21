@@ -9,6 +9,7 @@ public class AuthSystem : BaseSystem
 {
     public override void HandlePackage(Client client, Command messageType, string payload)
     {
+        base.HandlePackage(client, messageType, payload);
         switch (messageType)
         {
             case Command.RequestLogin:
@@ -22,18 +23,27 @@ public class AuthSystem : BaseSystem
             case Command.LoginWithFakeAccount:
                 LoginWithFakeAccount(client);
                 break;
+            case Command.Logout:
+                Logout(client);
+                break;
             default:
                 break;
         }
+    }
+
+    private void Logout(Client client)
+    {
+        client.Player = null;
+        ServerNetwork.Instance.SendToClient(client, Service.LoadLoginScene());
     }
 
     private void LoginWithFakeAccount(Client client)
     {
         client.Player = new Player
         {
-            Name =  $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
-        };  
-        ServerNetwork.Instance.SendToClient(client,Service.SendLoginResponse(client.Player.Name) ,Service.LoadLobbyScene());
+            Name = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
+        };
+        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.Player.Name,""), Service.LoadLobbyScene());
     }
 
 
@@ -80,7 +90,7 @@ public class AuthSystem : BaseSystem
             if (!apiResponse.Success)
             {
                 Debug.LogWarning($"[AUTH] Login failed for '{request?.Email}'. Message={apiResponse.Message}");
-                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Tài khoản hoặc mật khẩu sai."));
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification(apiResponse.Message ?? "Đăng nhập thất bại."));
                 return;
             }
             client.Token = apiResponse.token;
@@ -102,7 +112,7 @@ public class AuthSystem : BaseSystem
 
             ServerNetwork.Instance.SendToClient(
                 client,
-                Service.SendLoginResponse(user.lastName),
+                Service.SendLoginResponse(user.lastName, apiResponse.avatarUrl),
                 Service.LoadLobbyScene());
         }
         catch (Exception exception)

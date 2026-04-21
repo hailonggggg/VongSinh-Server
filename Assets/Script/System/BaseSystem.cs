@@ -19,5 +19,16 @@ public abstract class BaseSystem
         HandlePackage(client, type, payload);
     }
 
-    public abstract void HandlePackage(Client client, Command messageType, string payload);
+    public virtual void HandlePackage(Client client, Command messageType, string payload)
+    {
+        switch (messageType)
+        {
+            case Command.SceneLoadDone:
+                while (client.PendingPacket.TryDequeue(out Action action))
+                {
+                    action?.Invoke();
+                }
+                break;
+        }
+    }
 }
