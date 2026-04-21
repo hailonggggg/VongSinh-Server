@@ -26,6 +26,20 @@ public static class ReliableMessage
         return stream.ToArray();
     }
 
+    public static byte[] Build(Command cmd, string json)
+    {
+        byte[] payloadBytes = Encoding.UTF8.GetBytes(json);
+
+        using var stream = new MemoryStream();
+        using var writer = new BinaryWriter(stream);
+
+        writer.Write((byte)cmd);
+        writer.Write(payloadBytes.Length);
+        writer.Write(payloadBytes);
+
+        return stream.ToArray();
+    }
+
     public static (Command, string) Parse(ArraySegment<byte> data)
     {
         using var stream = new MemoryStream(data.Array, data.Offset, data.Count);

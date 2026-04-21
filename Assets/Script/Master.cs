@@ -8,6 +8,9 @@ public class Master : MonoBehaviour
     private AuthSystem authSystem;
     private RoomSystem roomSystem;
     private BattleSystem battleSystem;
+    private AnnouncementSystem announcementSystem;
+    private BundleSystem bundleSystem;
+    private OrderSystem orderSystem;
 
     void Awake()
     {
@@ -19,6 +22,9 @@ public class Master : MonoBehaviour
         authSystem = new AuthSystem();
         roomSystem = new RoomSystem();
         battleSystem = new BattleSystem();
+        announcementSystem =  new AnnouncementSystem();
+        bundleSystem = new BundleSystem();
+        orderSystem = new OrderSystem();
     }
 
     void Update()

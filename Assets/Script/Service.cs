@@ -1,4 +1,5 @@
 using Fusion;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,29 @@ public static class Service
             Message = message
         };
         return ReliableMessage.Build(Command.RegisterResponse, registerResponse);
+    }
+    public static byte[] SendAnnouncementResponse(AnnouncementResponse[] announcements)
+    {
+        string json = JsonConvert.SerializeObject(announcements);
+        return ReliableMessage.Build(Command.AnnouncementResponse, json);
+    }
+
+    [Serializable]
+    private class AnnouncementWrapper
+    {
+        public AnnouncementResponse[] Data;
+    }
+
+    public static byte[] SendGemBundleResponse(GemBundleResponse[] bundles)
+    {
+        string json = JsonConvert.SerializeObject(bundles);
+        return ReliableMessage.Build(Command.GemBundleResponse, json);
+    }
+
+    public static byte[] SendOrderResponse(OrderResponse order)
+    {
+        string json = JsonConvert.SerializeObject(order);
+        return ReliableMessage.Build(Command.OrderResponse, json);
     }
 
     public static byte[] SendPlayerTurnToDeploy(int currentTurnCount, string name)
