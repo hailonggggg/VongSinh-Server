@@ -156,4 +156,10 @@ public static class Service
     {
         return ReliableMessage.Build(Command.LoadDeploymentPhase, deploymentPhaseInfo);
     }
+
+    public static byte[] SendInventoryResponse(UserItem[] items)
+    {
+        string json = JsonConvert.SerializeObject(items);
+        return ReliableMessage.Build(Command.InventoryResponse, json);
+    }
 }
