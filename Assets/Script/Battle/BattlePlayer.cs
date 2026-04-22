@@ -9,15 +9,17 @@ public class BattlePlayer
     public bool IsBannedOtherUnit = false;
     public string Name { get; }
     public bool IsSceneLoaded { get; private set; }
+    public bool IsLeftSide { get; private set; }
     public PlayerRef PlayerRef { get; }
     public HashSet<int> DeployedUnitIds = new();
     public HashSet<int> BannedUnitIds = new();
+    public HashSet<Unit> UnitCombats = new();
 
-
-    public BattlePlayer(PlayerRef playerRef, string name)
+    public BattlePlayer(PlayerRef playerRef, string name, bool isLeftSide)
     {
         PlayerRef = playerRef;
         Name = name;
+        IsLeftSide = isLeftSide;
     }
 
     public bool MarkSceneLoaded()
@@ -39,6 +41,11 @@ public class BattlePlayer
     public bool ApplyUnitBan(int unitBanId)
     {
         return BannedUnitIds.Add(unitBanId);
+    }
+
+    public void AddUnit(Unit unit)
+    {
+        UnitCombats.Add(unit);
     }
 
     public bool HasReachedDeployLimit(int length)

@@ -156,4 +156,24 @@ public static class Service
     {
         return ReliableMessage.Build(Command.LoadDeploymentPhase, deploymentPhaseInfo);
     }
+
+    public static byte[] PlaceUnitResult(int id, int index, Vector3Int placedPosition, int playerRefId)
+    {
+        return ReliableMessage.Build(Command.UnitPlaced, new UnitPlaced
+        {
+            UnitId = id,
+            Index = index,
+            PlacedPosition = placedPosition,
+            PlayerRefId = playerRefId
+        });
+    }
+
+    public static byte[] RemoveUnit(int unitId, int playerRefId)
+    {
+        return ReliableMessage.Build(Command.RemoveUnit, new RemoveUnit
+        {
+            PlayerRefId = playerRefId,
+            UnitId = unitId
+        });
+    }
 }

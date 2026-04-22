@@ -44,14 +44,14 @@ public class RoomSystem : BaseSystem
                 SetPlayerReadyStatus(client, JsonUtility.FromJson<PlayerReadyRequest>(payload));
                 break;
             case Command.MapIndexSelected:
-                HandleMapIdSelected(client, payload);
+                HandleMapIndexSelected(client, payload);
                 break;
             default:
                 break;
         }
     }
 
-    private void HandleMapIdSelected(Client client, string payload)
+    private void HandleMapIndexSelected(Client client, string payload)
     {
         if (client.CurrentRoomId <= 0 || !TryGetRoomById(client.CurrentRoomId, out Room room))
         {

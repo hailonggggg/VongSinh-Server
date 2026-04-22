@@ -1,0 +1,530 @@
+{
+  "Characters": [
+    {
+      "Id": 3,
+      "IsYuanUser": true,
+      "IsAvailable": false,
+      "InitialSkillPoint": 10,
+      "SkillIds": [
+        1
+      ],
+      "PassiveIds": [],
+      "AssetName": "En1sis",
+      "DisplayName": "Trắc Anh",
+      "MaxHP": 10,
+      "MoveRange": 5
+    },
+    {
+      "Id": 1,
+      "IsYuanUser": false,
+      "IsAvailable": true,
+      "InitialSkillPoint": 10,
+      "SkillIds": [
+        1,
+        2,
+        3
+      ],
+      "PassiveIds": [
+        1,
+        2
+      ],
+      "AssetName": "MC",
+      "DisplayName": "Bình Tân",
+      "MaxHP": 18,
+      "MoveRange": 5
+    },
+    {
+      "Id": 2,
+      "IsYuanUser": true,
+      "IsAvailable": false,
+      "InitialSkillPoint": 10,
+      "SkillIds": [
+        10,
+        11,
+        12
+      ],
+      "PassiveIds": [
+        3,
+        4
+      ],
+      "AssetName": "No1",
+      "DisplayName": "Hữu Nghĩa",
+      "MaxHP": 16,
+      "MoveRange": 5
+    }
+  ],
+  "Monsters": [],
+  "Skills": [
+    {
+      "HaveYuanMode": true,
+      "IsYuanMode": false,
+      "NormalInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -1,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_1"
+      },
+      "YuanInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -1,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_1_Yuan"
+      },
+      "Id": 1,
+      "AssetName": "MC_Attack_1",
+      "SkillType": "BasicAttackSkillSO",
+      "SkillName": "Chém ngang",
+      "Description": "Bình Tân vung kiếm ngang và gây sát thương cho kẻ địch trong vùng. ",
+      "IsDirectional": true,
+      "IsUnlocked": true,
+      "Damage": 3,
+      "CritRate": 5,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 1,
+      "CooldownTurns": 0,
+      "ActionPointCost": 1,
+      "YuanLiCost": -1,
+      "SkillPointCost": 0,
+      "AnimationTrigger": "Attack_1",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [],
+      "Stages": []
+    },
+    {
+      "HaveYuanMode": true,
+      "IsYuanMode": false,
+      "NormalInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -1,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_2"
+      },
+      "YuanInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -1,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_2_Yuan"
+      },
+      "Id": 2,
+      "AssetName": "MC_Attack_2",
+      "SkillType": "BasicAttackSkillSO",
+      "SkillName": "Chém thẳng",
+      "Description": "Bình Tân vung kiếm thẳng và gây sát thương cho kẻ địch trong vùng.",
+      "IsDirectional": true,
+      "IsUnlocked": false,
+      "Damage": 4,
+      "CritRate": 5,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 1,
+      "CooldownTurns": 0,
+      "ActionPointCost": 1,
+      "YuanLiCost": -1,
+      "SkillPointCost": 0,
+      "AnimationTrigger": "Attack_2",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [],
+      "Stages": []
+    },
+    {
+      "HaveYuanMode": true,
+      "IsYuanMode": false,
+      "NormalInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -4,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_3"
+      },
+      "YuanInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -6,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_3"
+      },
+      "Id": 3,
+      "AssetName": "MC_Attack_3",
+      "SkillType": "BasicAttackSkillSO",
+      "SkillName": "Nguội",
+      "Description": "Bình Tân giảm Nguyện Áp đi 4 điểm.",
+      "IsDirectional": false,
+      "IsUnlocked": false,
+      "Damage": 0,
+      "CritRate": 0,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 0,
+      "CooldownTurns": 0,
+      "ActionPointCost": 1,
+      "YuanLiCost": -4,
+      "SkillPointCost": 0,
+      "AnimationTrigger": "Attack_3",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [],
+      "Stages": []
+    },
+    {
+      "HaveYuanMode": false,
+      "IsYuanMode": false,
+      "NormalInfo": {
+        "ActionPointCost": 1,
+        "YuanLiCost": -1,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Attack_1"
+      },
+      "YuanInfo": {
+        "ActionPointCost": 0,
+        "YuanLiCost": -10,
+        "SkillPointCost": 0,
+        "AnimationTrigger": "Idle"
+      },
+      "Id": 10,
+      "AssetName": "No1_Attack_1",
+      "SkillType": "BasicAttackSkillSO",
+      "SkillName": "Đâm thẳng",
+      "Description": "Hữu Nghĩa đâm thương về phía trước và gây sát thương cho kẻ địch trên 1 đường thẳng. ",
+      "IsDirectional": true,
+      "IsUnlocked": true,
+      "Damage": 3,
+      "CritRate": 5,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 1,
+      "CooldownTurns": 0,
+      "ActionPointCost": 1,
+      "YuanLiCost": -1,
+      "SkillPointCost": 0,
+      "AnimationTrigger": "Attack_1",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [],
+      "Stages": []
+    },
+    {
+      "SerializedActionPointCost": 0,
+      "SerializedYuanLiCost": 3,
+      "SerializedSkillPointCost": 1,
+      "SerializedAnimationTrigger": "YuanSkill_1",
+      "Id": 11,
+      "AssetName": "No1_YuanSkill_1",
+      "SkillType": "YuanSkillSO",
+      "SkillName": "Long Nha Kích",
+      "Description": "Hữu Nghĩa giải phóng Nguyện về phía trước gây sát thương cho kẻ địch trong vùng.",
+      "IsDirectional": true,
+      "IsUnlocked": true,
+      "Damage": 4,
+      "CritRate": 5,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 1,
+      "CooldownTurns": 0,
+      "ActionPointCost": 0,
+      "YuanLiCost": 3,
+      "SkillPointCost": 1,
+      "AnimationTrigger": "YuanSkill_1",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [],
+      "Stages": []
+    },
+    {
+      "SerializedActionPointCost": 0,
+      "SerializedYuanLiCost": 3,
+      "SerializedSkillPointCost": 1,
+      "SerializedAnimationTrigger": "YuanSkill_2",
+      "Id": 12,
+      "AssetName": "No1_YuanSkill_2",
+      "SkillType": "YuanSkillSO",
+      "SkillName": "Huyền thương tam ảnh",
+      "Description": "Hữu Nghĩa tạo ra 3 ngọn thương bằng Nguyện và phóng chúng về phía trước theo đường thẳng, gây hiệu ứng Chảy Máu (mất 2hp mỗi  turn) cho kẻ địch trúng phải trong vòng 4 turn.",
+      "IsDirectional": true,
+      "IsUnlocked": false,
+      "Damage": 2,
+      "CritRate": 5,
+      "SkillOrigin": "CharacterPosition",
+      "MoveRange": 1,
+      "CooldownTurns": 0,
+      "ActionPointCost": 0,
+      "YuanLiCost": 3,
+      "SkillPointCost": 1,
+      "AnimationTrigger": "YuanSkill_2",
+      "BuffTypeNames": [],
+      "DebuffTypeNames": [
+        "BleedStatus"
+      ],
+      "Stages": []
+    }
+  ],
+  "Passives": [
+    {
+      "Id": 1,
+      "AssetName": "MC_Passive_1",
+      "PassiveName": "Chiến Khai Thiên Mạch",
+      "Description": "+1 AP cho đội mỗi đầu lượt.",
+      "ConditionTypeNames": [
+        "OwnerTeamTurnCondition"
+      ],
+      "EffectTypeNames": [
+        "GainTeamAPEffect"
+      ]
+    },
+    {
+      "Id": 2,
+      "AssetName": "MC_Passive_2",
+      "PassiveName": "Linh Vực Hồi Thiên",
+      "Description": "Mỗi khi hành động, toàn bộ đồng đội trong vùng 3x3 xoay quanh MC sẽ hồi 2 hp.",
+      "ConditionTypeNames": [
+        "OwnerIsActorCondition"
+      ],
+      "EffectTypeNames": [
+        "HealAlliesAroundOwnerEffectConditon"
+      ]
+    },
+    {
+      "Id": 3,
+      "AssetName": "No1_Passive_2",
+      "PassiveName": "Phá Quân Hồi Khí",
+      "Description": "Mỗi khi tấn công trúng 3 kẻ địch trở lên, sẽ hồi phục 1 AP.",
+      "ConditionTypeNames": [
+        "HitEnemyCountAtLeastCondition",
+        "OwnerIsAttackerCondition"
+      ],
+      "EffectTypeNames": [
+        "GainTeamAPEffect"
+      ]
+    },
+    {
+      "Id": 4,
+      "AssetName": "No1_Passive_3",
+      "PassiveName": "Diệt Chúng Tụ Linh",
+      "Description": "Mỗi khi tấn công trúng 4 kẻ địch trở lên, sẽ hồi phục 1 SP.",
+      "ConditionTypeNames": [
+        "HitEnemyCountAtLeastCondition",
+        "OwnerIsAttackerCondition"
+      ],
+      "EffectTypeNames": [
+        "GainOwnerSPEffect"
+      ]
+    }
+  ],
+  "Maps": [
+    {
+      "Id": 1,
+      "AssetName": "Map_1",
+      "PlayerSpawnFacing": "Right",
+      "EnemySpawnFacing": "Left",
+      "Tiles": [
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": 4,
+            "z": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": 3,
+            "z": 0,
+            "magnitude": 4.2426405,
+            "sqrMagnitude": 18
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": 3,
+            "z": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": 4,
+            "z": 0,
+            "magnitude": 5.656854,
+            "sqrMagnitude": 32
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": 4,
+            "z": 0,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": 3,
+            "z": 0,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": 2,
+            "z": 0,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": 2,
+            "z": 0,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": 2,
+            "z": 0,
+            "magnitude": 2.828427,
+            "sqrMagnitude": 8
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": true,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -9,
+            "z": 0,
+            "magnitude": 9.848858,
+            "sqrMagnitude": 97
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -8,
+            "z": 0,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -8,
+            "z": 0,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -9,
+            "z": 0,
+            "magnitude": 9.486833,
+            "sqrMagnitude": 90
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -9,
+            "z": 0,
+            "magnitude": 10.29563,
+            "sqrMagnitude": 106
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -8,
+            "z": 0,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -10,
+            "z": 0,
+            "magnitude": 11.18034,
+            "sqrMagnitude": 125
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -10,
+            "z": 0,
+            "magnitude": 10.7703295,
+            "sqrMagnitude": 116
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -10,
+            "z": 0,
+            "magnitude": 10.4403067,
+            "sqrMagnitude": 109
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": true
+        }
+      ],
+      "MonsterSpawns": []
+    }
+  ]
+}

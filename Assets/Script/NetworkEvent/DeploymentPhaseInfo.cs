@@ -5,4 +5,5 @@ using System.Collections.Generic;
 public class DeploymentPhaseInfo
 {
     public List<int> DeployedUnitIds;
+    public List<TileData> tiles;
 }

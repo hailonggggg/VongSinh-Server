@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -166,6 +167,8 @@ public class Battle
         }
         RoomSystem.TryGetRoomById(RoomId, out var room);
 
+        currentMap = Master.Instance.LoadMap(room.MapIndexSelected);
+
         foreach (BattlePlayer battlePlayer in players)
         {
             Client battleClient = ClientManager.TryGetClient(battlePlayer.PlayerRef);
@@ -176,7 +179,7 @@ public class Battle
 
             ServerNetwork.Instance.SendToClient(battleClient, Service.SendBanPickStartInfo(new BattleBanPickInfo
             {
-                IsLocalPlayerOnLeftSide = battlePlayer == players[0],
+                IsLocalPlayerOnLeftSide = battlePlayer.IsLeftSide,
                 HasBanPhase = config.HasBanPhase,
                 MapIndexSelected = room.MapIndexSelected,
                 MaxUnitsPerPlayer = config.MaxUnitsPerPlayer,
@@ -247,6 +250,7 @@ public class Battle
     private void StartDeploymentPhase()
     {
         State = BattleState.Deployment;
+        RoomSystem.TryGetRoomById(RoomId, out Room room);
         foreach (BattlePlayer battlePlayer in players)
         {
             Client battleClient = ClientManager.TryGetClient(battlePlayer.PlayerRef);
@@ -256,9 +260,56 @@ public class Battle
             }
             ServerNetwork.Instance.SendToClient(battleClient, Service.LoadDeploymentPhase(new DeploymentPhaseInfo
             {
-                DeployedUnitIds = battlePlayer.DeployedUnitIds.ToList()
+                DeployedUnitIds = battlePlayer.DeployedUnitIds.ToList(),
+                tiles = currentMap.Tiles
             }));
         }
+    }
+
+    public void SetUnitPlaced(Client client, PlaceUnit placeUnit)
+    {
+        var battlePlayer = players.FirstOrDefault(x => x.PlayerRef == client.PlayerRef);
+        if (battlePlayer == null) return;
+
+        if (placeUnit.IndexSelected < 0 || placeUnit.IndexSelected >= battlePlayer.DeployedUnitIds.Count)
+        {
+            return;
+        }
+
+        int unitId = battlePlayer.DeployedUnitIds.ElementAt(placeUnit.IndexSelected);
+        Unit unit = battlePlayer.UnitCombats.FirstOrDefault(x => x.Data.Id == unitId);
+
+        if (!currentMap.IsValidSpawnPointPosition(battlePlayer.IsLeftSide, placeUnit.PlacedPosition))
+        {
+            if (unit != null)
+            {
+                battlePlayer.UnitCombats.Remove(unit);
+                ServerNetwork.Instance.SendToClients(Service.RemoveUnit(unitId, battlePlayer.PlayerRef.PlayerId),
+                players.Select(x => x.PlayerRef).ToArray());
+            }
+            return;
+        }
+
+
+        CharacterDataJsonData charData = unit?.Data;
+
+        if (unit == null)
+        {
+            charData = Master.Instance.TacticalSOExportData.Characters.FirstOrDefault(x => x.Id == unitId);
+
+            if (charData == null) return;
+
+            unit = new Unit(charData, placeUnit.PlacedPosition);
+            battlePlayer.AddUnit(unit);
+        }
+        else
+        {
+            unit.CurrentGridPosition = placeUnit.PlacedPosition;
+        }
+
+        ServerNetwork.Instance.SendToClients(Service.PlaceUnitResult(
+            charData.Id, placeUnit.IndexSelected, placeUnit.PlacedPosition, battlePlayer.PlayerRef.PlayerId),
+            players.Select(x => x.PlayerRef).ToArray());
     }
     #endregion
 }

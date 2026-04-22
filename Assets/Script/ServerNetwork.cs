@@ -226,5 +226,10 @@ public enum Command : byte
     SceneLoadDone,
     Logout,
     LoadLoginScene,
-    LoadDeploymentPhase
+    LoadDeploymentPhase,
+    RequestInventory,
+    InventoryResponse,
+    PlaceUnit,
+    UnitPlaced,
+    RemoveUnit
 }

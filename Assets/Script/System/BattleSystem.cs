@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,17 +30,25 @@ namespace Assets.Script.System
                 case Command.BanPickSelected:
                     HandleBanPickSelected(client, payload);
                     break;
+                case Command.PlaceUnit:
+                    HandleunitPlaced(client, payload);
+                    break;
             }
+        }
+
+        private void HandleunitPlaced(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            PlaceUnit unitPlaced = JsonUtility.FromJson<PlaceUnit>(payload);
+            battle.SetUnitPlaced(client, unitPlaced);
         }
 
         private void HandleBanPickSelected(Client client, string payload)
         {
-            if (client == null || client.CurrentBattleId < 0)
-            {
-                return;
-            }
-
-            if (!battles.TryGetValue(client.CurrentBattleId, out Battle battle))
+            if (!TryGetBattle(client, out Battle battle))
             {
                 return;
             }
@@ -53,12 +62,7 @@ namespace Assets.Script.System
 
         private void HandleUnitDeploySelected(Client client, string payload)
         {
-            if (client == null || client.CurrentBattleId < 0)
-            {
-                return;
-            }
-
-            if (!battles.TryGetValue(client.CurrentBattleId, out Battle battle))
+            if (!TryGetBattle(client, out Battle battle))
             {
                 return;
             }
@@ -74,12 +78,7 @@ namespace Assets.Script.System
 
         private static void BattleSceneLoaded(Client client)
         {
-            if (client == null || client.CurrentBattleId < 0)
-            {
-                return;
-            }
-
-            if (!battles.TryGetValue(client.CurrentBattleId, out Battle battle))
+            if (!TryGetBattle(client, out Battle battle))
             {
                 return;
             }
@@ -121,7 +120,7 @@ namespace Assets.Script.System
 
             int battleId = nextBattleId++;
             List<BattlePlayer> battlePlayers = room.Players
-                .Select(p => new BattlePlayer(p.Client.PlayerRef, p.Name))
+                .Select((p, index) => new BattlePlayer(p.Client.PlayerRef, p.Name, index == 0))
                 .ToList();
             Battle battle = new(battleId, room.RoomId, battlePlayers);
 
@@ -141,5 +140,12 @@ namespace Assets.Script.System
             }
         }
 
+        private static bool TryGetBattle(Client client, out Battle battle)
+        {
+            battle = null;
+            return client != null && client.CurrentBattleId > 0 && battles.TryGetValue(client.CurrentBattleId, out battle);
+        }
+
     }
+
 }
