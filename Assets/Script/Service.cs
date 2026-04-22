@@ -176,4 +176,10 @@ public static class Service
             UnitId = unitId
         });
     }
+
+    public static byte[] SendInventoryResponse(UserItem[] items)
+    {
+        string json = JsonConvert.SerializeObject(items);
+        return ReliableMessage.Build(Command.InventoryResponse, json);
+    }
 }

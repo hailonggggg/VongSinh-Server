@@ -16,6 +16,8 @@ public static class ApiService
     private const string AnnouncementUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Announcement?Search={0}&SortBy={1}&IsDescending={2}";
     private const string GemBundleUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Shop/gem-bundles";
     private const string OrderUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Order";
+    private const string InventoryUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Player/inventory";
+    //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
     {
@@ -359,7 +361,7 @@ public static class ApiService
                 playerUserName = client.Player.Name,
                 returnUrl = "https://return",
                 cancelUrl = "https://cancel",
-                expiredAt = DateTime.UtcNow.AddMinutes(15).ToString("o"),
+                expiredAt = DateTime.UtcNow.ToString("o"),
                 items = new[]
                 {
                     new OrderItem
@@ -433,6 +435,43 @@ public static class ApiService
         catch (Exception e)
         {
             Debug.LogError($"[API ORDER GET] {e}");
+            return null;
+        }
+    }
+    public static async Task<UserItem[]> GetInventory(Client client)
+    {
+        try
+        {
+            using HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Get, InventoryUrl);
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string json = await response.Content.ReadAsStringAsync();
+
+            Debug.Log($"[INVENTORY RAW] {json}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogWarning($"[API] Inventory failed {(int)response.StatusCode}");
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                Debug.LogWarning("[API] Inventory empty");
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<UserItem[]>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API INVENTORY] {e}");
             return null;
         }
     }

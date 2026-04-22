@@ -16,6 +16,7 @@ public class Master : MonoBehaviour
     private AnnouncementSystem announcementSystem;
     private BundleSystem bundleSystem;
     private OrderSystem orderSystem;
+    private InventorySystem inventorySystem;
 
     void Awake()
     {
@@ -31,6 +32,7 @@ public class Master : MonoBehaviour
         announcementSystem = new AnnouncementSystem();
         bundleSystem = new BundleSystem();
         orderSystem = new OrderSystem();
+        inventorySystem = new InventorySystem();
     }
 
     void Update()
