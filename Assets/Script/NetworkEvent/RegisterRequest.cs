@@ -4,4 +4,5 @@ public class RegisterRequest
     public string Password;
     public string FirstName;
     public string LastName;
+    public string UserName;
 }

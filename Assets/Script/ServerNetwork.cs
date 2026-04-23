@@ -8,6 +8,8 @@ using UnityEngine;
 [RequireComponent(typeof(NetworkSceneManagerDefault))]
 public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 {
+    [SerializeField]
+    private int loginSceneIndex = 2;
     public static ServerNetwork Instance { get; private set; }
     public event Action<PlayerRef, ArraySegment<byte>> OnReceiveNetworkData;
 
@@ -177,7 +179,7 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.Server,
             SessionName = "DedicatedServer",
             SceneManager = GetComponent<NetworkSceneManagerDefault>(),
-            Scene = SceneRef.FromIndex(0)
+            Scene = SceneRef.FromIndex(loginSceneIndex)
         });
 
         return networkRunner;

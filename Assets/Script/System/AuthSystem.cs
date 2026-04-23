@@ -43,7 +43,7 @@ public class AuthSystem : BaseSystem
         {
             Name = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
         };
-        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.Player.Name,""), Service.LoadLobbyScene());
+        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.Player.Name, ""), Service.LoadLobbyScene());
     }
 
 
@@ -130,7 +130,7 @@ public class AuthSystem : BaseSystem
         catch (Exception exception)
         {
             Debug.LogError($"[AUTH] Unexpected login error for '{request?.Email}'. Error={exception}");
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Tài khoản hoặc mật khẩu sai."));
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Đăng nhập thất bại."));
         }
     }
 }
