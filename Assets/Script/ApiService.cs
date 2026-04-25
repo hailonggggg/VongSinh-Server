@@ -93,13 +93,11 @@ public static class ApiService
         try
         {
             string requestUrl = string.Format(GetUserById, userId);
-            Debug.Log(requestUrl);
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
 
             using HttpResponseMessage response = await httpClient.SendAsync(request);
             string responseJson = await response.Content.ReadAsStringAsync();
-
             if (!response.IsSuccessStatusCode)
             {
                 Debug.LogWarning($"[AUTH API] Get user failed. Status={(int)response.StatusCode} Body={responseJson}");
@@ -121,14 +119,6 @@ public static class ApiService
             }
 
             return userApiUserData;
-        }
-        catch (TaskCanceledException exception)
-        {
-            Debug.LogError($"[AUTH API] Get user request timed out. Error={exception.Message}");
-        }
-        catch (HttpRequestException exception)
-        {
-            Debug.LogError($"[AUTH API] Could not reach user API. Error={exception.Message}");
         }
         catch (Exception exception)
         {

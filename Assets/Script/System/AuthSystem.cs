@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fusion;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AuthSystem : BaseSystem
 {
@@ -41,7 +42,7 @@ public class AuthSystem : BaseSystem
     {
         client.User = new UserApiUserData
         {
-            FirstName = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
+            LastName = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
         };
         ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.User.LastName, ""), Service.LoadLobbyScene());
     }
@@ -53,7 +54,7 @@ public class AuthSystem : BaseSystem
         {
             if (!IsValidEmail(registerRequest.Email))
             {
-                ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, "Email không hợp lệ"));
+                ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, "Định dạng email không hợp lệ"));
                 return;
             }
             RegisterApiResponse registerApiResponse = await ApiService.Register(registerRequest);
@@ -103,6 +104,20 @@ public class AuthSystem : BaseSystem
                 return;
             }
 
+            if (userApiResponse.IsOnline)
+            {
+                var onLoginClient = ClientManager.TryGetClient(userApiResponse.UserId);
+                if (onLoginClient != null)
+                {
+                    ServerNetwork.Instance.SendToClients(
+                        Service.ShowNotification(apiResponse.Message ?? "Tài khoản đang được đăng nhập ở nơi khác"),
+                        client,
+                        onLoginClient);
+                    ServerNetwork.Instance.Disconnect(onLoginClient.PlayerRef);
+                    return;
+                }
+            }
+
             client.User = userApiResponse;
 
             AnnouncementResponse[] announcements = await ApiService.GetAllAnnouncement(client);
@@ -118,13 +133,13 @@ public class AuthSystem : BaseSystem
 
             ServerNetwork.Instance.SendToClient(
                 client,
-                Service.SendLoginResponse(userApiResponse.LastName, apiResponse.avatarUrl),
+                Service.SendLoginResponse(userApiResponse.LastName, userApiResponse.AvatarUrl),
                 Service.SendAnnouncementResponse(announcements),
                 Service.LoadLobbyScene());
         }
-        catch (Exception exception)
+        catch (Exception e)
         {
-            Debug.LogError($"[AUTH] Unexpected login error for '{request?.Email}'. Error={exception}");
+            Debug.LogError($"[AUTH] Unexpected login error for '{request?.Email}'. Error={e}. Message={e.Message}");
             ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Đăng nhập thất bại."));
         }
     }

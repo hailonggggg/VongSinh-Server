@@ -1,6 +1,7 @@
 using Fusion;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ClientManager
@@ -28,5 +29,11 @@ public class ClientManager
     {
         return clients.TryGetValue(player, out Client client) ? client : null;
     }
+
+    public static Client TryGetClient(int userId)
+    {
+        return clients.Values.FirstOrDefault(x => x?.User != null && x.User.UserId == userId);
+    }
+
 
 }

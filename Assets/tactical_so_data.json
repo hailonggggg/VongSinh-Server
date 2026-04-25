@@ -1,7 +1,6 @@
 {
   "Characters": [
     {
-      "Id": 3,
       "IsYuanUser": true,
       "IsAvailable": false,
       "InitialSkillPoint": 10,
@@ -9,13 +8,13 @@
         1
       ],
       "PassiveIds": [],
+      "Id": 3,
       "AssetName": "En1sis",
       "DisplayName": "Trắc Anh",
       "MaxHP": 10,
       "MoveRange": 5
     },
     {
-      "Id": 1,
       "IsYuanUser": false,
       "IsAvailable": true,
       "InitialSkillPoint": 10,
@@ -28,13 +27,13 @@
         1,
         2
       ],
+      "Id": 1,
       "AssetName": "MC",
       "DisplayName": "Bình Tân",
       "MaxHP": 18,
       "MoveRange": 5
     },
     {
-      "Id": 2,
       "IsYuanUser": true,
       "IsAvailable": false,
       "InitialSkillPoint": 10,
@@ -47,13 +46,13 @@
         3,
         4
       ],
+      "Id": 2,
       "AssetName": "No1",
       "DisplayName": "Hữu Nghĩa",
       "MaxHP": 16,
       "MoveRange": 5
     }
   ],
-  "Monsters": [],
   "Skills": [
     {
       "HaveYuanMode": true,
@@ -231,7 +230,7 @@
       "SkillName": "Huyền thương tam ảnh",
       "Description": "Hữu Nghĩa tạo ra 3 ngọn thương bằng Nguyện và phóng chúng về phía trước theo đường thẳng, gây hiệu ứng Chảy Máu (mất 2hp mỗi  turn) cho kẻ địch trúng phải trong vòng 4 turn.",
       "IsDirectional": true,
-      "IsUnlocked": false,
+      "IsUnlocked": true,
       "Damage": 2,
       "CritRate": 5,
       "SkillOrigin": "CharacterPosition",
@@ -522,9 +521,872 @@
           "IsWalkable": true,
           "IsSpawnPoint": false,
           "IsOpponentSpawnPoint": true
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": 3,
+            "z": 0,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": 5,
+            "y": 19,
+            "z": 0,
+            "magnitude": 19.646883,
+            "sqrMagnitude": 386
+          },
+          "IsWalkable": false,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": 2,
+            "z": 0,
+            "magnitude": 5.38516474,
+            "sqrMagnitude": 29
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": 2,
+            "z": 0,
+            "magnitude": 6.3245554,
+            "sqrMagnitude": 40
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": 1,
+            "z": 0,
+            "magnitude": 5.09901953,
+            "sqrMagnitude": 26
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": 0,
+            "z": 0,
+            "magnitude": 4.0,
+            "sqrMagnitude": 16
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": 1,
+            "z": 0,
+            "magnitude": 4.12310553,
+            "sqrMagnitude": 17
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": 0,
+            "z": 0,
+            "magnitude": 3.0,
+            "sqrMagnitude": 9
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": 1,
+            "z": 0,
+            "magnitude": 3.1622777,
+            "sqrMagnitude": 10
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": 1,
+            "z": 0,
+            "magnitude": 2.236068,
+            "sqrMagnitude": 5
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": 0,
+            "z": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -1,
+            "z": 0,
+            "magnitude": 5.09901953,
+            "sqrMagnitude": 26
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -1,
+            "z": 0,
+            "magnitude": 6.08276272,
+            "sqrMagnitude": 37
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": 0,
+            "z": 0,
+            "magnitude": 6.0,
+            "sqrMagnitude": 36
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": 1,
+            "z": 0,
+            "magnitude": 6.08276272,
+            "sqrMagnitude": 37
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -1,
+            "z": 0,
+            "magnitude": 4.12310553,
+            "sqrMagnitude": 17
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": 0,
+            "z": 0,
+            "magnitude": 2.0,
+            "sqrMagnitude": 4
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -1,
+            "z": 0,
+            "magnitude": 2.236068,
+            "sqrMagnitude": 5
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -2,
+            "z": 0,
+            "magnitude": 2.828427,
+            "sqrMagnitude": 8
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -3,
+            "z": 0,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -4,
+            "z": 0,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -5,
+            "z": 0,
+            "magnitude": 5.38516474,
+            "sqrMagnitude": 29
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -6,
+            "z": 0,
+            "magnitude": 6.3245554,
+            "sqrMagnitude": 40
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -7,
+            "z": 0,
+            "magnitude": 7.28011,
+            "sqrMagnitude": 53
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -7,
+            "z": 0,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -7,
+            "z": 0,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -7,
+            "z": 0,
+            "magnitude": 8.602325,
+            "sqrMagnitude": 74
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -7,
+            "z": 0,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -7,
+            "z": 0,
+            "magnitude": 9.899495,
+            "sqrMagnitude": 98
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -8,
+            "z": 0,
+            "magnitude": 10.630146,
+            "sqrMagnitude": 113
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -8,
+            "z": 0,
+            "magnitude": 11.3137083,
+            "sqrMagnitude": 128
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -7,
+            "z": 0,
+            "magnitude": 10.630146,
+            "sqrMagnitude": 113
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -6,
+            "z": 0,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -6,
+            "z": 0,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -6,
+            "z": 0,
+            "magnitude": 8.485281,
+            "sqrMagnitude": 72
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -6,
+            "z": 0,
+            "magnitude": 7.81025,
+            "sqrMagnitude": 61
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -6,
+            "z": 0,
+            "magnitude": 7.21110249,
+            "sqrMagnitude": 52
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -6,
+            "z": 0,
+            "magnitude": 6.708204,
+            "sqrMagnitude": 45
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -5,
+            "z": 0,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -4,
+            "z": 0,
+            "magnitude": 5.656854,
+            "sqrMagnitude": 32
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -5,
+            "z": 0,
+            "magnitude": 6.40312433,
+            "sqrMagnitude": 41
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -5,
+            "z": 0,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -5,
+            "z": 0,
+            "magnitude": 7.81025,
+            "sqrMagnitude": 61
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -5,
+            "z": 0,
+            "magnitude": 8.602325,
+            "sqrMagnitude": 74
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -4,
+            "z": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -3,
+            "z": 0,
+            "magnitude": 4.2426405,
+            "sqrMagnitude": 18
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -3,
+            "z": 0,
+            "magnitude": 5.0,
+            "sqrMagnitude": 25
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -2,
+            "z": 0,
+            "magnitude": 3.60555124,
+            "sqrMagnitude": 13
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -3,
+            "y": -1,
+            "z": 0,
+            "magnitude": 3.1622777,
+            "sqrMagnitude": 10
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -4,
+            "y": -2,
+            "z": 0,
+            "magnitude": 4.472136,
+            "sqrMagnitude": 20
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -3,
+            "z": 0,
+            "magnitude": 5.83095169,
+            "sqrMagnitude": 34
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -2,
+            "z": 0,
+            "magnitude": 5.38516474,
+            "sqrMagnitude": 29
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -2,
+            "z": 0,
+            "magnitude": 6.3245554,
+            "sqrMagnitude": 40
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -2,
+            "z": 0,
+            "magnitude": 7.28011,
+            "sqrMagnitude": 53
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -3,
+            "z": 0,
+            "magnitude": 7.615773,
+            "sqrMagnitude": 58
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -3,
+            "z": 0,
+            "magnitude": 6.708204,
+            "sqrMagnitude": 45
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -5,
+            "y": -4,
+            "z": 0,
+            "magnitude": 6.40312433,
+            "sqrMagnitude": 41
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -4,
+            "z": 0,
+            "magnitude": 7.21110249,
+            "sqrMagnitude": 52
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -4,
+            "z": 0,
+            "magnitude": 8.062258,
+            "sqrMagnitude": 65
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -1,
+            "z": 0,
+            "magnitude": 7.071068,
+            "sqrMagnitude": 50
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -8,
+            "z": 0,
+            "magnitude": 10.0,
+            "sqrMagnitude": 100
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -9,
+            "z": 0,
+            "magnitude": 10.8166542,
+            "sqrMagnitude": 117
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": -9,
+            "z": 0,
+            "magnitude": 11.4017544,
+            "sqrMagnitude": 130
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -8,
+            "z": 0,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -9,
+            "z": 0,
+            "magnitude": 9.219544,
+            "sqrMagnitude": 85
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -2,
+            "y": -10,
+            "z": 0,
+            "magnitude": 10.1980391,
+            "sqrMagnitude": 104
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -6,
+            "y": -10,
+            "z": 0,
+            "magnitude": 11.6619034,
+            "sqrMagnitude": 136
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -7,
+            "y": 0,
+            "z": 0,
+            "magnitude": 7.0,
+            "sqrMagnitude": 49
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -5,
+            "z": 0,
+            "magnitude": 9.433981,
+            "sqrMagnitude": 89
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -4,
+            "z": 0,
+            "magnitude": 8.944272,
+            "sqrMagnitude": 80
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -3,
+            "z": 0,
+            "magnitude": 8.54400349,
+            "sqrMagnitude": 73
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
+        },
+        {
+          "GridPosition": {
+            "x": -8,
+            "y": -2,
+            "z": 0,
+            "magnitude": 8.246211,
+            "sqrMagnitude": 68
+          },
+          "IsWalkable": true,
+          "IsSpawnPoint": false,
+          "IsOpponentSpawnPoint": false
         }
-      ],
-      "MonsterSpawns": []
+      ]
     }
   ]
 }

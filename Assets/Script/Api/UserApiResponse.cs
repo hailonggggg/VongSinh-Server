@@ -19,6 +19,6 @@ public class UserApiUserData
     public string UserName;
     public bool IsOnline;
     public string AvatarUrl;
-    public DateTime LastOnline;
-    public TimeSpan? BannedUntil;
+    public DateTime? LastOnline;
+    public DateTime? BannedUntil;
 }

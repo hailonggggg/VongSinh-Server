@@ -28,17 +28,11 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
-        string ip = System.Text.Encoding.UTF8.GetString(token);
 
-        request.Accept();
-        Debug.Log("Ip get " + ip);
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
-        if (data.TryGetValue("ip", out var ip))
-        {
-            Debug.Log("Player IP from backend: " + ip);
-        }
+
     }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
@@ -191,7 +185,10 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
         return networkRunner;
     }
 
-
+    public void Disconnect(PlayerRef playerRef)
+    {
+        runner.Disconnect(playerRef);
+    }
 }
 public enum Command : byte
 {

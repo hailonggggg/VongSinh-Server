@@ -20,7 +20,7 @@ public class Client : IEquatable<Client>
 
     public Queue<Action> PendingPacket = new();
 
-    public Client(PlayerRef playerRef)
+    public Client(NetworkRunner networkRunner, PlayerRef playerRef)
     {
         PlayerRef = playerRef;
     }
@@ -29,6 +29,7 @@ public class Client : IEquatable<Client>
     {
         return PlayerRef == other.PlayerRef;
     }
+
 
     // public static bool operator ==(Client left, Client right)
     // {

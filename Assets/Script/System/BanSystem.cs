@@ -27,7 +27,7 @@ public class BanSystem
             return;
         }
 
-        ClientManager.AddClient(new Client(player));
+        ClientManager.AddClient(new Client(runner, player));
         Debug.Log($"Player accepted: {userId}");
     }
 
