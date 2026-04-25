@@ -11,10 +11,14 @@ public class UserApiResponse
 [Serializable]
 public class UserApiUserData
 {
-    public int userId;
-    public string email;
-    public string firstName;
-    public string lastName;
-    public bool banned;
-    public TimeSpan? bannedUntil;
+    public int UserId;
+    public string Email;
+    public string FirstName;
+    public string LastName;
+    public bool Banned;
+    public string UserName;
+    public bool IsOnline;
+    public string AvatarUrl;
+    public DateTime LastOnline;
+    public TimeSpan? BannedUntil;
 }

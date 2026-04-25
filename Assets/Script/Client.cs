@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Client : IEquatable<Client>
 {
-    public Player Player;
+    public UserApiUserData User;
 
     public PlayerRef PlayerRef;
 

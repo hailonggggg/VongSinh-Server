@@ -17,6 +17,7 @@ public static class ApiService
     private const string GemBundleUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Shop/gem-bundles";
     private const string OrderUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Order";
     private const string InventoryUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Player/inventory";
+    private const string GetUserById = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/User/{0}";
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -63,7 +64,7 @@ public static class ApiService
                 }
                 return null;
             }
-            LoginApiResponse loginResponse = JsonUtility.FromJson<LoginApiResponse>(responseJson);
+            LoginApiResponse loginResponse = JsonConvert.DeserializeObject<LoginApiResponse>(responseJson);
             if (loginResponse == null)
             {
                 Debug.LogWarning($"[AUTH API] Could not parse login response. Body={responseJson}");
@@ -87,22 +88,12 @@ public static class ApiService
         return null;
     }
 
-    [Serializable]
-    private class UserApiArrayWrapper
-    {
-        public UserApiUserData[] Data;
-    }
-
-    public static async Task<UserApiUserData[]> GetUser(Client client, string email)
+    public static async Task<UserApiUserData> GetUser(Client client, int userId)
     {
         try
         {
-            string requestUrl = string.Format(
-                SearchUserUrl,
-                Uri.EscapeDataString(email),
-                string.Empty,
-                "false");
-
+            string requestUrl = string.Format(GetUserById, userId);
+            Debug.Log(requestUrl);
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
 
@@ -121,16 +112,15 @@ public static class ApiService
                 return null;
             }
 
-            string wrappedJson = WrapArrayResponse(responseJson, "Data");
-            UserApiArrayWrapper userResponse = JsonUtility.FromJson<UserApiArrayWrapper>(wrappedJson);
+            UserApiUserData userApiUserData = JsonConvert.DeserializeObject<UserApiUserData>(responseJson);
 
-            if (userResponse?.Data == null)
+            if (userApiUserData == null)
             {
                 Debug.LogWarning($"[AUTH API] Could not parse user response. Body={responseJson}");
                 return null;
             }
 
-            return userResponse.Data;
+            return userApiUserData;
         }
         catch (TaskCanceledException exception)
         {
@@ -355,10 +345,10 @@ public static class ApiService
         {
             OrderRequest request = new OrderRequest
             {
-                userId = client.Player.Id,
+                userId = client.User.UserId,
                 totalAmount = bundle.bundlePrice,
-                playerEmail = client.Player.Username,
-                playerUserName = client.Player.Name,
+                playerEmail = client.User.Email,
+                playerUserName = client.User.Email,
                 returnUrl = "https://return",
                 cancelUrl = "https://cancel",
                 expiredAt = DateTime.UtcNow.ToString("o"),

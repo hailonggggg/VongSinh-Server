@@ -10,6 +10,8 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static ServerNetwork Instance { get; private set; }
     public event Action<PlayerRef, ArraySegment<byte>> OnReceiveNetworkData;
+    HashSet<string> bannedUsers = new HashSet<string>();
+    HashSet<string> bannedIPs = new HashSet<string>();
 
     private NetworkRunner runner;
 
@@ -26,11 +28,17 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
     {
+        string ip = System.Text.Encoding.UTF8.GetString(token);
 
+        request.Accept();
+        Debug.Log("Ip get " + ip);
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
-
+        if (data.TryGetValue("ip", out var ip))
+        {
+            Debug.Log("Player IP from backend: " + ip);
+        }
     }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
@@ -58,9 +66,9 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        
-        ClientManager.AddClient(new Client(player));
+        BanSystem.HandlePlayerJoin(runner, player);
     }
+
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
@@ -158,7 +166,7 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
             SendToClient(players[i], bytes);
         }
     }
-    
+
     public void SendToClients(byte[] bytes, params Client[] clients)
     {
         for (int i = 0; i < clients.Length; i++)
@@ -178,7 +186,6 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.Server,
             SessionName = "DedicatedServer",
             SceneManager = GetComponent<NetworkSceneManagerDefault>(),
-            // Scene = SceneRef.FromIndex(loginSceneIndex)
         });
 
         return networkRunner;

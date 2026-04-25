@@ -100,7 +100,7 @@ public class RoomSystem : BaseSystem
         int roomId = nextRoomId++;
         var hostPlayer = new RoomPlayer
         {
-            Name = client.Player.Name,
+            Name = client.User.LastName,
             IsHost = true,
             Client = client,
         };
@@ -132,7 +132,7 @@ public class RoomSystem : BaseSystem
 
         var roomPlayer = new RoomPlayer
         {
-            Name = client.Player.Name,
+            Name = client.User.LastName,
             IsHost = false,
             IsReady = false,
             Client = client
@@ -140,7 +140,7 @@ public class RoomSystem : BaseSystem
 
         room.Players.Add(roomPlayer);
         client.CurrentRoomId = room.RoomId;
-        Debug.Log($"[ROOM] Client {client.Player.Name} joined room {joinRequest.RoomName}");
+        Debug.Log($"[ROOM] Client {client.User.LastName} joined room {joinRequest.RoomName}");
         ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
         ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.UpdateRoomInfo(new RoomInfo
@@ -175,7 +175,7 @@ public class RoomSystem : BaseSystem
         }
 
         rooms.Remove(room.RoomId);
-        Debug.Log($"[ROOM] Room {roomName} removed by player {client.Player.Name}");
+        Debug.Log($"[ROOM] Room {roomName} removed by player {client.User.LastName}");
         ServerNetwork.Instance.SendToClients(Service.LoadLobbyScene(), clients);
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }

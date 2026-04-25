@@ -33,17 +33,17 @@ public class AuthSystem : BaseSystem
 
     private void Logout(Client client)
     {
-        client.Player = null;
+        client.User = null;
         ServerNetwork.Instance.SendToClient(client, Service.LoadLoginScene());
     }
 
     private void LoginWithFakeAccount(Client client)
     {
-        client.Player = new Player
+        client.User = new UserApiUserData
         {
-            Name = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
+            FirstName = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
         };
-        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.Player.Name, ""), Service.LoadLobbyScene());
+        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.User.LastName, ""), Service.LoadLobbyScene());
     }
 
 
@@ -94,21 +94,16 @@ public class AuthSystem : BaseSystem
                 return;
             }
             client.Token = apiResponse.token;
-            UserApiUserData[] userApiResponse = await ApiService.GetUser(client, request.Email);
 
-
-            if (userApiResponse == null || userApiResponse.Length == 0)
+            UserApiUserData userApiResponse = await ApiService.GetUser(client, apiResponse.Id);
+            if (userApiResponse == null)
             {
                 Debug.LogWarning($"[AUTH] Get user returned no data for '{request?.Email}'.");
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification(apiResponse.Message ?? "Không tìm thấy tài khoản"));
                 return;
             }
 
-            UserApiUserData user = userApiResponse[0];
-            client.Player = new Player
-            {
-                Username = request.Email,
-                Name = user.lastName
-            };
+            client.User = userApiResponse;
 
             AnnouncementResponse[] announcements = await ApiService.GetAllAnnouncement(client);
 
@@ -123,7 +118,7 @@ public class AuthSystem : BaseSystem
 
             ServerNetwork.Instance.SendToClient(
                 client,
-                Service.SendLoginResponse(user.lastName, apiResponse.avatarUrl),
+                Service.SendLoginResponse(userApiResponse.LastName, apiResponse.avatarUrl),
                 Service.SendAnnouncementResponse(announcements),
                 Service.LoadLobbyScene());
         }

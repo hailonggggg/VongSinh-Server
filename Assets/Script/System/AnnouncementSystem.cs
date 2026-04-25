@@ -38,7 +38,7 @@ public class AnnouncementSystem : BaseSystem
                 return;
             }
 
-            Debug.Log($"[ANNOUNCEMENT] Fetching announcements for {client.Player?.Name}");
+            Debug.Log($"[ANNOUNCEMENT] Fetching announcements for {client.User?.LastName}");
 
             AnnouncementResponse[] announcements =
                 await ApiService.GetAllAnnouncement(client);

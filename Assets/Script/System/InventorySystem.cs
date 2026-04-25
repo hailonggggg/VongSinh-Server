@@ -36,7 +36,7 @@ public class InventorySystem : BaseSystem
                 return;
             }
 
-            Debug.Log($"[INVENTORY] Fetching for {client.Player?.Name}");
+            Debug.Log($"[INVENTORY] Fetching for {client.User?.LastName}");
 
             UserItem[] items = await ApiService.GetInventory(client);
 

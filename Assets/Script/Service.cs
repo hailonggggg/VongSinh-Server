@@ -35,7 +35,6 @@ public static class Service
             PlayerName = playerName,
             PlayerAvatarUrl = avatarUrl
         };
-        Debug.Log(avatarUrl);
         return ReliableMessage.Build(Command.LoginResponse, loginResponse);
     }
 
