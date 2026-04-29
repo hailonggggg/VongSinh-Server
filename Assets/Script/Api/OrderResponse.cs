@@ -10,5 +10,5 @@ public class OrderResponse
     public string checkoutUrl;
 
     public string expiredAt;
-    public string bundleName;
+    public string accountName;
 }

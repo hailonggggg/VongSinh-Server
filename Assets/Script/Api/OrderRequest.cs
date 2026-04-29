@@ -12,6 +12,7 @@ public class OrderRequest
     public string expiredAt;
     public OrderItem[] items;
     public bool isSuccess;
+    public string accountName;
 }
 
 [Serializable]
