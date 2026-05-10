@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Assets.Script.System
@@ -9,7 +10,7 @@ namespace Assets.Script.System
     public class BattleSystem : BaseSystem
     {
         private static int nextBattleId = 1;
-        private readonly static ConcurrentDictionary<int, Battle> battles = new ConcurrentDictionary<int, Battle>();
+        private readonly static ConcurrentDictionary<int, Battle> battles = new();
 
         public void Tick(float deltaTime)
         {
@@ -31,17 +32,73 @@ namespace Assets.Script.System
                     HandleBanPickSelected(client, payload);
                     break;
                 case Command.PlaceUnit:
-                    HandleunitPlaced(client, payload);
+                    HandleUnitPlaced(client, payload);
+                    break;
+                case Command.UnitDeploySelectedSkill:
+                    HandleUnitDeploySelectedSkill(client, payload);
+                    break;
+                case Command.CompleteSetupDeployment:
+                    HandleCompleteSetupDeployment(client, payload);
+                    break;
+                case Command.UnitMove:
+                    HandleUnitMove(client, payload);
                     break;
             }
         }
 
-        private void HandleunitPlaced(Client client, string payload)
+        private void HandleUnitMove(Client client, string payload)
         {
             if (!TryGetBattle(client, out Battle battle))
             {
                 return;
             }
+            var data = JObject.Parse(payload);
+            int unitId = data["UnitId"].Value<int>();
+            Vector3Int targetCell = data["TargetCell"].Value<Vector3Int>();
+            battle.HandleUnitMove(client, unitId, targetCell);
+        }
+
+
+        private void HandleCompleteSetupDeployment(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            if (!battle.TryMarkSetupDeploymentComplete(client))
+            {
+                return;
+            }
+            battle.StartCombatPhase();
+        }
+
+
+        private void HandleUnitDeploySelectedSkill(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+
+            UnitDeploySelectedSkillRequest request = JsonUtility.FromJson<UnitDeploySelectedSkillRequest>(payload);
+            if (request == null)
+            {
+                return;
+            }
+
+            if (!battle.TryHandleUnitDeploySelectedSkill(client.PlayerRef, request))
+            {
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Không thể gắn thêm kỹ năng vào nhóm này. Mỗi unit chỉ được tối đa 2 basic attack, 2 kỹ năng và 2 passive. Hãy xóa 1 kỹ năng trước."));
+            }
+        }
+
+        private void HandleUnitPlaced(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+
             PlaceUnit unitPlaced = JsonUtility.FromJson<PlaceUnit>(payload);
             battle.SetUnitPlaced(client, unitPlaced);
         }
@@ -52,6 +109,7 @@ namespace Assets.Script.System
             {
                 return;
             }
+
             if (!int.TryParse(payload, out int unitBanId))
             {
                 return;
@@ -68,12 +126,10 @@ namespace Assets.Script.System
             }
 
             UnitDeployInfo unitDeployInfo = JsonUtility.FromJson<UnitDeployInfo>(payload);
-
             if (!battle.HandleUnitDeploySelected(client.PlayerRef, unitDeployInfo.UnitId))
             {
-                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Không thể triển khai đơn vị này. Hãy chắc chắn rằng bạn đã chọn đúng đơn vị và chưa vượt quá giới hạn triển khai."));
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Khong the trien khai don vi nay. Hay chac chan rang ban da chon dung don vi va chua vuot qua gioi han trien khai."));
             }
-
         }
 
         private static void BattleSceneLoaded(Client client)
@@ -114,13 +170,13 @@ namespace Assets.Script.System
             {
                 ServerNetwork.Instance.SendToClient(
                     host,
-                    Service.ShowNotification("Không đủ điều kiện để bắt đầu trận đấu. Hãy chắc chắn rằng tất cả người chơi đã sẵn sàng, có ít nhất 2 người chơi và không có ai đang trong trận đấu khác."));
+                    Service.ShowNotification("Khong du dieu kien de bat dau tran dau. Hay chac chan rang tat ca nguoi choi da san sang, co it nhat 2 nguoi choi va khong co ai dang trong tran dau khac."));
                 return;
             }
 
             int battleId = nextBattleId++;
             List<BattlePlayer> battlePlayers = room.Players
-                .Select((p, index) => new BattlePlayer(p.Client.PlayerRef, p.Name, index == 0))
+                .Select((player, index) => new BattlePlayer(player.Client, player.Name, index == 0))
                 .ToList();
             Battle battle = new(battleId, room.RoomId, battlePlayers);
 
@@ -145,7 +201,5 @@ namespace Assets.Script.System
             battle = null;
             return client != null && client.CurrentBattleId > 0 && battles.TryGetValue(client.CurrentBattleId, out battle);
         }
-
     }
-
 }

@@ -4,9 +4,10 @@
       "IsYuanUser": true,
       "IsAvailable": false,
       "InitialSkillPoint": 10,
-      "SkillIds": [
+      "basicAttackSkillIds": [
         1
       ],
+      "yuanSkillIds": [],
       "PassiveIds": [],
       "Id": 3,
       "AssetName": "En1sis",
@@ -18,11 +19,12 @@
       "IsYuanUser": false,
       "IsAvailable": true,
       "InitialSkillPoint": 10,
-      "SkillIds": [
+      "basicAttackSkillIds": [
         1,
         2,
         3
       ],
+      "yuanSkillIds": [],
       "PassiveIds": [
         1,
         2
@@ -35,10 +37,12 @@
     },
     {
       "IsYuanUser": true,
-      "IsAvailable": false,
+      "IsAvailable": true,
       "InitialSkillPoint": 10,
-      "SkillIds": [
-        10,
+      "basicAttackSkillIds": [
+        10
+      ],
+      "yuanSkillIds": [
         11,
         12
       ],
@@ -53,7 +57,7 @@
       "MoveRange": 5
     }
   ],
-  "Skills": [
+  "BasicAttackSkillJsonDatas": [
     {
       "HaveYuanMode": true,
       "IsYuanMode": false,
@@ -61,13 +65,197 @@
         "ActionPointCost": 1,
         "YuanLiCost": -1,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_1"
+        "AnimationTrigger": "Attack_1",
+        "SkillPattern": {
+          "PreviewTargetOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "RedDamageMultiplier": 0.25,
+          "OrangeDamageMultiplier": 0.5,
+          "YellowDamageMultiplier": 1.0,
+          "TargetTiles": [
+            {
+              "offset": {
+                "x": -1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "magnitude": 0.0,
+                "sqrMagnitude": 0
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            }
+          ]
+        }
       },
       "YuanInfo": {
         "ActionPointCost": 1,
         "YuanLiCost": -1,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_1_Yuan"
+        "AnimationTrigger": "Attack_1_Yuan",
+        "SkillPattern": {
+          "PreviewTargetOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "RedDamageMultiplier": 0.5,
+          "OrangeDamageMultiplier": 0.5,
+          "YellowDamageMultiplier": 1.0,
+          "TargetTiles": [
+            {
+              "offset": {
+                "x": -2,
+                "y": 1,
+                "z": 0,
+                "magnitude": 2.236068,
+                "sqrMagnitude": 5
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.41421354,
+                "sqrMagnitude": 2
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.41421354,
+                "sqrMagnitude": 2
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 2,
+                "y": 1,
+                "z": 0,
+                "magnitude": 2.236068,
+                "sqrMagnitude": 5
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": -2,
+                "y": 0,
+                "z": 0,
+                "magnitude": 2.0,
+                "sqrMagnitude": 4
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "magnitude": 0.0,
+                "sqrMagnitude": 0
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 2,
+                "y": 0,
+                "z": 0,
+                "magnitude": 2.0,
+                "sqrMagnitude": 4
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            }
+          ]
+        }
       },
       "Id": 1,
       "AssetName": "MC_Attack_1",
@@ -81,12 +269,8 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
       "CooldownTurns": 0,
-      "ActionPointCost": 1,
-      "YuanLiCost": -1,
-      "SkillPointCost": 0,
-      "AnimationTrigger": "Attack_1",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [],
+      "BuffOptions": [],
+      "DebuffOptions": [],
       "Stages": []
     },
     {
@@ -96,13 +280,209 @@
         "ActionPointCost": 1,
         "YuanLiCost": -1,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_2"
+        "AnimationTrigger": "Attack_2",
+        "SkillPattern": {
+          "PreviewTargetOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "RedDamageMultiplier": 0.25,
+          "OrangeDamageMultiplier": 0.5,
+          "YellowDamageMultiplier": 1.0,
+          "TargetTiles": [
+            {
+              "offset": {
+                "x": 0,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "magnitude": 0.0,
+                "sqrMagnitude": 0
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            }
+          ]
+        }
       },
       "YuanInfo": {
         "ActionPointCost": 1,
         "YuanLiCost": -1,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_2_Yuan"
+        "AnimationTrigger": "Attack_2_Yuan",
+        "SkillPattern": {
+          "PreviewTargetOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "RedDamageMultiplier": 0.25,
+          "OrangeDamageMultiplier": 0.5,
+          "YellowDamageMultiplier": 1.0,
+          "TargetTiles": [
+            {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "magnitude": 0.0,
+                "sqrMagnitude": 0
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 2,
+                "z": 0,
+                "magnitude": 2.0,
+                "sqrMagnitude": 4
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.41421354,
+                "sqrMagnitude": 2
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 2,
+                "z": 0,
+                "magnitude": 2.236068,
+                "sqrMagnitude": 5
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": -1,
+                "y": 3,
+                "z": 0,
+                "magnitude": 3.1622777,
+                "sqrMagnitude": 10
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 3,
+                "z": 0,
+                "magnitude": 3.0,
+                "sqrMagnitude": 9
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 3,
+                "z": 0,
+                "magnitude": 3.1622777,
+                "sqrMagnitude": 10
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 2,
+                "z": 0,
+                "magnitude": 2.236068,
+                "sqrMagnitude": 5
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.41421354,
+                "sqrMagnitude": 2
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            },
+            {
+              "offset": {
+                "x": 1,
+                "y": 0,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 2,
+              "damageMultiplier": 0.5
+            }
+          ]
+        }
       },
       "Id": 2,
       "AssetName": "MC_Attack_2",
@@ -116,12 +496,8 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
       "CooldownTurns": 0,
-      "ActionPointCost": 1,
-      "YuanLiCost": -1,
-      "SkillPointCost": 0,
-      "AnimationTrigger": "Attack_2",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [],
+      "BuffOptions": [],
+      "DebuffOptions": [],
       "Stages": []
     },
     {
@@ -131,13 +507,15 @@
         "ActionPointCost": 1,
         "YuanLiCost": -4,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_3"
+        "AnimationTrigger": "Attack_3",
+        "SkillPattern": null
       },
       "YuanInfo": {
         "ActionPointCost": 1,
         "YuanLiCost": -6,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_3"
+        "AnimationTrigger": "Attack_3",
+        "SkillPattern": null
       },
       "Id": 3,
       "AssetName": "MC_Attack_3",
@@ -151,12 +529,8 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 0,
       "CooldownTurns": 0,
-      "ActionPointCost": 1,
-      "YuanLiCost": -4,
-      "SkillPointCost": 0,
-      "AnimationTrigger": "Attack_3",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [],
+      "BuffOptions": [],
+      "DebuffOptions": [],
       "Stages": []
     },
     {
@@ -166,13 +540,64 @@
         "ActionPointCost": 1,
         "YuanLiCost": -1,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Attack_1"
+        "AnimationTrigger": "Attack_1",
+        "SkillPattern": {
+          "PreviewTargetOffset": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "magnitude": 0.0,
+            "sqrMagnitude": 0
+          },
+          "RedDamageMultiplier": 0.25,
+          "OrangeDamageMultiplier": 0.5,
+          "YellowDamageMultiplier": 1.0,
+          "TargetTiles": [
+            {
+              "offset": {
+                "x": 0,
+                "y": 1,
+                "z": 0,
+                "magnitude": 1.0,
+                "sqrMagnitude": 1
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 2,
+                "z": 0,
+                "magnitude": 2.0,
+                "sqrMagnitude": 4
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            },
+            {
+              "offset": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "magnitude": 0.0,
+                "sqrMagnitude": 0
+              },
+              "IsTargetCell": false,
+              "tileColor": 3,
+              "damageMultiplier": 1.0
+            }
+          ]
+        }
       },
       "YuanInfo": {
         "ActionPointCost": 0,
         "YuanLiCost": -10,
         "SkillPointCost": 0,
-        "AnimationTrigger": "Idle"
+        "AnimationTrigger": "Idle",
+        "SkillPattern": null
       },
       "Id": 10,
       "AssetName": "No1_Attack_1",
@@ -186,19 +611,163 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
       "CooldownTurns": 0,
-      "ActionPointCost": 1,
-      "YuanLiCost": -1,
-      "SkillPointCost": 0,
-      "AnimationTrigger": "Attack_1",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [],
+      "BuffOptions": [],
+      "DebuffOptions": [],
       "Stages": []
-    },
+    }
+  ],
+  "YuanSkillJsonDatas": [
     {
-      "SerializedActionPointCost": 0,
-      "SerializedYuanLiCost": 3,
-      "SerializedSkillPointCost": 1,
-      "SerializedAnimationTrigger": "YuanSkill_1",
+      "ActionPointCost": 0,
+      "YuanLiCost": 3,
+      "SkillPointCost": 1,
+      "AnimationTrigger": "YuanSkill_1",
+      "SkillPattern": {
+        "PreviewTargetOffset": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0
+        },
+        "RedDamageMultiplier": 0.25,
+        "OrangeDamageMultiplier": 0.5,
+        "YellowDamageMultiplier": 1.0,
+        "TargetTiles": [
+          {
+            "offset": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "magnitude": 0.0,
+              "sqrMagnitude": 0
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -1,
+              "y": 1,
+              "z": 0,
+              "magnitude": 1.41421354,
+              "sqrMagnitude": 2
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -1,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -1,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.1622777,
+              "sqrMagnitude": 10
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 1,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.1622777,
+              "sqrMagnitude": 10
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 1,
+              "y": 1,
+              "z": 0,
+              "magnitude": 1.41421354,
+              "sqrMagnitude": 2
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 1,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.0,
+              "sqrMagnitude": 4
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.0,
+              "sqrMagnitude": 9
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 4,
+              "z": 0,
+              "magnitude": 4.0,
+              "sqrMagnitude": 16
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          }
+        ]
+      },
       "Id": 11,
       "AssetName": "No1_YuanSkill_1",
       "SkillType": "YuanSkillSO",
@@ -211,19 +780,197 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
       "CooldownTurns": 0,
-      "ActionPointCost": 0,
-      "YuanLiCost": 3,
-      "SkillPointCost": 1,
-      "AnimationTrigger": "YuanSkill_1",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [],
+      "BuffOptions": [],
+      "DebuffOptions": [],
       "Stages": []
     },
     {
-      "SerializedActionPointCost": 0,
-      "SerializedYuanLiCost": 3,
-      "SerializedSkillPointCost": 1,
-      "SerializedAnimationTrigger": "YuanSkill_2",
+      "ActionPointCost": 0,
+      "YuanLiCost": 3,
+      "SkillPointCost": 1,
+      "AnimationTrigger": "YuanSkill_2",
+      "SkillPattern": {
+        "PreviewTargetOffset": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "magnitude": 0.0,
+          "sqrMagnitude": 0
+        },
+        "RedDamageMultiplier": 0.25,
+        "OrangeDamageMultiplier": 0.5,
+        "YellowDamageMultiplier": 1.0,
+        "TargetTiles": [
+          {
+            "offset": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "magnitude": 0.0,
+              "sqrMagnitude": 0
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "magnitude": 1.0,
+              "sqrMagnitude": 1
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.0,
+              "sqrMagnitude": 9
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 0,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.0,
+              "sqrMagnitude": 4
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -2,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.60555124,
+              "sqrMagnitude": 13
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -2,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.828427,
+              "sqrMagnitude": 8
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -2,
+              "y": 1,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -2,
+              "y": 0,
+              "z": 0,
+              "magnitude": 2.0,
+              "sqrMagnitude": 4
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "magnitude": 2.0,
+              "sqrMagnitude": 4
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 2,
+              "y": 1,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 2,
+              "y": 2,
+              "z": 0,
+              "magnitude": 2.828427,
+              "sqrMagnitude": 8
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 2,
+              "y": 3,
+              "z": 0,
+              "magnitude": 3.60555124,
+              "sqrMagnitude": 13
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": 2,
+              "y": -1,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          },
+          {
+            "offset": {
+              "x": -2,
+              "y": -1,
+              "z": 0,
+              "magnitude": 2.236068,
+              "sqrMagnitude": 5
+            },
+            "IsTargetCell": false,
+            "tileColor": 3,
+            "damageMultiplier": 1.0
+          }
+        ]
+      },
       "Id": 12,
       "AssetName": "No1_YuanSkill_2",
       "SkillType": "YuanSkillSO",
@@ -236,15 +983,21 @@
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
       "CooldownTurns": 0,
-      "ActionPointCost": 0,
-      "YuanLiCost": 3,
-      "SkillPointCost": 1,
-      "AnimationTrigger": "YuanSkill_2",
-      "BuffTypeNames": [],
-      "DebuffTypeNames": [
-        "BleedStatus"
+      "BuffOptions": [],
+      "DebuffOptions": [
+        {
+          "StatusEffectId": 0,
+          "Value": 2,
+          "TurnApply": 4
+        }
       ],
       "Stages": []
+    }
+  ],
+  "StatusEffects": [
+    {
+      "Id": 0,
+      "EffectType": "Bleed"
     }
   ],
   "Passives": [
@@ -253,11 +1006,21 @@
       "AssetName": "MC_Passive_1",
       "PassiveName": "Chiến Khai Thiên Mạch",
       "Description": "+1 AP cho đội mỗi đầu lượt.",
-      "ConditionTypeNames": [
-        "OwnerTeamTurnCondition"
+      "IsUnlocked": true,
+      "Conditions": [
+        {
+          "Type": "OwnerIsActor",
+          "EnemyGetHitRequired": 0,
+          "ThreadLevel": "None"
+        }
       ],
-      "EffectTypeNames": [
-        "GainTeamAPEffect"
+      "Effects": [
+        {
+          "Type": "GainTeamAP",
+          "Amount": 1,
+          "Range": 0,
+          "IncludeOwner": false
+        }
       ]
     },
     {
@@ -265,11 +1028,21 @@
       "AssetName": "MC_Passive_2",
       "PassiveName": "Linh Vực Hồi Thiên",
       "Description": "Mỗi khi hành động, toàn bộ đồng đội trong vùng 3x3 xoay quanh MC sẽ hồi 2 hp.",
-      "ConditionTypeNames": [
-        "OwnerIsActorCondition"
+      "IsUnlocked": false,
+      "Conditions": [
+        {
+          "Type": "OwnerIsActor",
+          "EnemyGetHitRequired": 0,
+          "ThreadLevel": "None"
+        }
       ],
-      "EffectTypeNames": [
-        "HealAlliesAroundOwnerEffectConditon"
+      "Effects": [
+        {
+          "Type": "HealAlliesAroundOwner",
+          "Amount": 2,
+          "Range": 1,
+          "IncludeOwner": false
+        }
       ]
     },
     {
@@ -277,12 +1050,26 @@
       "AssetName": "No1_Passive_2",
       "PassiveName": "Phá Quân Hồi Khí",
       "Description": "Mỗi khi tấn công trúng 3 kẻ địch trở lên, sẽ hồi phục 1 AP.",
-      "ConditionTypeNames": [
-        "HitEnemyCountAtLeastCondition",
-        "OwnerIsAttackerCondition"
+      "IsUnlocked": true,
+      "Conditions": [
+        {
+          "Type": "HitEnemyCountAtLeast",
+          "EnemyGetHitRequired": 3,
+          "ThreadLevel": "None"
+        },
+        {
+          "Type": "OwnerIsActor",
+          "EnemyGetHitRequired": 0,
+          "ThreadLevel": "None"
+        }
       ],
-      "EffectTypeNames": [
-        "GainTeamAPEffect"
+      "Effects": [
+        {
+          "Type": "GainTeamAP",
+          "Amount": 1,
+          "Range": 0,
+          "IncludeOwner": false
+        }
       ]
     },
     {
@@ -290,12 +1077,26 @@
       "AssetName": "No1_Passive_3",
       "PassiveName": "Diệt Chúng Tụ Linh",
       "Description": "Mỗi khi tấn công trúng 4 kẻ địch trở lên, sẽ hồi phục 1 SP.",
-      "ConditionTypeNames": [
-        "HitEnemyCountAtLeastCondition",
-        "OwnerIsAttackerCondition"
+      "IsUnlocked": false,
+      "Conditions": [
+        {
+          "Type": "HitEnemyCountAtLeast",
+          "EnemyGetHitRequired": 4,
+          "ThreadLevel": "None"
+        },
+        {
+          "Type": "OwnerIsActor",
+          "EnemyGetHitRequired": 4,
+          "ThreadLevel": "None"
+        }
       ],
-      "EffectTypeNames": [
-        "GainOwnerSPEffect"
+      "Effects": [
+        {
+          "Type": "GainOwnerSP",
+          "Amount": 1,
+          "Range": 0,
+          "IncludeOwner": false
+        }
       ]
     }
   ],
@@ -303,8 +1104,8 @@
     {
       "Id": 1,
       "AssetName": "Map_1",
-      "PlayerSpawnFacing": "Right",
-      "EnemySpawnFacing": "Left",
+      "PlayerSpawnFacing": "Down",
+      "EnemySpawnFacing": "Up",
       "Tiles": [
         {
           "GridPosition": {
@@ -424,7 +1225,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -436,7 +1237,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -448,7 +1249,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -460,7 +1261,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -472,7 +1273,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -484,7 +1285,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -496,7 +1297,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -508,7 +1309,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {
@@ -520,7 +1321,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": true
+          "IsOpponentSpawnPoint": false
         },
         {
           "GridPosition": {

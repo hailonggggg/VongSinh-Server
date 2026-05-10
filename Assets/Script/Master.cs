@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Assets.Script.System;
 using Newtonsoft.Json;
@@ -11,6 +12,11 @@ public class Master : MonoBehaviour
 {
     public static Master Instance;
     public TacticalSOExportData TacticalSOExportData;
+    public Dictionary<int, Unit> CharactersById { get; private set; } = new();
+    public Dictionary<int, YuanSkill> YuanSkillsById { get; private set; } = new();
+    public Dictionary<int, BasicAttackSkill> BasicAttackSkillsById { get; private set; } = new();
+    public Dictionary<int, StatusEffect> StatusEffectByIds { get; private set; } = new();
+    public Dictionary<int, Passive> PassiveByIds { get; private set; } = new();
     private AuthSystem authSystem;
     private RoomSystem roomSystem;
     private BattleSystem battleSystem;
@@ -68,7 +74,51 @@ public class Master : MonoBehaviour
         string json = File.ReadAllText(filePath);
         TacticalSOExportData = JsonConvert.DeserializeObject<TacticalSOExportData>(json);
 
-        Debug.Log($"Loaded: {TacticalSOExportData.Characters.Count} characters, {TacticalSOExportData.Skills.Count} skills, {TacticalSOExportData.Maps.Count} maps");
+        foreach (var characterData in TacticalSOExportData.Characters)
+        {
+            if (CharactersById.ContainsKey(characterData.Id))
+                continue;
+
+            CharactersById[characterData.Id] = new Unit(characterData);
+        }
+        foreach (var skillData in TacticalSOExportData.BasicAttackSkillJsonDatas)
+        {
+            skillData.IsUnlocked = true;
+            if (BasicAttackSkillsById.ContainsKey(skillData.Id))
+                continue;
+
+            BasicAttackSkillsById[skillData.Id] = BasicAttackSkill.FromJson(skillData);
+        }
+        foreach (var yuanSkillData in TacticalSOExportData.YuanSkillJsonDatas)
+        {
+            yuanSkillData.IsUnlocked = true;
+            if (YuanSkillsById.ContainsKey(yuanSkillData.Id))
+                continue;
+
+            YuanSkillsById[yuanSkillData.Id] = YuanSkill.FromJson(yuanSkillData);
+        }
+        foreach (var statusEffectData in TacticalSOExportData.StatusEffects)
+        {
+            if (StatusEffectByIds.ContainsKey(statusEffectData.Id))
+                continue;
+
+            StatusEffectByIds[statusEffectData.Id] = StatusEffect.FromJson(statusEffectData);
+        }
+        foreach (var passiveData in TacticalSOExportData.Passives)
+        {
+            passiveData.IsUnlocked = true;
+            if (PassiveByIds.ContainsKey(passiveData.Id))
+                continue;
+
+            PassiveByIds[passiveData.Id] = Passive.FromJson(passiveData);
+        }
+
+        Debug.Log(
+            @$"Loaded: {CharactersById.Count} characters, 
+            {BasicAttackSkillsById.Count + YuanSkillsById.Count} skills, 
+            {TacticalSOExportData.Maps.Count} maps, 
+            {StatusEffectByIds.Count} statusEffects
+            {PassiveByIds.Count} Passives");
     }
 
     public Map LoadMap(int mapIndexSelected)
@@ -77,95 +127,4 @@ public class Master : MonoBehaviour
         map.LoadData(TacticalSOExportData.Maps[mapIndexSelected]);
         return map;
     }
-}
-
-
-[Serializable]
-public class TacticalSOExportData
-{
-    public List<CharacterDataJsonData> Characters = new List<CharacterDataJsonData>();
-    [SerializeReference] public List<SkillJsonData> Skills = new List<SkillJsonData>();
-    public List<PassiveJsonData> Passives = new List<PassiveJsonData>();
-    public List<MapDataJsonData> Maps = new List<MapDataJsonData>();
-}
-
-[Serializable]
-public class UnitDataJsonData
-{
-    public string AssetName;
-    public string DisplayName;
-    public int MaxHP;
-    public int MoveRange;
-}
-
-[Serializable]
-public class CharacterDataJsonData : UnitDataJsonData
-{
-    public int Id;
-    public bool IsYuanUser;
-    public bool IsAvailable;
-    public int InitialSkillPoint;
-    public List<int> SkillIds;
-    public List<int> PassiveIds;
-}
-
-[Serializable]
-public class PassiveJsonData
-{
-    public int Id;
-    public string AssetName;
-    public string PassiveName;
-    public string Description;
-    public List<string> ConditionTypeNames;
-    public List<string> EffectTypeNames;
-}
-
-
-[Serializable]
-public class MapDataJsonData
-{
-    public int Id;
-    public string AssetName;
-    public string PlayerSpawnFacing;
-    public string EnemySpawnFacing;
-    public List<TileDataJsonData> Tiles;
-}
-
-[Serializable]
-public class TileDataJsonData
-{
-    public Vector3Int GridPosition;
-    public bool IsWalkable;
-    public bool IsSpawnPoint;
-    public bool IsOpponentSpawnPoint;
-}
-
-[Serializable]
-public class SkillJsonData
-{
-    public int Id;
-    public string AssetName;
-    public string SkillType;
-    public string SkillName;
-    public string Description;
-    public bool IsDirectional;
-    public bool IsUnlocked;
-    public int Damage;
-    public int CritRate;
-    public string SkillOrigin;
-    public int MoveRange;
-    public int CooldownTurns;
-    public int ActionPointCost;
-    public int YuanLiCost;
-    public int SkillPointCost;
-    public string AnimationTrigger;
-    public List<string> BuffTypeNames;
-    public List<string> DebuffTypeNames;
-    public List<SkillStageJsonData> Stages;
-}
-
-[Serializable]
-public class SkillStageJsonData
-{
-    public string NameEffect;
 }

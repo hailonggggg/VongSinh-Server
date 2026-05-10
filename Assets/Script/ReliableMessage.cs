@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public static class ReliableMessage
@@ -17,7 +18,7 @@ public static class ReliableMessage
 
     public static byte[] Build<T>(Command type, T someClass) where T : class
     {
-        byte[] payload = Encoding.UTF8.GetBytes(JsonUtility.ToJson(someClass));
+        byte[] payload = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(someClass));
         using var stream = new MemoryStream();
         using var writer = new BinaryWriter(stream);
         writer.Write((byte)type);

@@ -1,10 +1,12 @@
 using Fusion;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -128,9 +130,9 @@ public static class Service
         });
     }
 
-    public static byte[] SendBanPickTurnCountDown(float currentCountDown)
+    public static byte[] SendTimeCountDown(float currentCountDown)
     {
-        return ReliableMessage.Build(Command.BanPickTurnCountDown, new BanPickTurnCountDown
+        return ReliableMessage.Build(Command.TimeCountDown, new
         {
             TimeLeft = currentCountDown
         });
@@ -180,5 +182,38 @@ public static class Service
     {
         string json = JsonConvert.SerializeObject(items);
         return ReliableMessage.Build(Command.InventoryResponse, json);
+    }
+
+    public static byte[] SendGameData(GameDataResponse gameDataResponse)
+    {
+        string json = JsonConvert.SerializeObject(gameDataResponse);
+        return ReliableMessage.Build(Command.GameData, json);
+    }
+
+    public static byte[] SendUnitDeploySelectedSkill(int unitId, int skillId, int type, bool isChecked)
+    {
+        string json = JsonConvert.SerializeObject(new UnitDeploySelectedSkillResponse
+        {
+            UnitId = unitId,
+            SkillId = skillId,
+            Type = type,
+            IsChecked = isChecked
+        });
+        return ReliableMessage.Build(Command.UnitDeploySelectedSkill, json);
+    }
+
+    public static byte[] StartCombatPhase()
+    {
+        return ReliableMessage.Build(Command.StartCombatPhase, new byte[0]);
+    }
+
+    public static byte[] UnitMove(int playerId, int id, List<Vector3Int> paths)
+    {
+        return ReliableMessage.Build(Command.UnitMove, new
+        {
+            PlayerId = playerId,
+            UnitId = id,
+            Paths = paths
+        });
     }
 }
