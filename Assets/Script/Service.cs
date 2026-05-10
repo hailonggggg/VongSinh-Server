@@ -220,7 +220,7 @@ public static class Service
 
     public static byte[] UnitMove(int playerId, int id, List<Vector3Int> paths)
     {
-        return ReliableMessage.Build(Command.UnitMove, new
+        return ReliableMessage.Build(Command.UnitMove, new UnitMoveResponse
         {
             PlayerId = playerId,
             UnitId = id,

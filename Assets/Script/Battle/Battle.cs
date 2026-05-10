@@ -452,6 +452,7 @@ public class Battle
         {
             return;
         }
+        unit.CurrentGridPosition = targetCell;
         ServerNetwork.Instance.SendToClients(Service.UnitMove(client.PlayerRef.PlayerId, unit.Id, paths), playerClients);
     }
 

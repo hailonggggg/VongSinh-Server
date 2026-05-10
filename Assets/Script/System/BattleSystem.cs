@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -52,10 +53,8 @@ namespace Assets.Script.System
             {
                 return;
             }
-            var data = JObject.Parse(payload);
-            int unitId = data["UnitId"].Value<int>();
-            Vector3Int targetCell = data["TargetCell"].Value<Vector3Int>();
-            battle.HandleUnitMove(client, unitId, targetCell);
+            UnitMoveRequest unitMoveRequest = JsonConvert.DeserializeObject<UnitMoveRequest>(payload);
+            battle.HandleUnitMove(client, unitMoveRequest.UnitId, unitMoveRequest.TargetCell);
         }
 
 
