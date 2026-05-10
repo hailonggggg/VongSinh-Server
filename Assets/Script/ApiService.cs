@@ -10,14 +10,16 @@ using Newtonsoft.Json;
 
 public static class ApiService
 {
-    private const string LoginUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Auth/login-user";
-    private const string SearchUserUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/User?Search={0}&SortBy={1}&IsDescending={2}";
-    private const string RegisterUserUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Auth/register";
-    private const string AnnouncementUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Announcement?Search={0}&SortBy={1}&IsDescending={2}";
-    private const string GemBundleUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Shop/gem-bundles";
-    private const string OrderUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Order";
-    private const string InventoryUrl = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/Player/inventory";
-    private const string GetUserById = "https://unaliveapi-a3hbhfb4dba5gwgs.japanwest-01.azurewebsites.net/api/User/{0}";
+    private const string LoginUrl = "https://be-adminmanagementsystem.onrender.com/api/Auth/login-user";
+    private const string SearchUserUrl = "https://be-adminmanagementsystem.onrender.com/api/User?Search={0}&SortBy={1}&IsDescending={2}";
+    private const string RegisterUserUrl = "https://be-adminmanagementsystem.onrender.com/api/Auth/register";
+    private const string AnnouncementUrl = "https://be-adminmanagementsystem.onrender.com/api/Announcement?Search={0}&SortBy={1}&IsDescending={2}";
+    private const string GemBundleUrl = "https://be-adminmanagementsystem.onrender.com/api/Shop/gem-bundles";
+    private const string OrderUrl = "https://be-adminmanagementsystem.onrender.com/api/Order";
+    private const string InventoryUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/inventory";
+    private const string GetUserById = "https://be-adminmanagementsystem.onrender.com/api/User/{0}";
+    private const string SkinBundleUrl = "https://be-adminmanagementsystem.onrender.com/api/Shop/skin-and-character-bundles";
+    private const string PurchaseOrderUrl = "https://be-adminmanagementsystem.onrender.com/api/PurchaseOrder";
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -329,6 +331,55 @@ public static class ApiService
         return null;
     }
 
+    public static async Task<SkinAndCharacterBundleResponse[]>
+    GetAllSkinAndCharacterBundle(Client client)
+    {
+        try
+        {
+            using HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Get, SkinBundleUrl);
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string responseJson =
+                await response.Content.ReadAsStringAsync();
+
+            Debug.Log($"[SKIN BUNDLE RAW] {responseJson}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogWarning(
+                    $"[API] Get skin bundles failed {(int)response.StatusCode}"
+                );
+
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(responseJson))
+            {
+                Debug.LogWarning("[API] Empty skin bundle response");
+                return null;
+            }
+
+            SkinAndCharacterBundleResponse[] result =
+                JsonConvert.DeserializeObject<SkinAndCharacterBundleResponse[]>(
+                    responseJson
+                );
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API] Skin bundle error: {e}");
+        }
+
+        return null;
+    }
+
     public static async Task<OrderResponse> CreateOrder(Client client, GemBundleResponse bundle)
     {
         try
@@ -416,6 +467,60 @@ public static class ApiService
         {
             Debug.LogError($"[API ORDER GET] {e}");
             return null;
+        }
+    }
+
+    public static async Task<PurchaseOrderResponse> PurchaseSkinBundle(Client client, int bundleId)
+    {
+        try
+        {
+            var body = new
+            {
+                userId = client.User.UserId,
+                skinAndCharacterBundleId = bundleId
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+
+            using HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Post, PurchaseOrderUrl);
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", client.Token);
+
+            request.Content =
+                new StringContent(json, Encoding.UTF8, "application/json");
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            Debug.Log($"[PURCHASE ORDER] Status: {response.StatusCode}, Body: {responseJson}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.Log($"[PURCHASE ORDER] Request JSON: {json}");
+                Debug.Log($"[PURCHASE ORDER] URL: {PurchaseOrderUrl}");
+                Debug.Log($"[PURCHASE ORDER] Token: {client.Token?.Substring(0, 20)}...");
+                string errorMsg = "Mua thất bại.";
+                try
+                {
+                    var err = JsonConvert.DeserializeAnonymousType(responseJson, new { message = "" });
+                    if (!string.IsNullOrWhiteSpace(err?.message)) errorMsg = err.message;
+                }
+                catch { }
+
+                return new PurchaseOrderResponse { success = false, message = errorMsg };
+            }
+
+            return new PurchaseOrderResponse { success = true, message = "OK" };
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[PURCHASE ORDER] {e}");
+            return new PurchaseOrderResponse { success = false, message = "Lỗi server." };
         }
     }
     public static async Task<UserItem[]> GetInventory(Client client)

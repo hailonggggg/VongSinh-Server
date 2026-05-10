@@ -1,4 +1,6 @@
+using Newtonsoft.Json;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -10,6 +12,14 @@ public class BundleSystem : BaseSystem
         {
             case Command.RequestGemBundle:
                 _ = HandleRequestGemBundle(client);
+                break;
+
+            case Command.RequestSkinAndCharacterBundle:
+                _ = HandleRequestSkinBundle(client);
+                break;
+
+            case Command.RequestPurchaseSkinBundle:
+                _ = HandlePurchaseSkinBundle(client, payload);
                 break;
         }
     }
@@ -46,7 +56,7 @@ public class BundleSystem : BaseSystem
 
                 ServerNetwork.Instance.SendToClient(
                     client,
-                    Service.ShowNotification("Không thể tải shop.")
+                    Service.ShowNotification("Không tải được shop pha lê.")
                 );
                 return;
             }
@@ -66,6 +76,73 @@ public class BundleSystem : BaseSystem
                 client,
                 Service.ShowNotification("Lỗi tải shop.")
             );
+        }
+    }
+
+    private async Task HandleRequestSkinBundle(Client client)
+    {
+        try
+        {
+            if (client == null)
+            {
+                Debug.LogWarning("[SKIN BUNDLE] Client null");
+                return;
+            }
+
+            SkinAndCharacterBundleResponse[] bundles =
+                await ApiService.GetAllSkinAndCharacterBundle(client);
+
+            if (bundles == null)
+            {
+                ServerNetwork.Instance.SendToClient(
+                    client,
+                    Service.ShowNotification("Không tải được shop vật phẩm.")
+                );
+
+                return;
+            }
+
+            ServerNetwork.Instance.SendToClient(
+                client,
+                Service.SendSkinAndCharacterBundleResponse(bundles)
+            );
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SKIN BUNDLE] {e}");
+        }
+    }
+
+    private async Task HandlePurchaseSkinBundle(
+    Client client,
+    string payload)
+    {
+        try
+        {
+            PurchaseOrderRequest req =
+                JsonConvert.DeserializeObject
+                <PurchaseOrderRequest>(payload);
+
+            PurchaseOrderResponse response =
+                await ApiService.PurchaseSkinBundle(
+                    client,
+                    req.skinAndCharacterBundleId
+                );
+
+            string json =
+                JsonConvert.SerializeObject(response);
+
+            ServerNetwork.Instance.SendToClient(
+                client,
+                ReliableMessage.Build(
+                    Command.PurchaseSkinBundleResponse,
+                    Encoding.UTF8.GetBytes(json)
+                )
+            );
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
         }
     }
 }

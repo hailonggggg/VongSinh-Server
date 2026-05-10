@@ -236,5 +236,9 @@ public enum Command : byte
     InventoryResponse,
     PlaceUnit,
     UnitPlaced,
-    RemoveUnit
+    RemoveUnit,
+    RequestSkinAndCharacterBundle,
+    SkinAndCharacterBundleResponse,
+    RequestPurchaseSkinBundle,
+    PurchaseSkinBundleResponse,
 }
