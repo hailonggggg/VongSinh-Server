@@ -9,8 +9,7 @@ public class Map
     public GridFacing RightSpawnFacing;
     public List<TileData> LeftTiles = new();
     public List<TileData> rightTiles = new();
-
-    public List<TileData> TileDatas => LeftTiles.Concat(rightTiles).ToList();
+    public List<TileData> TileDatas = new();
     private HashSet<Vector3Int> walkablePositions => TileDatas.Where(x => x.IsWalkable).Select(x => x.GridPosition).ToHashSet();
 
     private static readonly Vector3Int[] Directions =
@@ -33,6 +32,8 @@ public class Map
                 IsWalkable = tileJson.IsWalkable,
                 IsSpawnPoint = tileJson.IsSpawnPoint || tileJson.IsOpponentSpawnPoint,
             };
+            TileDatas.Add(tile);
+
             if (tileJson.IsSpawnPoint)
                 LeftTiles.Add(tile);
             else if (tileJson.IsOpponentSpawnPoint)
