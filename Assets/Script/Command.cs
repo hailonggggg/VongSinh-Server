@@ -51,5 +51,9 @@ public enum Command : byte
     GameData,
     StartCombatPhase,
     CompleteSetupDeployment,
-    UnitMove
+    UnitMove,
+    RequestSkinAndCharacterBundle,
+    SkinAndCharacterBundleResponse,
+    RequestPurchaseSkinBundle,
+    PurchaseSkinBundleResponse,
 }
