@@ -115,6 +115,17 @@ public static class Service
         return ReliableMessage.Build(Command.GemBundleResponse, json);
     }
 
+    public static byte[] SendSkinAndCharacterBundleResponse(
+    SkinAndCharacterBundleResponse[] bundles)
+    {
+        string json = JsonConvert.SerializeObject(bundles);
+
+        return ReliableMessage.Build(
+            Command.SkinAndCharacterBundleResponse,
+            json
+        );
+    }
+
     public static byte[] SendOrderResponse(OrderResponse order)
     {
         string json = JsonConvert.SerializeObject(order);

@@ -85,10 +85,12 @@
     <Compile Include="Assets\Script\ServerNetwork.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitDeploySelectedSkillResponse.cs" />
     <Compile Include="Assets\Script\Battle\YuanSkill.cs" />
+    <Compile Include="Assets\Script\Api\SkinAndCharacterBundleResponse.cs" />
     <Compile Include="Assets\Script\Shared\Commands\BattleCommand.cs" />
     <Compile Include="Assets\Script\NetworkEvent\BattleInputRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitDeploySelectedSkillRequest.cs" />
     <Compile Include="Assets\Script\JsonDatas\MapDataJsonData.cs" />
+    <Compile Include="Assets\Script\Api\PurchaseOrderResponse.cs" />
     <Compile Include="Assets\Script\NetworkEvent\DeploymentPhaseInfo.cs" />
     <Compile Include="Assets\Script\Client.cs" />
     <Compile Include="Assets\Script\Player.cs" />
@@ -114,7 +116,6 @@
     <Compile Include="Assets\Script\Battle\SkillTileData.cs" />
     <Compile Include="Assets\Script\Enums\UnitAnimationState.cs" />
     <Compile Include="Assets\Script\JsonDatas\TileDataJsonData.cs" />
-    <Compile Include="Assets\Script\AnnouncementResponse.cs" />
     <Compile Include="Assets\Script\Battle\BattlePlayer.cs" />
     <Compile Include="Assets\Script\Battle\SkillPattern.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveEffectJsonData.cs" />
@@ -174,11 +175,13 @@
     <Compile Include="Assets\Script\NetworkEvent\LoginRequest.cs" />
     <Compile Include="Assets\Script\Shared\Core\BattleState.cs" />
     <Compile Include="Assets\Script\Battle\Battle.cs" />
+    <Compile Include="Assets\Script\Api\PurchaseOrderRequest.cs" />
     <Compile Include="Assets\Script\System\AuthSystem.cs" />
     <Compile Include="Assets\Script\Shared\BattleEnums.cs" />
     <Compile Include="Assets\Script\JsonDatas\CharacterDataJsonData.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveConditionJsonData.cs" />
     <Compile Include="Assets\Script\Api\OrderResponse.cs" />
+    <Compile Include="Assets\Script\Api\AnnouncementResponse.cs" />
     <Compile Include="Assets\Script\NetworkEvent\RegisterResponse.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -867,12 +870,20 @@
       <HintPath>E:\Unity 6000.0.58f2\Editor\Data\Managed\UnityEngine\UnityEditor.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>Assets\Packages\Microsoft.Extensions.DependencyInjection.Abstractions.10.0.7\lib\netstandard2.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Collections.LowLevel.ILSupport">
       <HintPath>Library\PackageCache\com.unity.collections@56bff8827a7e\Unity.Collections.LowLevel.ILSupport\Unity.Collections.LowLevel.ILSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>Library\PackageCache\com.unity.ext.nunit@031a54704bff\net40\unity-custom\nunit.framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.SignalR.Protocols.Json">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Protocols.Json.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Fusion.Log">
@@ -891,20 +902,96 @@
       <HintPath>Assets\Photon\Fusion\Plugins\NanoSockets\NanoSockets\Dynamic\NanoSockets.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>Assets\Packages\Microsoft.Extensions.DependencyInjection.10.0.7\lib\netstandard2.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Fusion.Sockets">
       <HintPath>Assets\Photon\Fusion\Assemblies\Fusion.Sockets.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.SignalR.Common">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives">
+      <HintPath>Assets\Packages\Microsoft.Extensions.Primitives.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Threading.Channels">
+      <HintPath>Assets\Packages\System.Threading.Channels.10.0.7\lib\netstandard2.1\System.Threading.Channels.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Connections.Client">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.Http.Connections.Client.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.Http.Connections.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.ServerSentEvents">
+      <HintPath>Assets\Packages\System.Net.ServerSentEvents.10.0.7\lib\netstandard2.0\System.Net.ServerSentEvents.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.SignalR.Client">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Client.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Connections.Common">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.Http.Connections.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.Http.Connections.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Fusion.Runtime">
       <HintPath>Assets\Photon\Fusion\Assemblies\Fusion.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>Assets\Packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options">
+      <HintPath>Assets\Packages\Microsoft.Extensions.Options.10.0.7\lib\netstandard2.1\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource">
+      <HintPath>Assets\Packages\System.Diagnostics.DiagnosticSource.10.0.7\lib\netstandard2.0\System.Diagnostics.DiagnosticSource.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@6279e2b7c485\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Features">
+      <HintPath>Assets\Packages\Microsoft.Extensions.Features.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Features.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>Assets\Packages\System.ComponentModel.Annotations.5.0.0\lib\netstandard2.1\System.ComponentModel.Annotations.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Photon3Unity3D">
       <HintPath>Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.TimeProvider">
+      <HintPath>Assets\Packages\Microsoft.Bcl.TimeProvider.10.0.7\lib\netstandard2.0\Microsoft.Bcl.TimeProvider.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web">
+      <HintPath>Assets\Packages\System.Text.Encodings.Web.10.0.7\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.SignalR.Client.Core">
+      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Client.Core.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.SignalR.Client.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging">
+      <HintPath>Assets\Packages\Microsoft.Extensions.Logging.10.0.7\lib\netstandard2.1\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>Assets\Packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Text.Json">
+      <HintPath>Assets\Packages\System.Text.Json.10.0.7\lib\netstandard2.0\System.Text.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -919,100 +1006,16 @@
       <HintPath>Assets\Photon\Fusion\Assemblies\Fusion.Realtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Assets\Packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.Http.Connections.Client">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.Http.Connections.Client.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.Http.Connections.Client.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Threading.Channels">
-      <HintPath>Assets\Packages\System.Threading.Channels.10.0.7\lib\netstandard2.1\System.Threading.Channels.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Diagnostics.DiagnosticSource">
-      <HintPath>Assets\Packages\System.Diagnostics.DiagnosticSource.10.0.7\lib\netstandard2.0\System.Diagnostics.DiagnosticSource.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>Assets\Packages\Microsoft.Extensions.DependencyInjection.Abstractions.10.0.7\lib\netstandard2.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options">
-      <HintPath>Assets\Packages\Microsoft.Extensions.Options.10.0.7\lib\netstandard2.1\Microsoft.Extensions.Options.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-      <HintPath>Assets\Packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.TimeProvider">
-      <HintPath>Assets\Packages\Microsoft.Bcl.TimeProvider.10.0.7\lib\netstandard2.0\Microsoft.Bcl.TimeProvider.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Net.ServerSentEvents">
-      <HintPath>Assets\Packages\System.Net.ServerSentEvents.10.0.7\lib\netstandard2.0\System.Net.ServerSentEvents.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Client">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Client.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Client.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Protocols.Json">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Protocols.Json.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>Assets\Packages\Microsoft.Extensions.DependencyInjection.10.0.7\lib\netstandard2.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.IO.Pipelines">
-      <HintPath>Assets\Packages\System.IO.Pipelines.10.0.7\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Text.Json">
-      <HintPath>Assets\Packages\System.Text.Json.10.0.7\lib\netstandard2.0\System.Text.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.Http.Connections.Common">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.Http.Connections.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.Http.Connections.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.AspNetCore.Connections.Abstractions">
       <HintPath>Assets\Packages\Microsoft.AspNetCore.Connections.Abstractions.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.Connections.Abstractions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives">
-      <HintPath>Assets\Packages\Microsoft.Extensions.Primitives.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web">
-      <HintPath>Assets\Packages\System.Text.Encodings.Web.10.0.7\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Features">
-      <HintPath>Assets\Packages\Microsoft.Extensions.Features.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Features.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Common">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Logging">
-      <HintPath>Assets\Packages\Microsoft.Extensions.Logging.10.0.7\lib\netstandard2.1\Microsoft.Extensions.Logging.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces">
       <HintPath>Assets\Packages\Microsoft.Bcl.AsyncInterfaces.10.0.7\lib\netstandard2.1\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.ComponentModel.Annotations">
-      <HintPath>Assets\Packages\System.ComponentModel.Annotations.5.0.0\lib\netstandard2.1\System.ComponentModel.Annotations.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Client.Core">
-      <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Client.Core.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.SignalR.Client.Core.dll</HintPath>
+    <Reference Include="System.IO.Pipelines">
+      <HintPath>Assets\Packages\System.IO.Pipelines.10.0.7\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
