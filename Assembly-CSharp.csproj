@@ -92,6 +92,7 @@
     <Compile Include="Assets\Script\Api\OrderRequest.cs" />
     <Compile Include="Assets\Script\Api\RegisterApiResponse.cs" />
     <Compile Include="Assets\Script\Shared\Core\BattleConfig.cs" />
+    <Compile Include="Assets\Script\Api\ItemDetail.cs" />
     <Compile Include="Assets\Script\ServerNetwork.cs" />
     <Compile Include="Assets\Script\Api\SkinAndCharacterBundleResponse.cs" />
     <Compile Include="Assets\Script\Shared\Commands\BattleCommand.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Assets\Script\System\BaseSystem.cs" />
     <Compile Include="Assets\Script\NetworkEvent\CreateRoomRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\RoomInfo.cs" />
+    <Compile Include="Assets\Script\Api\UserItemWithDetail.cs" />
     <Compile Include="Assets\Script\Service.cs" />
     <Compile Include="Assets\Script\NetworkEvent\CreateBattleRequest.cs" />
     <Compile Include="Assets\Script\System\InventorySystem.cs" />

@@ -187,7 +187,7 @@ public static class Service
         });
     }
 
-    public static byte[] SendInventoryResponse(UserItem[] items)
+    public static byte[] SendInventoryResponse(UserItemWithDetail[] items)
     {
         string json = JsonConvert.SerializeObject(items);
         return ReliableMessage.Build(Command.InventoryResponse, json);
