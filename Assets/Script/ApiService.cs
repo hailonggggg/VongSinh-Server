@@ -20,6 +20,8 @@ public static class ApiService
     private const string GetUserById = "https://be-adminmanagementsystem.onrender.com/api/User/{0}";
     private const string SkinBundleUrl = "https://be-adminmanagementsystem.onrender.com/api/Shop/skin-and-character-bundles";
     private const string PurchaseOrderUrl = "https://be-adminmanagementsystem.onrender.com/api/PurchaseOrder";
+    private const string ItemUrl = "https://be-adminmanagementsystem.onrender.com/api/Item/{0}";
+
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -331,8 +333,7 @@ public static class ApiService
         return null;
     }
 
-    public static async Task<SkinAndCharacterBundleResponse[]>
-    GetAllSkinAndCharacterBundle(Client client)
+    public static async Task<SkinAndCharacterBundleResponse[]> GetAllSkinAndCharacterBundle(Client client)
     {
         try
         {
@@ -560,4 +561,37 @@ public static class ApiService
             return null;
         }
     }
+
+    public static async Task<ItemDetail> GetItemById(Client client, int itemId)
+    {
+        try
+        {
+            string url = string.Format(ItemUrl, itemId);
+
+            using HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Get, url);
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string json = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogWarning($"[API ITEM] Get item {itemId} failed: {json}");
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<ItemDetail>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API ITEM] {e}");
+            return null;
+        }
+    }
+
 }
