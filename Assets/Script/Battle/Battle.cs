@@ -33,6 +33,7 @@ public class Battle
     private int lastBroadcastCountDownSecond = -1;
     private BattlePlayer currentTurnPlayer;
     private Map currentMap;
+    private bool isSendDeploymentInfo;
 
     public Battle(int battleId, int roomId, IEnumerable<BattlePlayer> players)
     {
@@ -112,7 +113,6 @@ public class Battle
         if (playersById.Values.All(x => x.HasReachedDeployLimit(config.AllowCharacterSelectables.Length)))
         {
             LoadGameData();
-            StartDeploymentPhase();
             return true;
         }
 
@@ -285,6 +285,11 @@ public class Battle
 
     private void StartDeploymentPhase()
     {
+        if (isSendDeploymentInfo)
+        {
+            return;
+        }
+        isSendDeploymentInfo = true;
         currentCountDown = config.DeploymentTime;
         State = BattleState.Deployment;
         foreach (BattlePlayer battlePlayer in playersById.Values)
@@ -311,30 +316,34 @@ public class Battle
             return;
         }
 
-        if (!battlePlayer.TryGetDeployedUnitIdAt(placeUnit.IndexSelected, out int unitId))
+        if (!battlePlayer.DeployedUnitIds.Contains(placeUnit.UnitId))
         {
             return;
         }
 
-        if (!battlePlayer.TryGetUnit(unitId, out Unit unit))
+        if (!battlePlayer.TryGetUnit(placeUnit.UnitId, out Unit unit))
         {
-            Master.Instance.CharactersById.TryGetValue(unitId, out Unit character);
+            Master.Instance.CharactersById.TryGetValue(placeUnit.UnitId, out Unit character);
             if (character == null)
             {
-                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification($"Đơn vị {unitId} không tồn tại"));
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification($"Đơn vị {placeUnit.UnitId} không tồn tại"));
                 return;
             }
-            character.CurrentGridPosition = placeUnit.PlacedPosition;
-            battlePlayer.AddUnit(character.Clone());
+            unit = character.Clone();
+            unit.CurrentGridPosition = placeUnit.PlacedPosition;
+            battlePlayer.AddUnit(unit);
+            ServerNetwork.Instance.SendToClients(
+                Service.PlaceUnitResult(unit.Id, placeUnit.UnitId, placeUnit.PlacedPosition, battlePlayer.Client.PlayerRef.PlayerId),
+                playerClients);
         }
 
         if (unit == null) return;
 
         if (!currentMap.IsValidSpawnPointPosition(battlePlayer.IsLeftSide, placeUnit.PlacedPosition))
         {
-            battlePlayer.RemoveUnit(unitId);
+            battlePlayer.RemoveUnit(placeUnit.UnitId);
             ServerNetwork.Instance.SendToClients(
-                Service.RemoveUnit(unitId, battlePlayer.Client.PlayerRef.PlayerId),
+                Service.RemoveUnit(placeUnit.UnitId, battlePlayer.Client.PlayerRef.PlayerId),
                 playerClients);
 
             return;
@@ -343,7 +352,7 @@ public class Battle
         unit.CurrentGridPosition = placeUnit.PlacedPosition;
 
         ServerNetwork.Instance.SendToClients(
-            Service.PlaceUnitResult(unit.Id, placeUnit.IndexSelected, placeUnit.PlacedPosition, battlePlayer.Client.PlayerRef.PlayerId),
+            Service.PlaceUnitResult(unit.Id, placeUnit.UnitId, placeUnit.PlacedPosition, battlePlayer.Client.PlayerRef.PlayerId),
             playerClients);
     }
 

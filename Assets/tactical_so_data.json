@@ -2,7 +2,7 @@
   "Characters": [
     {
       "IsYuanUser": true,
-      "IsAvailable": false,
+      "IsAvailable": true,
       "InitialSkillPoint": 10,
       "basicAttackSkillIds": [
         1
@@ -55,6 +55,45 @@
       "DisplayName": "Hữu Nghĩa",
       "MaxHP": 16,
       "MoveRange": 5
+    },
+    {
+      "IsYuanUser": true,
+      "IsAvailable": true,
+      "InitialSkillPoint": 0,
+      "basicAttackSkillIds": [],
+      "yuanSkillIds": [],
+      "PassiveIds": [],
+      "Id": 0,
+      "AssetName": "No6",
+      "DisplayName": "Thiên An",
+      "MaxHP": 0,
+      "MoveRange": 0
+    },
+    {
+      "IsYuanUser": true,
+      "IsAvailable": true,
+      "InitialSkillPoint": 0,
+      "basicAttackSkillIds": [],
+      "yuanSkillIds": [],
+      "PassiveIds": [],
+      "Id": 0,
+      "AssetName": "No8",
+      "DisplayName": "Thiên An",
+      "MaxHP": 0,
+      "MoveRange": 0
+    },
+    {
+      "IsYuanUser": false,
+      "IsAvailable": true,
+      "InitialSkillPoint": 0,
+      "basicAttackSkillIds": [],
+      "yuanSkillIds": [],
+      "PassiveIds": [],
+      "Id": 0,
+      "AssetName": "No9",
+      "DisplayName": "Thiên An",
+      "MaxHP": 0,
+      "MoveRange": 0
     }
   ],
   "BasicAttackSkillJsonDatas": [
@@ -1225,7 +1264,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -1237,7 +1276,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -1249,7 +1288,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -1261,7 +1300,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -1309,7 +1348,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -1321,7 +1360,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -2089,7 +2128,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -2101,7 +2140,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {
@@ -2113,7 +2152,7 @@
           },
           "IsWalkable": true,
           "IsSpawnPoint": false,
-          "IsOpponentSpawnPoint": false
+          "IsOpponentSpawnPoint": true
         },
         {
           "GridPosition": {

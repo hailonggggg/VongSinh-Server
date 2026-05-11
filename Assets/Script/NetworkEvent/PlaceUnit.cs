@@ -4,6 +4,6 @@ using UnityEngine;
 [Serializable]
 public class PlaceUnit
 {
-    public int IndexSelected;
+    public int UnitId;
     public Vector3Int PlacedPosition;
 }
