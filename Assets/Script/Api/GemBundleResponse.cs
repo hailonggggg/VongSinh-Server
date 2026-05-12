@@ -9,4 +9,5 @@ public class GemBundleResponse
     public string imageUrl;
     public int gemAmount;
     public string description;
+    public string status;
 }

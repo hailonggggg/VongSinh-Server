@@ -47,14 +47,12 @@ public class InventorySystem : BaseSystem
                 return;
             }
 
-            // Lấy detail cho từng item song song
             List<Task<ItemDetail>> detailTasks = new List<Task<ItemDetail>>();
             foreach (var item in items)
                 detailTasks.Add(ApiService.GetItemById(client, item.itemId));
 
             ItemDetail[] details = await Task.WhenAll(detailTasks);
 
-            // Gộp UserItem + ItemDetail thành UserItemWithDetail
             List<UserItemWithDetail> result = new List<UserItemWithDetail>();
             for (int i = 0; i < items.Length; i++)
             {
@@ -67,7 +65,8 @@ public class InventorySystem : BaseSystem
                     shopOrderId = items[i].shopOrderId,
                     itemName = detail?.itemName ?? $"Item {items[i].itemId}",
                     itemDescription = detail?.itemDescription ?? "",
-                    itemImageUrl = detail?.itemImageUrl ?? ""
+                    itemImageUrl = detail?.itemImageUrl ?? "",
+                    itemStatus = detail?.status ?? ""
                 });
             }
 
