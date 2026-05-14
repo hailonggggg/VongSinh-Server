@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class UnitMoveRequest
+public class UseSkillResult
 {
+    public int PlayerId;
     public int UnitId;
-    public Vector3Int CurrentCell;
+    public string AnimationTrigger;
     public Vector3Int TargetCell;
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class YuanSkill : Skill
@@ -27,8 +28,32 @@ public class YuanSkill : Skill
             : Enum.Parse<UnitAnimationState>(data.AnimationTrigger);
     }
 
+    public YuanSkill(YuanSkill source) : base(source)
+    {
+        actionPointCost = source.ActionPointCost;
+        yuanLiCost = source.YuanLiCost;
+        skillPointCost = source.SkillPointCost;
+        skillPattern = source.SkillPattern;
+        animationTrigger = source.AnimationTrigger;
+    }
+
     public static YuanSkill FromJson(YuanSkillJsonData yuanSkillJson)
     {
         return yuanSkillJson == null ? null : new YuanSkill(yuanSkillJson);
+    }
+
+    public override List<SkillTileData> GetAffectedTileData(Vector3Int previewDirection)
+    {
+        if (skillPattern == null)
+        {
+            return new List<SkillTileData>();
+        }
+
+        return skillPattern.GetAffectedTileData(previewDirection);
+    }
+
+    public override Skill Clone()
+    {
+        return new YuanSkill(this);
     }
 }

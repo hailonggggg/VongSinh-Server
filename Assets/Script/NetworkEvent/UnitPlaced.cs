@@ -7,5 +7,6 @@ public class UnitPlaced
     public int UnitId;
     public int Index;
     public Vector3Int PlacedPosition;
+    public GridFacing FacingDirection;
     public int PlayerRefId;
 }

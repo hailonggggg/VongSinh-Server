@@ -1046,6 +1046,7 @@
       "PassiveName": "Chiến Khai Thiên Mạch",
       "Description": "+1 AP cho đội mỗi đầu lượt.",
       "IsUnlocked": true,
+      "TriggerType": "TurnStart",
       "Conditions": [
         {
           "Type": "OwnerIsActor",
@@ -1068,6 +1069,7 @@
       "PassiveName": "Linh Vực Hồi Thiên",
       "Description": "Mỗi khi hành động, toàn bộ đồng đội trong vùng 3x3 xoay quanh MC sẽ hồi 2 hp.",
       "IsUnlocked": false,
+      "TriggerType": "ActionPerformed",
       "Conditions": [
         {
           "Type": "OwnerIsActor",
@@ -1090,6 +1092,7 @@
       "PassiveName": "Phá Quân Hồi Khí",
       "Description": "Mỗi khi tấn công trúng 3 kẻ địch trở lên, sẽ hồi phục 1 AP.",
       "IsUnlocked": true,
+      "TriggerType": "AttackHit",
       "Conditions": [
         {
           "Type": "HitEnemyCountAtLeast",
@@ -1117,6 +1120,7 @@
       "PassiveName": "Diệt Chúng Tụ Linh",
       "Description": "Mỗi khi tấn công trúng 4 kẻ địch trở lên, sẽ hồi phục 1 SP.",
       "IsUnlocked": false,
+      "TriggerType": "AttackHit",
       "Conditions": [
         {
           "Type": "HitEnemyCountAtLeast",

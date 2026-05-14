@@ -169,12 +169,13 @@ public static class Service
         return ReliableMessage.Build(Command.LoadDeploymentPhase, deploymentPhaseInfo);
     }
 
-    public static byte[] PlaceUnitResult(int id, int index, Vector3Int placedPosition, int playerRefId)
+    public static byte[] PlaceUnitResult(int id, int index, GridFacing facingDirection, Vector3Int placedPosition, int playerRefId)
     {
         return ReliableMessage.Build(Command.UnitPlaced, new UnitPlaced
         {
             UnitId = id,
             Index = index,
+            FacingDirection = facingDirection,
             PlacedPosition = placedPosition,
             PlayerRefId = playerRefId
         });
@@ -201,10 +202,11 @@ public static class Service
         return ReliableMessage.Build(Command.GameData, json);
     }
 
-    public static byte[] SendUnitDeploySelectedSkill(int unitId, int skillId, int type, bool isChecked)
+    public static byte[] SendUnitDeploySelectedSkill(int playerId, int unitId, int skillId, int type, bool isChecked)
     {
         string json = JsonConvert.SerializeObject(new UnitDeploySelectedSkillResponse
         {
+            PlayerId = playerId,
             UnitId = unitId,
             SkillId = skillId,
             Type = type,
@@ -225,6 +227,84 @@ public static class Service
             PlayerId = playerId,
             UnitId = id,
             Paths = paths
+        });
+    }
+
+    public static byte[] CombatTurnInfo(int currentPlayerId)
+    {
+        return ReliableMessage.Build(Command.CombatTurnInfo, new CombatTurnInfo
+        {
+            PlayerId = currentPlayerId,
+        });
+    }
+
+    public static byte[] PlayerResourceInfo(int apPoint, int yuanPressurePoint)
+    {
+        return ReliableMessage.Build(Command.PlayerResourceInfo, new PlayerResourceInfo
+        {
+            ApPoint = apPoint,
+            YuanPressurePoint = yuanPressurePoint
+        });
+    }
+
+    public static byte[] UseSkillResult(int playerId, int unitId, string AnimationTrigger, Vector3Int targetCell)
+    {
+        return ReliableMessage.Build(Command.UseSkill, new UseSkillResult
+        {
+            PlayerId = playerId,
+            UnitId = unitId,
+            AnimationTrigger = AnimationTrigger,
+            TargetCell = targetCell
+        });
+    }
+
+    public static byte[] ReceiveDamage(int playerId, int id, int damage, int currentHealth)
+    {
+        return ReliableMessage.Build(Command.ReceiveDamage, new ReceiveDamageResult
+        {
+            PlayerId = playerId,
+            UnitId = id,
+            DamageAmount = damage,
+            RemainingHealth = currentHealth
+        });
+    }
+
+    public static byte[] UnitInfoResult(int playerId, int id, int skillPoint, int currentHealth)
+    {
+        return ReliableMessage.Build(Command.UnitInfo, new UnitInfoResult
+        {
+            PlayerId = playerId,
+            UnitId = id,
+            SkillPoint = skillPoint,
+            RemainingHealth = currentHealth
+        });
+    }
+
+    public static byte[] UnitHealResult(int playerId, int id, int healAmount, int currentHealth)
+    {
+        return ReliableMessage.Build(Command.UnitHeal, new UnitHealResult
+        {
+            PlayerId = playerId,
+            UnitId = id,
+            HealAmount = healAmount,
+            RemainingHealth = currentHealth
+        });
+    }
+
+    public static byte[] UnitDeathResult(int playerId, int id)
+    {
+        return ReliableMessage.Build(Command.UnitDeath, new UnitDeathResult
+        {
+            PlayerId = playerId,
+            UnitId = id,
+        });
+    }
+
+    public static byte[] YuanPressureUpdate(int current)
+    {
+        return ReliableMessage.Build(Command.YuanPressureUpdate, new YuanPressureUpdate
+        {
+            Current = current
         });
     }
 }

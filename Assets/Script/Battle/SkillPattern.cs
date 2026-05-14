@@ -283,6 +283,10 @@ public class SkillPattern
 
     public static SkillPattern FromJson(SkillPatternJsonData data)
     {
+        if (data == null)
+        {
+            return null;
+        }
         return new SkillPattern
         {
             previewTargetOffset = data.PreviewTargetOffset,

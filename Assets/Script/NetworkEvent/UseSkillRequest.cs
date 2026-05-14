@@ -2,9 +2,10 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class UnitMoveRequest
+public class UseSkillRequest
 {
     public int UnitId;
-    public Vector3Int CurrentCell;
+    public int SkillId;
+    public int SkillType;
     public Vector3Int TargetCell;
 }

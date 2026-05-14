@@ -12,7 +12,7 @@ public class Map
     public List<TileData> TileDatas = new();
     private HashSet<Vector3Int> walkablePositions => TileDatas.Where(x => x.IsWalkable).Select(x => x.GridPosition).ToHashSet();
 
-    private static readonly Vector3Int[] Directions =
+    public static readonly Vector3Int[] Directions =
  {
         Vector3Int.left ,
         Vector3Int.up,
@@ -163,6 +163,27 @@ public class Map
             path.Add(node.Position);
         path.Reverse();
         return path;
+    }
+
+    public List<Vector3Int> GetSquareTiles(Vector3Int center, int range)
+    {
+        if (range < 0)
+        {
+            return new List<Vector3Int>();
+        }
+        List<Vector3Int> result = new();
+        for (int x = -range; x <= range; x++)
+        {
+            for (int y = -range; y <= range; y++)
+            {
+                Vector3Int cell = center + new Vector3Int(x, y);
+                if (walkablePositions.Contains(cell))
+                {
+                    result.Add(cell);
+                }
+            }
+        }
+        return result;
     }
 }
 

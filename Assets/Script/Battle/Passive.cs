@@ -10,8 +10,34 @@ public class Passive
     public string PassiveName;
     public string Description;
     public bool IsUnlocked;
+    public PassiveTriggerType TriggerType;
     public List<PassiveCondition> Conditions;
     public List<PassiveEffect> Effects;
+    public Passive()
+    {
+    }
+    public Passive(Passive source)
+    {
+        Id = source.Id;
+        AssetName = source.AssetName;
+        PassiveName = source.PassiveName;
+        Description = source.Description;
+        IsUnlocked = source.IsUnlocked;
+        TriggerType = source.TriggerType;
+        Conditions = source.Conditions.Select(x => new PassiveCondition
+        {
+            Type = x.Type,
+            EnemyGetHitRequired = x.EnemyGetHitRequired,
+            ThreatLevel = x.ThreatLevel
+        }).ToList();
+        Effects = source.Effects.Select(x => new PassiveEffect
+        {
+            Type = x.Type,
+            Amount = x.Amount,
+            IncludeOwner = x.IncludeOwner,
+            Range = x.Range
+        }).ToList();
+    }
 
     public static Passive FromJson(PassiveJsonData data)
     {
@@ -21,6 +47,7 @@ public class Passive
             PassiveName = data.PassiveName,
             Description = data.Description,
             IsUnlocked = data.IsUnlocked,
+            TriggerType = Enum.Parse<PassiveTriggerType>(data.TriggerType),
             Conditions = data.Conditions.Select(x => new PassiveCondition
             {
                 Type = Enum.Parse<PassiveConditionType>(x.Type),
@@ -35,5 +62,21 @@ public class Passive
                 Range = x.Range
             }).ToList(),
         };
+    }
+
+    public Passive Clone()
+    {
+        return new Passive(this);
+    }
+
+    public void Execute(Unit owner, PassiveContext context)
+    {
+        if (Conditions.All(c => c.Evaluated(owner, context)))
+        {
+            foreach (var eff in Effects)
+            {
+                eff.Execute(owner, context);
+            }
+        }
     }
 }

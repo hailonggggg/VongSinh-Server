@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Skill
+public abstract class Skill
 {
     public int Id;
     public string AssetName;
@@ -22,6 +23,26 @@ public class Skill
     public virtual int SkillPointCost { get; }
     public virtual SkillPattern SkillPattern { get; }
     public virtual UnitAnimationState AnimationTrigger { get; }
+
+    public Skill(Skill skill)
+    {
+        Id = skill.Id;
+        AssetName = skill.AssetName;
+        SkillType = skill.SkillType;
+        SkillName = skill.SkillName;
+        Description = skill.Description;
+        IsDirectional = skill.IsDirectional;
+        IsUnlocked = skill.IsUnlocked;
+        Damage = skill.Damage;
+        CritRate = skill.CritRate;
+        SkillOrigin = skill.SkillOrigin;
+        MoveRange = skill.MoveRange;
+        CooldownTurns = skill.CooldownTurns;
+    }
+
+    public Skill()
+    {
+    }
 
     protected void ApplyBaseData(SkillJsonData data)
     {
@@ -45,6 +66,11 @@ public class Skill
         MoveRange = data.MoveRange;
         CooldownTurns = data.CooldownTurns;
     }
+
+
+    public abstract List<SkillTileData> GetAffectedTileData(Vector3Int previewDirection);
+
+    public abstract Skill Clone();
 }
 
 

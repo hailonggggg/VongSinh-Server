@@ -56,4 +56,14 @@ public enum Command : byte
     SkinAndCharacterBundleResponse,
     RequestPurchaseSkinBundle,
     PurchaseSkinBundleResponse,
+    CombatTurnInfo,
+    PlayerResourceInfo,
+    ActionComplete,
+    UseSkill,
+    OnFrameHit,
+    ReceiveDamage,
+    UnitInfo,
+    UnitHeal,
+    UnitDeath,
+    YuanPressureUpdate
 }

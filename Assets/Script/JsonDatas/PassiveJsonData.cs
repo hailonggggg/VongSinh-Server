@@ -10,6 +10,7 @@ public class PassiveJsonData
     public string PassiveName;
     public string Description;
     public bool IsUnlocked;
+    public string TriggerType;
     public List<PassiveConditionJsonData> Conditions;
     public List<PassiveEffectJsonData> Effects;
 }

@@ -44,7 +44,50 @@ namespace Assets.Script.System
                 case Command.UnitMove:
                     HandleUnitMove(client, payload);
                     break;
+                case Command.ActionComplete:
+                    HandleActionComplete(client);
+                    break;
+                case Command.UseSkill:
+                    HandleUseSkill(client, payload);
+                    break;
+                case Command.OnFrameHit:
+                    HandleOnFrameHit(client, payload);
+                    break;
             }
+        }
+
+        private void HandleOnFrameHit(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            battle.HandleOnFrameHit(client);
+        }
+
+        private void HandleUseSkill(Client client, string payload)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+
+            UseSkillRequest request = JsonUtility.FromJson<UseSkillRequest>(payload);
+            if (request == null)
+            {
+                return;
+            }
+
+            battle.HandleUseSkill(client, request);
+        }
+
+        private void HandleActionComplete(Client client)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            battle.HandleActionComplete(client);
         }
 
         private void HandleUnitMove(Client client, string payload)
@@ -54,7 +97,7 @@ namespace Assets.Script.System
                 return;
             }
             UnitMoveRequest unitMoveRequest = JsonConvert.DeserializeObject<UnitMoveRequest>(payload);
-            battle.HandleUnitMove(client, unitMoveRequest.UnitId, unitMoveRequest.TargetCell);
+            battle.HandleUnitMove(client, unitMoveRequest.UnitId, unitMoveRequest.CurrentCell, unitMoveRequest.TargetCell);
         }
 
 

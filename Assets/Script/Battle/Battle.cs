@@ -2,6 +2,7 @@ using Fusion;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -22,6 +23,9 @@ public class Battle
     public int CurrentTurnCount = 1;
     public BattleState State { get; private set; }
     public Client[] PlayerClients => playerClients;
+    public BattleConfig Config => config;
+    public Map CurrentMap => currentMap;
+    public Dictionary<int, BattlePlayer> PlayersById => playersById;
 
     private readonly Dictionary<int, BattlePlayer> playersById;
     private readonly Client[] playerClients;
@@ -29,11 +33,11 @@ public class Battle
     private readonly HashSet<int> allowedCharacterSelectableIds;
 
     private int playerTurnIndex = 0;
-    private float currentCountDown = 0f;
     private int lastBroadcastCountDownSecond = -1;
-    private BattlePlayer currentTurnPlayer;
-    private Map currentMap;
     private bool isSendDeploymentInfo;
+    private float currentCountDown = 0f;
+    private Map currentMap;
+    private BattlePlayer currentTurnPlayer;
 
     public Battle(int battleId, int roomId, IEnumerable<BattlePlayer> players)
     {
@@ -55,8 +59,11 @@ public class Battle
         {
             UpdateDeploymentState(deltaTime);
         }
+        else if (State == BattleState.Combat)
+        {
+            UpdateCombatState(deltaTime);
+        }
     }
-
     public bool TryMarkSceneLoaded(PlayerRef playerRef)
     {
         if (State != BattleState.WaitingForSceneLoad)
@@ -174,13 +181,18 @@ public class Battle
         {
             return;
         }
-
-        if (playersById.Values.All(p => p.DeployedUnitIds.Count >= CurrentTurnCount))
+        if (State == BattleState.BanPick)
+        {
+            if (playersById.Values.All(p => p.DeployedUnitIds.Count >= CurrentTurnCount))
+            {
+                CurrentTurnCount++;
+            }
+            currentTurnPlayer.ResetState();
+        }
+        else if (State == BattleState.Combat)
         {
             CurrentTurnCount++;
         }
-
-        currentTurnPlayer.ResetState();
         playerTurnIndex = (playerTurnIndex + 1) % playersById.Values.Count;
         ProcessPlayersTurn();
     }
@@ -251,7 +263,14 @@ public class Battle
 
         currentTurnPlayer = playerTurn;
         BroadcastTurnCountDownIfNeeded(forceBroadcast: true);
-        playerTurn.HandleTurnStart(this, config.HasBanPhase);
+        if (State == BattleState.BanPick)
+        {
+            playerTurn.HandleBanPickTurnStart(this, config.HasBanPhase);
+        }
+        else if (State == BattleState.Combat)
+        {
+            playerTurn.HandleCombatTurnStart(this);
+        }
     }
 
     private void BroadcastTurnCountDownIfNeeded(bool forceBroadcast = false)
@@ -299,6 +318,7 @@ public class Battle
                 continue;
             }
 
+
             ServerNetwork.Instance.SendToClient(battlePlayer.Client, Service.LoadDeploymentPhase(new DeploymentPhaseInfo
             {
                 DeployedUnitIds = battlePlayer.DeployedUnitIds.ToList(),
@@ -310,50 +330,12 @@ public class Battle
 
     public void SetUnitPlaced(Client client, PlaceUnit placeUnit)
     {
-        BattlePlayer battlePlayer = GetPlayer(client.PlayerRef);
-        if (battlePlayer == null)
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        if (player == null)
         {
             return;
         }
-
-        if (!battlePlayer.DeployedUnitIds.Contains(placeUnit.UnitId))
-        {
-            return;
-        }
-
-        if (!battlePlayer.TryGetUnit(placeUnit.UnitId, out Unit unit))
-        {
-            Master.Instance.CharactersById.TryGetValue(placeUnit.UnitId, out Unit character);
-            if (character == null)
-            {
-                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification($"Đơn vị {placeUnit.UnitId} không tồn tại"));
-                return;
-            }
-            unit = character.Clone();
-            unit.CurrentGridPosition = placeUnit.PlacedPosition;
-            battlePlayer.AddUnit(unit);
-            ServerNetwork.Instance.SendToClients(
-                Service.PlaceUnitResult(unit.Id, placeUnit.UnitId, placeUnit.PlacedPosition, battlePlayer.Client.PlayerRef.PlayerId),
-                playerClients);
-        }
-
-        if (unit == null) return;
-
-        if (!currentMap.IsValidSpawnPointPosition(battlePlayer.IsLeftSide, placeUnit.PlacedPosition))
-        {
-            battlePlayer.RemoveUnit(placeUnit.UnitId);
-            ServerNetwork.Instance.SendToClients(
-                Service.RemoveUnit(placeUnit.UnitId, battlePlayer.Client.PlayerRef.PlayerId),
-                playerClients);
-
-            return;
-        }
-
-        unit.CurrentGridPosition = placeUnit.PlacedPosition;
-
-        ServerNetwork.Instance.SendToClients(
-            Service.PlaceUnitResult(unit.Id, placeUnit.UnitId, placeUnit.PlacedPosition, battlePlayer.Client.PlayerRef.PlayerId),
-            playerClients);
+        player.SetUnitPlaced(this, placeUnit);
     }
 
     public bool TryHandleUnitDeploySelectedSkill(PlayerRef playerRef, UnitDeploySelectedSkillRequest request)
@@ -363,32 +345,12 @@ public class Battle
             return false;
         }
 
-        BattlePlayer battlePlayer = GetPlayer(playerRef);
-        if (battlePlayer == null)
+        BattlePlayer player = GetPlayer(playerRef);
+        if (player == null)
         {
             return false;
         }
-
-        if (!battlePlayer.TryGetUnit(request.CharId, out Unit unit))
-        {
-            return false;
-        }
-
-        SkillLoadoutType loadoutType = (SkillLoadoutType)request.Type;
-        if (unit.GetListSkillLoadout(loadoutType).Contains(request.SkillId))
-        {
-            unit.RemoveSkillEquipped(request.SkillId, loadoutType);
-            ServerNetwork.Instance.SendToClient(battlePlayer.Client, Service.SendUnitDeploySelectedSkill(unit.Id, request.SkillId, request.Type, false));
-            return true;
-        }
-
-        if (unit.TryAssignSkill(request.SkillId, loadoutType))
-        {
-            ServerNetwork.Instance.SendToClient(battlePlayer.Client, Service.SendUnitDeploySelectedSkill(unit.Id, request.SkillId, request.Type, true));
-            return true;
-        }
-
-        return false;
+        return player.TryHandleUnitDeploySelectedSkill(this, request);
     }
 
     private BattlePlayer GetPlayer(PlayerRef playerRef)
@@ -408,8 +370,14 @@ public class Battle
         {
             return;
         }
+        foreach (var player in playersById.Values)
+        {
+            player.InitializeUnit();
+        }
         State = BattleState.Combat;
+        ResetTurnState();
         ServerNetwork.Instance.SendToClients(Service.StartCombatPhase(), playerClients);
+        ProcessPlayersTurn();
     }
 
     public bool TryMarkSetupDeploymentComplete(Client client)
@@ -431,41 +399,157 @@ public class Battle
         return false;
     }
 
-    public void HandleUnitMove(Client client, int unitId, Vector3Int targetCell)
+    public void HandleUnitMove(Client client, int unitId, Vector3Int currentCell, Vector3Int targetCell)
     {
         BattlePlayer player = GetPlayer(client.PlayerRef);
         if (player == null)
         {
             return;
         }
-        if (!player.UnitCombats.TryGetValue(unitId, out Unit unit))
+
+        player.HandleUnitMove(this, unitId, currentCell, targetCell);
+    }
+
+    private void ResetTurnState()
+    {
+        playerTurnIndex = 0;
+        currentCountDown = 0;
+        currentTurnPlayer = null;
+    }
+
+    public void HandleActionComplete(Client client)
+    {
+        if (currentTurnPlayer == null)
         {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Bạn không có nhân vật này trong đội hình."));
             return;
         }
-        if (!currentMap.ContainWalkablePos(targetCell))
+        if (currentTurnPlayer.Client.PlayerRef.PlayerId != client.PlayerRef.PlayerId)
         {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Vị trí không hợp lệ."));
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Không phải lượt của bạn nhưng bạn đang cố kết thúc lượt ?"));
             return;
         }
-        List<Unit> units = playersById.Values.SelectMany(x => x.UnitCombats.Values).ToList();
-        HashSet<Vector3Int> blockCells = currentMap.GetOccupiedCells(units);
-        if (!currentMap.IsWithinMoveRange(unit.CurrentGridPosition, targetCell, unit.MoveRange, blockCells))
+        if (!currentTurnPlayer.ApSystem.IsEmpty)
         {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Vị trí đến nằm ngoài phạm vi."));
+            return;
+        }
+        HandlePlayerTurnDone();
+    }
+
+    private void UpdateCombatState(float deltaTime)
+    {
+        currentCountDown = Mathf.Max(0f, currentCountDown - deltaTime);
+        BroadcastTurnCountDownIfNeeded();
+        if (currentCountDown > 0f)
+        {
             return;
         }
 
-        List<Vector3Int> paths = currentMap.FindPathToTarget(unit.CurrentGridPosition, targetCell, blockCells);
-        if (paths == null || paths.Count == 0)
+        HandlePlayerTurnDone();
+    }
+
+    public void HandleUseSkill(Client client, UseSkillRequest request)
+    {
+        if (request == null)
         {
             return;
         }
-        unit.CurrentGridPosition = targetCell;
-        ServerNetwork.Instance.SendToClients(Service.UnitMove(client.PlayerRef.PlayerId, unit.Id, paths), playerClients);
+
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        if (player == null)
+        {
+            return;
+        }
+        player.HandeUseSkill(this, request);
+    }
+
+    public void HandleOnFrameHit(Client client)
+    {
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        if (player == null)
+        {
+            return;
+        }
+
+        if (currentTurnPlayer == null || currentTurnPlayer.ListUnitHavePendingDamage == null)
+        {
+            return;
+        }
+
+        if (!ReferenceEquals(player, currentTurnPlayer))
+        {
+            return;
+        }
+
+        foreach (Unit unit in currentTurnPlayer.ListUnitHavePendingDamage)
+        {
+            unit.ApplyPendingDamage();
+        }
+        currentTurnPlayer.ListUnitHavePendingDamage.Clear();
+        if (currentTurnPlayer.ApSystem.IsEmpty)
+        {
+            HandleActionComplete(client);
+        }
+    }
+
+    public BattleContext CreateBattleContext(BattlePlayer player, Unit unit)
+    {
+        return new BattleContext
+        {
+            Map = currentMap,
+            ActionPointSystem = player.ApSystem,
+            YuanPressureSystem = player.YuanPressureSystem,
+            Allies = player.UnitCombats.Values.Where(u => u != unit).ToList(),
+            Enemies = playersById.Values.Where(p => p != player).SelectMany(p => p.UnitCombats.Values).ToList(),
+        };
     }
 
 
-
     #endregion
+}
+
+public class BattleContext
+{
+    public Map Map;
+    public ActionPointSystem ActionPointSystem;
+    public YuanPressureSystem YuanPressureSystem;
+    public List<Unit> Allies;
+    public List<Unit> Enemies;
+}
+public class SkillHandler
+{
+    public static Vector3Int GetSkillPreviewDirection(bool isDirectional, Unit unit, Vector3Int targetPosition)
+    {
+        if (isDirectional)
+        {
+            return GetCardinalDirection(unit.CurrentGridPosition, targetPosition, Vector3Int.zero);
+        }
+        return unit.FacingDirection;
+    }
+
+    public static List<Unit> GetAffectedEnemyUnits(List<SkillTileData> selectedTileAffectedTargets, BattleContext battleContext, Vector3Int targetCell)
+    {
+        List<Unit> affectedUnits = new();
+        foreach (SkillTileData tileData in selectedTileAffectedTargets)
+        {
+            Vector3Int cell = tileData.offset + targetCell;
+            affectedUnits.AddRange(battleContext.Enemies.Where(a => a.CurrentGridPosition == cell));
+        }
+        return affectedUnits;
+    }
+
+    private static Vector3Int GetCardinalDirection(Vector3Int originCell, Vector3Int targetCell, Vector3Int fallbackDirection)
+    {
+        Vector3Int delta = targetCell - originCell;
+        if (delta == Vector3Int.zero)
+        {
+            return fallbackDirection;
+        }
+
+        if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+        {
+            return delta.x > 0 ? Vector3Int.right : Vector3Int.left;
+        }
+
+        return delta.y > 0 ? Vector3Int.up : Vector3Int.down;
+    }
 }

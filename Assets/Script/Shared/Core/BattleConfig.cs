@@ -14,6 +14,7 @@ public class BattleConfig
     public bool HasBanPhase = false;
     public float TurnTimeLimit = 30f;
     public float DeploymentTime = 60f;
+    public int MoveActionCost = 1;
     public int[] AllowMapIds = new int[] { 1 };
     public int[] AllowCharacterSelectables = new int[] { 1, 2};
 
