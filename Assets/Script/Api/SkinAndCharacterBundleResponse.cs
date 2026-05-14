@@ -9,4 +9,5 @@ public class SkinAndCharacterBundleResponse
     public int itemId;
     public int quantity;
     public string imageUrl;
+    public string status;
 }

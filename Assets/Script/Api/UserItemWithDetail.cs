@@ -10,4 +10,5 @@ public class UserItemWithDetail
     public string itemName;
     public string itemDescription;
     public string itemImageUrl;
+    public string itemStatus;
 }
