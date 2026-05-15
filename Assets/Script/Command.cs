@@ -65,5 +65,6 @@ public enum Command : byte
     UnitInfo,
     UnitHeal,
     UnitDeath,
-    YuanPressureUpdate
+    YuanPressureUpdate,
+    EndTurn
 }

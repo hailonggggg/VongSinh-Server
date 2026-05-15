@@ -5,5 +5,5 @@ using UnityEngine;
 public class PlayerTurnToDeploy
 {
     public int TurnCount;
-    public string Name;
+    public int PlayerId;
 }

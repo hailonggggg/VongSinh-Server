@@ -32,7 +32,9 @@ public class PassiveEffect
                 List<Vector3Int> validHealCells = context.BattleContext.Map.GetSquareTiles(owner.CurrentGridPosition, Range);
                 foreach (var ally in context.BattleContext.Allies)
                 {
-                    if (!validHealCells.Contains(ally.CurrentGridPosition)) continue;
+                    if (!validHealCells.Contains(ally.CurrentGridPosition))
+                        continue;
+
                     ally.PlusHp(Amount);
                 }
                 break;

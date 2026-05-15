@@ -225,7 +225,7 @@ public class Battle
 
             ServerNetwork.Instance.SendToClient(battleClient, Service.SendBanPickStartInfo(new BattleBanPickInfo
             {
-                IsLocalPlayerOnLeftSide = battlePlayer.IsLeftSide,
+                LeftSidePlayerId = battlePlayer.IsLeftSide ? battlePlayer.Client.PlayerRef.PlayerId : -1,
                 HasBanPhase = config.HasBanPhase,
                 MapIndexSelected = room.MapIndexSelected,
                 MaxUnitsPerPlayer = config.MaxUnitsPerPlayer,
@@ -493,14 +493,46 @@ public class Battle
 
     public BattleContext CreateBattleContext(BattlePlayer player, Unit unit)
     {
+        var allies = new List<Unit>(player.UnitCombats.Count - 1);
+        foreach (var u in player.UnitCombats.Values)
+        {
+            if (u != unit) allies.Add(u);
+        }
+
+        var enemies = new List<Unit>();
+        foreach (var p in playersById.Values)
+        {
+            if (p != player) enemies.AddRange(p.UnitCombats.Values);
+        }
+
         return new BattleContext
         {
             Map = currentMap,
             ActionPointSystem = player.ApSystem,
             YuanPressureSystem = player.YuanPressureSystem,
-            Allies = player.UnitCombats.Values.Where(u => u != unit).ToList(),
-            Enemies = playersById.Values.Where(p => p != player).SelectMany(p => p.UnitCombats.Values).ToList(),
+            Allies = allies,
+            Enemies = enemies,
         };
+    }
+
+    public void HandleEndTurn(Client client)
+    {
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        if (player == null)
+        {
+            return;
+        }
+
+        if (currentTurnPlayer == null)
+        {
+            return;
+        }
+        if (currentTurnPlayer.Client.PlayerRef.PlayerId != client.PlayerRef.PlayerId)
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Không phải lượt của bạn nhưng bạn đang cố kết thúc lượt ?"));
+            return;
+        }
+        HandlePlayerTurnDone();
     }
 
 

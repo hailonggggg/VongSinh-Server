@@ -133,9 +133,11 @@ public class BattlePlayer
 
         if (!IsDeployed)
         {
-            ServerNetwork.Instance.SendToClients(
-                Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Name),
-                battle.PlayerClients);
+            ServerNetwork.Instance
+                .SendToClients(
+                    Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Client.PlayerRef.PlayerId),
+                    battle.PlayerClients
+                );
             IsDeployed = true;
             return;
         }
@@ -156,8 +158,8 @@ public class BattlePlayer
     public void HandleCombatTurnStart(Battle battle)
     {
         int apGainFromAliveUnits = unitsByCharId.Count(x => x.Value.IsAlive);
-        TriggerAllUnitTurnStartPassive(battle);
         apSystem.PlusPoint(apGainFromAliveUnits);
+        TriggerAllUnitTurnStartPassive(battle);
         ServerNetwork.Instance.SendToClient(Client, Service.PlayerResourceInfo(apSystem.Current, yuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(
             Service.CombatTurnInfo(Client.PlayerRef.PlayerId),

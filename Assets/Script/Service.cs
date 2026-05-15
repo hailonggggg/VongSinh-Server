@@ -132,12 +132,12 @@ public static class Service
         return ReliableMessage.Build(Command.OrderResponse, json);
     }
 
-    public static byte[] SendPlayerTurnToDeploy(int currentTurnCount, string name)
+    public static byte[] SendPlayerTurnToDeploy(int currentTurnCount, int playerId)
     {
         return ReliableMessage.Build(Command.PlayerTurnToDeploy, new PlayerTurnToDeploy
         {
             TurnCount = currentTurnCount,
-            Name = name
+            PlayerId = playerId
         });
     }
 

@@ -53,7 +53,19 @@ namespace Assets.Script.System
                 case Command.OnFrameHit:
                     HandleOnFrameHit(client, payload);
                     break;
+                case Command.EndTurn:
+                    HandleEndTurn(client);
+                    break;
             }
+        }
+
+        private void HandleEndTurn(Client client)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            battle.HandleEndTurn(client);
         }
 
         private void HandleOnFrameHit(Client client, string payload)

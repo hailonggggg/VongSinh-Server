@@ -207,8 +207,9 @@ public class Unit
     public void SetSkillpoint(int amount)
     {
         SkillPoint = Math.Max(amount, 0);
-        ServerNetwork.Instance.SendToClient(owner.Client,
-            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth));
+        ServerNetwork.Instance.SendToClients(
+            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth),
+            battle.PlayerClients);
     }
 
     public void TriggerPassives(PassiveTriggerType trigger, IPassiveEvent passiveEvent, BattleContext context)
@@ -231,17 +232,21 @@ public class Unit
 
     public void SetHealth(int amount)
     {
-        CurrentHealth = Math.Max(amount, 0);
-        ServerNetwork.Instance.SendToClient(owner.Client,
-            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth));
+        CurrentHealth = Math.Clamp(amount, 0, MaxHealth);
+        ServerNetwork.Instance.SendToClients(
+            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth),
+            battle.PlayerClients);
     }
 
     public void PlusHp(int amount)
     {
         int lastHp = CurrentHealth;
         lastHp += amount;
-        ServerNetwork.Instance.SendToClient(owner.Client,
-           Service.UnitHealResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth));
+        int healAmount = Math.Min(lastHp, MaxHealth) - CurrentHealth;
+        if (healAmount <= 0) return;
+
+        ServerNetwork.Instance.SendToClients(
+           Service.UnitHealResult(owner.Client.PlayerRef.PlayerId, Id, healAmount, CurrentHealth), battle.PlayerClients);
         SetHealth(lastHp);
     }
 
@@ -253,8 +258,8 @@ public class Unit
         }
 
         SkillPoint -= yuanLiCost;
-        ServerNetwork.Instance.SendToClient(owner.Client,
-            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth));
+        ServerNetwork.Instance.SendToClients(
+            Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth), battle.PlayerClients);
         return true;
     }
 }
