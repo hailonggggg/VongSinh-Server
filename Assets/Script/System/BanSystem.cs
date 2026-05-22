@@ -28,7 +28,7 @@ public class BanSystem
         }
 
         ClientManager.AddClient(new Client(runner, player));
-        Debug.Log($"Player accepted: {userId}");
+        // Debug.Log($"Player accepted: {userId}");
     }
 
     // -------- BAN CHECK --------

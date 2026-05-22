@@ -9,4 +9,5 @@ public class Room
     public List<RoomPlayer> Players;
     public int MaxPlayers;
     public int MapIndexSelected = 0;
+
 }

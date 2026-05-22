@@ -1,35 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Transactions;
 using Fusion;
 using UnityEngine;
 
 public class BattlePlayer
 {
+    private const int MaxDeployUnit = 5;
+    private const int MaxBanUnit = 5;
+    private const int MaxUnitBanPerTurn = 2;
     public string Name { get; }
     public bool IsDeployed = false;
-    public bool IsBannedOtherUnit = false;
+
     public bool IsSceneLoaded { get; private set; }
     public bool DoneSetupDeployment { get; private set; }
     public bool IsGameDataLoaded { get; private set; }
     public bool IsLeftSide { get; private set; }
     public Client Client { get; }
+    public bool IsTeamEliminated => unitsByCharId.Values.All(u => !u.IsAlive);
+
+    #region Banpick
+    public IReadOnlyCollection<int> PickedUnitIds => pickedUnitIds;
+    public IReadOnlyCollection<int> BannedUnitIds => bannedUnitIds;
+    public IReadOnlyCollection<int> OwnerUnlockedUnitId => ownerUnlockedUnitId;
+    private readonly HashSet<int> bannedUnitIds = new(MaxBanUnit);
+    private readonly HashSet<int> pickedUnitIds = new(MaxDeployUnit);
+    private readonly HashSet<int> ownerUnlockedUnitId = new();
+
+    #endregion
+
+    #region Combat
+    public IDictionary<int, Unit> UnitCombats => unitsByCharId;
     public ActionPointSystem ApSystem => apSystem;
     public YuanPressureSystem YuanPressureSystem => yuanPressureSystem;
-    public IReadOnlyList<int> DeployedUnitIds => deployedUnitIds;
-    public IReadOnlyCollection<int> BannedUnitIds => bannedUnitIds;
-    public IDictionary<int, Unit> UnitCombats => unitsByCharId;
-    public List<SkillTileData> SelectedTileAffectedTargets = new();
-    public BattleContext BattleContext;
-    public List<Unit> ListUnitHavePendingDamage;
-
-    private readonly List<int> deployedUnitIds = new();
-    private readonly HashSet<int> deployedUnitIdSet = new();
-    private readonly HashSet<int> bannedUnitIds = new();
+    public List<SkillTileData> SelectedTileAffectedTargets => selectedTileAffectedTargets;
+    public List<Unit> ListUnitHavePendingDamage => listUnitHavePendingDamage;
+    private readonly List<Unit> listUnitHavePendingDamage = new();
     private readonly Dictionary<int, Unit> unitsByCharId = new();
+    private readonly List<SkillTileData> selectedTileAffectedTargets = new();
     private readonly ActionPointSystem apSystem = new();
     private readonly YuanPressureSystem yuanPressureSystem = new();
+
+    #endregion
 
 
     public BattlePlayer(Client client, string name, bool isLeftSide)
@@ -37,6 +51,12 @@ public class BattlePlayer
         Client = client;
         Name = name;
         IsLeftSide = isLeftSide;
+        ownerUnlockedUnitId = client.OwnedCharacterIds;
+    }
+
+    public bool IsMyTurn(PlayerRef @ref)
+    {
+        return Client.PlayerRef == @ref;
     }
 
     public bool MarkSceneLoaded()
@@ -71,20 +91,14 @@ public class BattlePlayer
         return true;
     }
 
-    public bool ApplyUnitDeploy(int unitDeployId)
+    public bool ApplyUnitIdPicked(int unitId)
     {
-        if (!deployedUnitIdSet.Add(unitDeployId))
-        {
-            return false;
-        }
-
-        deployedUnitIds.Add(unitDeployId);
-        return true;
+        return pickedUnitIds.Add(unitId);
     }
 
-    public bool ApplyUnitBan(int unitBanId)
+    public bool ApplyUnitIdBanned(int unitId)
     {
-        return bannedUnitIds.Add(unitBanId);
+        return bannedUnitIds.Add(unitId);
     }
 
     public void AddUnit(Unit unit)
@@ -110,46 +124,41 @@ public class BattlePlayer
     public bool TryGetDeployedUnitIdAt(int index, out int unitId)
     {
         unitId = default;
-        if (index < 0 || index >= deployedUnitIds.Count)
+        if (index < 0 || index >= pickedUnitIds.Count)
         {
             return false;
         }
 
-        unitId = deployedUnitIds[index];
+        unitId = pickedUnitIds.ElementAt(index);
         return true;
     }
 
-    public bool HasReachedDeployLimit(int length)
+    public bool HasReachedDeployLimit(int battleLimit)
     {
-        return deployedUnitIds.Count >= length;
+        bool isPlayerHaveUnitEqualBattleLimit = ownerUnlockedUnitId.Count >= battleLimit;
+
+        if (!isPlayerHaveUnitEqualBattleLimit)
+            battleLimit = ownerUnlockedUnitId.Count;
+
+        bool isReachLimit = pickedUnitIds.Count >= battleLimit;
+        return isReachLimit;
     }
 
     public void HandleBanPickTurnStart(Battle battle, bool hasBanPhase)
     {
-        if (hasBanPhase && !IsBannedOtherUnit)
-        {
-            return;
-        }
+        ServerNetwork.Instance.SendToClients(
+            Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Client.PlayerRef.PlayerId),
+            battle.PlayerClients);
 
-        if (!IsDeployed)
-        {
-            ServerNetwork.Instance
-                .SendToClients(
-                    Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Client.PlayerRef.PlayerId),
-                    battle.PlayerClients
-                );
-            IsDeployed = true;
-            return;
-        }
+        bool banComplete = !hasBanPhase || bannedUnitIds.Count >= battle.CurrentTurnCount * MaxUnitBanPerTurn;
+        bool pickComplete = pickedUnitIds.Count >= battle.CurrentTurnCount;
 
-        battle.HandlePlayerTurnDone();
+        if (banComplete && pickComplete)
+        {
+            battle.HandlePlayerTurnDone();
+        }
     }
 
-    public void ResetState()
-    {
-        IsDeployed = false;
-        IsBannedOtherUnit = false;
-    }
     public void ResetSceneLoaded()
     {
         IsSceneLoaded = false;
@@ -237,9 +246,9 @@ public class BattlePlayer
         ServerNetwork.Instance.SendToClients(Service.UnitMove(Client.PlayerRef.PlayerId, unit.Id, paths), battle.PlayerClients);
     }
 
-    public void SetUnitPlaced(Battle battle, PlaceUnit placeUnit)
+    public async Task SetUnitPlaced(Battle battle, PlaceUnit placeUnit)
     {
-        if (!deployedUnitIds.Contains(placeUnit.UnitId))
+        if (!pickedUnitIds.Contains(placeUnit.UnitId))
         {
             return;
         }
@@ -252,7 +261,12 @@ public class BattlePlayer
                 ServerNetwork.Instance.SendToClient(Client, Service.ShowNotification($"Đơn vị {placeUnit.UnitId} không tồn tại"));
                 return;
             }
+            CharacterStats characterStats = await ApiService.FindCharacterStatById(Client, placeUnit.UnitId);
             unit = character.Clone();
+            if (characterStats != null)
+            {
+                unit.SetCharacterStats(characterStats);
+            }
             unit.CurrentGridPosition = placeUnit.PlacedPosition;
             unit.SetOwner(this, battle);
             unitsByCharId[placeUnit.UnitId] = unit;
@@ -380,8 +394,8 @@ public class BattlePlayer
             enemy.PendingDamage += (int)(tileData.damageMultiplier * selectedSkill.Damage);
             affectedUnits.Add(enemy);
         }
-
-        ListUnitHavePendingDamage = affectedUnits;
+        listUnitHavePendingDamage.Clear();
+        listUnitHavePendingDamage.AddRange(affectedUnits);
         yuanPressureSystem.AdjustValue(selectedSkill.YuanLiCost);
         unit.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(unit), battle.CreateBattleContext(this, unit));
         ServerNetwork.Instance.SendToClient(Client, Service.YuanPressureUpdate(yuanPressureSystem.Current));

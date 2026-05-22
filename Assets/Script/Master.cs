@@ -24,6 +24,7 @@ public class Master : MonoBehaviour
     private BundleSystem bundleSystem;
     private OrderSystem orderSystem;
     private InventorySystem inventorySystem;
+    private CharacterSystem characterSystem;
 
     void Awake()
     {
@@ -40,6 +41,7 @@ public class Master : MonoBehaviour
         bundleSystem = new BundleSystem();
         orderSystem = new OrderSystem();
         inventorySystem = new InventorySystem();
+        characterSystem = new CharacterSystem();
     }
 
     void Update()
@@ -50,12 +52,18 @@ public class Master : MonoBehaviour
 
     public void ClearClientResource(Client client)
     {
-        if (client == null || client.CurrentRoomId < 0)
+        if (client == null)
         {
+            Debug.LogWarning("Cannot clear Resource because client is null");
             return;
         }
+        // Debug.Log($"{client.User.Email} clear resources, currentBattleId: {client.CurrentBattleId}");
+        if (client.CurrentBattleId != -1 && BattleSystem.TryGetBattleById(client.CurrentBattleId, out Battle battle))
+        {
+            battle.HandleLeaveBattle(client);
+        }
 
-        if (RoomSystem.TryGetRoomById(client.CurrentRoomId, out Room room))
+        if (client.CurrentRoomId != -1 && RoomSystem.TryGetRoomById(client.CurrentRoomId, out _))
         {
             roomSystem.LeaveRoom(client);
         }

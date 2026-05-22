@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class BattlePlayerInfo
+public class PlayerBanPickInfo
 {
     public string Name;
-    public List<int> DeployedUnitIds = new();
+    public List<int> PickedUnitIds = new();
     public List<int> BannedUnitIds = new();
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 
 public static class ApiService
@@ -21,6 +22,8 @@ public static class ApiService
     private const string SkinBundleUrl = "https://be-adminmanagementsystem.onrender.com/api/Shop/skin-and-character-bundles";
     private const string PurchaseOrderUrl = "https://be-adminmanagementsystem.onrender.com/api/PurchaseOrder";
     private const string ItemUrl = "https://be-adminmanagementsystem.onrender.com/api/Item/{0}";
+    private const string GiftUrl = "https://be-adminmanagementsystem.onrender.com/api/Gift";
+    private const string SearchCharacterStatUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/stats?Search={0}";
 
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
@@ -131,33 +134,12 @@ public static class ApiService
         return null;
     }
 
-    private static string WrapArrayResponse(string responseJson, string fieldName)
-    {
-        string trimmedJson = responseJson.TrimStart();
-        if (!trimmedJson.StartsWith("["))
-        {
-            return responseJson;
-        }
-
-        return $"{{\"{fieldName}\":{trimmedJson}}}";
-    }
-
-    private static string BuildErrorMessage(HttpStatusCode statusCode, string responseJson)
-    {
-        if (!string.IsNullOrWhiteSpace(responseJson))
-        {
-            return responseJson;
-        }
-
-        return $"API Error ({(int)statusCode})";
-    }
-
-    public static async Task<RegisterApiResponse> Register(RegisterRequest registerRequest)
+    public static async Task<(bool, string, RegisterApiResponse)> Register(RegisterRequest registerRequest)
     {
 
         try
         {
-            string json = JsonUtility.ToJson(registerRequest, prettyPrint: true);
+            string json = JsonConvert.SerializeObject(registerRequest);
             using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, RegisterUserUrl);
             httpRequestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -167,21 +149,17 @@ public static class ApiService
             {
                 if (response.StatusCode == HttpStatusCode.Conflict)
                 {
-                    return new RegisterApiResponse
-                    {
-                        Success = false,
-                        Message = "Email đã tồn tại, vui lòng sử dụng email khác"
-                    };
+                    return (false, "Email đã tồn tại, vui lòng sử dụng email khác", null);
                 }
-                return null;
+                return (false, "Có lỗi xảy ra", null);
             }
-            RegisterApiResponse registerApiResponse = JsonUtility.FromJson<RegisterApiResponse>(responseJson);
+            RegisterApiResponse registerApiResponse = JsonConvert.DeserializeObject<RegisterApiResponse>(responseJson);
             if (registerApiResponse == null)
             {
                 Debug.LogWarning($"[AUTH API] Could not parse register response. Body={responseJson}");
-                return null;
+                return (false, "Có lỗi xảy ra", null);
             }
-            return registerApiResponse;
+            return (true, "Đăng ký thành công", registerApiResponse);
 
         }
         catch (TaskCanceledException exception)
@@ -196,7 +174,7 @@ public static class ApiService
         {
             Debug.LogError($"[AUTH API] Unexpected error while calling login API. Error={exception}");
         }
-        return null;
+        return (false, "Có lỗi xảy ra", null);
     }
 
     public static bool CheckSuccessStatusAndLogError(HttpResponseMessage response, string responseJson)
@@ -594,4 +572,101 @@ public static class ApiService
         }
     }
 
+    public static async Task AddUserItem(Client client, int id, int itemId = 1, int quantity = 1)
+    {
+        try
+        {
+            var body = new UserItem
+            {
+                userId = id,
+                itemId = itemId,
+                quantity = quantity,
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            using HttpRequestMessage request = new(HttpMethod.Post, GiftUrl);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogError($"[API ADD ITEM] Status: {response.StatusCode}");
+                Debug.LogError($"[API ADD ITEM] Body: {responseJson}");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API ADD ITEM] {e}");
+        }
+    }
+
+    public static async Task<UserItem[]> GetUserItems(Client client, int userId)
+    {
+        try
+        {
+            using HttpRequestMessage request =
+                new HttpRequestMessage(HttpMethod.Get, $"{InventoryUrl}/{userId}");
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using HttpResponseMessage response =
+                await httpClient.SendAsync(request);
+
+            string json = await response.Content.ReadAsStringAsync();
+
+            Debug.Log($"[USER ITEMS RAW] {json}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogWarning($"[API] Get user items failed {(int)response.StatusCode}");
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                Debug.LogWarning("[API] User items empty");
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<UserItem[]>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API USER ITEMS] {e}");
+            return null;
+        }
+    }
+
+    public static async Task<CharacterStats> FindCharacterStatById(Client client, int unitId)
+    {
+        try
+        {
+            string url = string.Format(SearchCharacterStatUrl, unitId);
+            using HttpRequestMessage request = new(HttpMethod.Get, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            return JsonConvert.DeserializeObject<CharacterStats>(responseJson);
+        }
+        catch (Exception)
+        {
+
+        }
+        return null;
+    }
 }

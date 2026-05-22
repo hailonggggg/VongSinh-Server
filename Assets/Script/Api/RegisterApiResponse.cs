@@ -2,10 +2,10 @@ using System;
 
 public class RegisterApiResponse
 {
-    public string token;
-    public string email;
-    public string role;
-    public string avatarUrl;
-    public bool Success = true;
-    public string Message;
+    public int Id;
+    public string Token;
+    public string Email;
+    public string UserName;
+    public string Role;
+    public string AvatarUrl;
 }

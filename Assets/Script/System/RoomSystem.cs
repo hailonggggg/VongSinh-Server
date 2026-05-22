@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class RoomSystem : BaseSystem
 {
-    private static readonly Dictionary<int, Room> rooms = new Dictionary<int, Room>();
+    private static readonly Dictionary<int, Room> rooms = new();
     private static int nextRoomId = 1;
 
     public static bool TryGetRoomById(int roomId, out Room room)
@@ -41,7 +41,7 @@ public class RoomSystem : BaseSystem
                 JoinRoom(client, JsonUtility.FromJson<JoinRoomRequest>(payload));
                 break;
             case Command.PlayerReady:
-                SetPlayerReadyStatus(client, JsonUtility.FromJson<PlayerReadyRequest>(payload));
+                SetPlayerReadyStatus(client);
                 break;
             case Command.MapIndexSelected:
                 HandleMapIndexSelected(client, payload);
@@ -100,8 +100,10 @@ public class RoomSystem : BaseSystem
         int roomId = nextRoomId++;
         var hostPlayer = new RoomPlayer
         {
+            PlayerId = client.PlayerRef.PlayerId,
             Name = client.User.LastName,
             IsHost = true,
+            AvatarUrl = client.User.AvatarUrl,
             Client = client,
         };
 
@@ -132,17 +134,22 @@ public class RoomSystem : BaseSystem
 
         var roomPlayer = new RoomPlayer
         {
+            PlayerId = client.PlayerRef.PlayerId,
             Name = client.User.LastName,
             IsHost = false,
             IsReady = false,
+            AvatarUrl = client.User.AvatarUrl,
             Client = client
         };
 
         room.Players.Add(roomPlayer);
         client.CurrentRoomId = room.RoomId;
+        client.PendingPacket.Enqueue(() =>
+        {
+            ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
+        });
         Debug.Log($"[ROOM] Client {client.User.LastName} joined room {joinRequest.RoomName}");
         ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
-        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.UpdateRoomInfo(new RoomInfo
         {
             Name = room.Name,
@@ -160,7 +167,7 @@ public class RoomSystem : BaseSystem
     {
         if (!TryGetRoomByName(roomName, out Room room))
         {
-            Debug.Log("[ROOM] Room not found.");
+            // Debug.Log("[ROOM] Room not found.");
             return;
         }
 
@@ -175,7 +182,7 @@ public class RoomSystem : BaseSystem
         }
 
         rooms.Remove(room.RoomId);
-        Debug.Log($"[ROOM] Room {roomName} removed by player {client.User.LastName}");
+        // Debug.Log($"[ROOM] Room {roomName} removed by player {client.User.LastName}");
         ServerNetwork.Instance.SendToClients(Service.LoadLobbyScene(), clients);
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
@@ -225,21 +232,21 @@ public class RoomSystem : BaseSystem
         return true;
     }
 
-    public void SetPlayerReadyStatus(Client client, PlayerReadyRequest request)
+    public void SetPlayerReadyStatus(Client client)
     {
         if (!TryGetRoomById(client.CurrentRoomId, out Room room))
         {
             return;
         }
 
-        RoomPlayer roomPlayer = room.Players.FirstOrDefault(p => p.Name == request.PlayerName);
-        if (roomPlayer == null)
+        RoomPlayer me = room.Players.FirstOrDefault(p => p.Client == client);
+        if (me == null)
         {
             Debug.Log("RoomPlayer not found!");
             return;
         }
 
-        roomPlayer.IsReady = !roomPlayer.IsReady;
+        me.IsReady = !me.IsReady;
         if (room.Players.All(x => x.IsReady))
         {
             BattleSystem.CreateBattle(client, room.Name);

@@ -1,5 +1,6 @@
 using Fusion;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -19,23 +20,25 @@ public class Battle
 
     public int BattleId { get; }
     public int RoomId { get; }
+    public float disconnectCountDown;
     public float CurrentCountDown => currentCountDown;
-    public int CurrentTurnCount = 1;
+    public int CurrentTurnCount;
     public BattleState State { get; private set; }
     public Client[] PlayerClients => playerClients;
     public BattleConfig Config => config;
     public Map CurrentMap => currentMap;
     public Dictionary<int, BattlePlayer> PlayersById => playersById;
+    public event Action<int> OnBattleEnded;
 
     private readonly Dictionary<int, BattlePlayer> playersById;
     private readonly Client[] playerClients;
     private readonly BattleConfig config = new();
-    private readonly HashSet<int> allowedCharacterSelectableIds;
 
     private int playerTurnIndex = 0;
     private int lastBroadcastCountDownSecond = -1;
     private bool isSendDeploymentInfo;
     private float currentCountDown = 0f;
+    private bool isEnd;
     private Map currentMap;
     private BattlePlayer currentTurnPlayer;
 
@@ -46,11 +49,12 @@ public class Battle
         State = BattleState.WaitingForSceneLoad;
         playersById = players.ToDictionary(player => player.Client.PlayerRef.PlayerId);
         playerClients = players.Select(player => player.Client).ToArray();
-        allowedCharacterSelectableIds = new HashSet<int>(config.AllowCharacterSelectables);
     }
 
     public void Tick(float deltaTime)
     {
+        if (isEnd) return;
+
         if (State == BattleState.BanPick)
         {
             UpdateBanPickState(deltaTime);
@@ -79,7 +83,7 @@ public class Battle
 
         if (playersById.Values.All(x => x.IsSceneLoaded))
         {
-            State = BattleState.BanPick;
+            StartBanPickPhase();
         }
 
         return true;
@@ -87,37 +91,52 @@ public class Battle
 
     #region BanPick State
 
+    private void StartBanPickPhase()
+    {
+        State = BattleState.BanPick;
+        ResetTurnState();
+        CurrentTurnCount = 1;
+    }
+
     public bool IsReadyToStart()
     {
         return State == BattleState.BanPick;
     }
 
-    public bool HandleUnitDeploySelected(PlayerRef playerRef, int unitDeployId)
+    public bool HandleUnitIdPicked(Client client, int unitDeployId)
     {
-        BattlePlayer player = GetPlayer(playerRef);
-        if (player == null || State != BattleState.BanPick)
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        BattlePlayer opponent = GetOpponent(client.PlayerRef);
+        if (player == null || State != BattleState.BanPick || opponent == null)
         {
             return false;
         }
 
-        if (currentTurnPlayer == null || !currentTurnPlayer.Client.PlayerRef.Equals(playerRef))
+        if (currentTurnPlayer == null || !player.IsMyTurn(currentTurnPlayer.Client.PlayerRef))
         {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Lượt này không phải của bạn!"));
             return false;
         }
 
-        if (!allowedCharacterSelectableIds.Contains(unitDeployId))
+        if (!player.OwnerUnlockedUnitId.Contains(unitDeployId))
         {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Bạn chưa mở khóa nhân vật này!"));
             return false;
         }
 
-        if (!player.ApplyUnitDeploy(unitDeployId))
+        if (opponent.BannedUnitIds.Contains(unitDeployId))
         {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Nhân vật này đã bị đối phương cấm!"));
             return false;
         }
 
-        ServerNetwork.Instance.SendToClients(Service.SendBattlePlayerInfo(player), playerClients);
-
-        if (playersById.Values.All(x => x.HasReachedDeployLimit(config.AllowCharacterSelectables.Length)))
+        if (!player.ApplyUnitIdPicked(unitDeployId))
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Đã thêm nhân vật này!"));
+            return false;
+        }
+        ServerNetwork.Instance.SendToClients(Service.SendPlayerBanPickInfo(player), playerClients);
+        if (playersById.Values.All(x => x.HasReachedDeployLimit(config.MaxUnitsPerPlayer)))
         {
             LoadGameData();
             return true;
@@ -125,6 +144,19 @@ public class Battle
 
         ProcessPlayersTurn();
         return true;
+    }
+
+    public void ForcePickUnit(BattlePlayer player, int unitId)
+    {
+        player.ApplyUnitIdPicked(unitId);
+        ServerNetwork.Instance.SendToClients(Service.SendPlayerBanPickInfo(player), playerClients);
+        if (playersById.Values.All(x => x.HasReachedDeployLimit(config.MaxUnitsPerPlayer)))
+        {
+            LoadGameData();
+            return;
+        }
+
+        ProcessPlayersTurn();
     }
 
     private void LoadGameData()
@@ -148,30 +180,31 @@ public class Battle
             }), playerClients);
     }
 
-    public void HandleBanPickSelected(PlayerRef playerRef, int unitBanId)
+    public void HandleUnitIdBanned(Client client, int unitBanId)
     {
-        BattlePlayer player = GetPlayer(playerRef);
-        if (player == null || State != BattleState.BanPick)
+        BattlePlayer me = GetPlayer(client.PlayerRef);
+        if (me == null || State != BattleState.BanPick)
         {
             return;
         }
 
-        if (currentTurnPlayer == null || !currentTurnPlayer.Client.PlayerRef.Equals(playerRef))
+        if (currentTurnPlayer == null || !me.IsMyTurn(currentTurnPlayer.Client.PlayerRef))
         {
             return;
         }
 
-        if (!allowedCharacterSelectableIds.Contains(unitBanId))
+        BattlePlayer opponent = GetOpponent(client.PlayerRef);
+
+        if (!opponent.OwnerUnlockedUnitId.Contains(unitBanId))
         {
             return;
         }
 
-        if (!player.ApplyUnitBan(unitBanId))
+        if (!opponent.ApplyUnitIdBanned(unitBanId))
         {
             return;
         }
-
-        player.IsBannedOtherUnit = true;
+        ServerNetwork.Instance.SendToClients(Service.SendPlayerBanPickInfo(opponent), playerClients);
         ProcessPlayersTurn();
     }
 
@@ -183,11 +216,17 @@ public class Battle
         }
         if (State == BattleState.BanPick)
         {
-            if (playersById.Values.All(p => p.DeployedUnitIds.Count >= CurrentTurnCount))
+            if (currentTurnPlayer.PickedUnitIds.Count(x => x != -1) < config.MinUnitsPerPlayer)
+            {
+                State = BattleState.Finished;
+                BattleEnd(GetOpponent(currentTurnPlayer.Client.PlayerRef), false, LoseReason.OpponentNotHaveAnyPickedUnit);
+                return;
+            }
+            if (playersById.Values.All(p => p.PickedUnitIds.Count >= CurrentTurnCount) &&
+               (!config.HasBanPhase || playersById.Values.All(p => p.BannedUnitIds.Count >= CurrentTurnCount * 2)))
             {
                 CurrentTurnCount++;
             }
-            currentTurnPlayer.ResetState();
         }
         else if (State == BattleState.Combat)
         {
@@ -197,39 +236,74 @@ public class Battle
         ProcessPlayersTurn();
     }
 
+    private void BattleEnd(BattlePlayer winner, bool rewardOrUpRank, LoseReason loseReason)
+    {
+        isEnd = true;
+        if (rewardOrUpRank)
+        {
+            //use api to update rank here
+        }
+
+        RoomSystem.TryGetRoomById(RoomId, out Room room);
+        foreach (var player in room.Players)
+        {
+            if (player == null) continue;
+            player.Reset();
+            player.Client.PendingPacket.Enqueue(() =>
+            {
+                ServerNetwork.Instance.SendToClient(player.Client, Service.UpdateRoom(room));
+                if (player.PlayerId == winner.Client.PlayerRef.PlayerId)
+                {
+                    string msg = loseReason switch
+                    {
+                        LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
+                        LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
+                        LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
+                        _ => ""
+                    };
+                    ServerNetwork.Instance.SendToClient(player.Client, Service.ShowNotification(msg));
+                }
+            });
+            ServerNetwork.Instance.SendToClient(player.Client, Service.LoadRoomScene());
+        }
+        Debug.LogWarning(loseReason.ToString());
+        OnBattleEnded?.Invoke(BattleId);
+    }
+
     public void BroadcastBanPickInfo()
     {
         bool shouldStartTurn = currentTurnPlayer == null;
         if (shouldStartTurn)
         {
-            playerTurnIndex = Random.Range(0, playersById.Values.Count);
+            playerTurnIndex = UnityEngine.Random.Range(0, playersById.Values.Count);
         }
 
         RoomSystem.TryGetRoomById(RoomId, out Room room);
         currentMap = Master.Instance.LoadMap(room.MapIndexSelected);
 
-        BattlePlayerInfo[] playerInfos = playersById.Values.Select(player => new BattlePlayerInfo
+        PlayerBanPickInfo[] playerInfos = playersById.Values.Select(player => new PlayerBanPickInfo
         {
             Name = player.Name,
-            DeployedUnitIds = player.DeployedUnitIds.ToList(),
+            PickedUnitIds = player.PickedUnitIds.ToList(),
             BannedUnitIds = player.BannedUnitIds.ToList()
-        }).ToArray();
+        })
+        .ToArray();
 
         foreach (BattlePlayer battlePlayer in playersById.Values)
         {
-            Client battleClient = battlePlayer.Client;
-            if (battleClient == null)
+            Client client = battlePlayer.Client;
+            if (client == null)
             {
                 continue;
             }
-
-            ServerNetwork.Instance.SendToClient(battleClient, Service.SendBanPickStartInfo(new BattleBanPickInfo
+            int[] allowUnitIds = battlePlayer.OwnerUnlockedUnitId.Select(id => config.ListUnitIdHasData.Contains(id) ? id : -1).ToArray();
+            ServerNetwork.Instance.SendToClient(client, Service.SendBanPickStartInfo(new BattleBanPickInfo
             {
                 LeftSidePlayerId = battlePlayer.IsLeftSide ? battlePlayer.Client.PlayerRef.PlayerId : -1,
                 HasBanPhase = config.HasBanPhase,
                 MapIndexSelected = room.MapIndexSelected,
-                MaxUnitsPerPlayer = config.MaxUnitsPerPlayer,
-                AllowCharacterSelectables = config.AllowCharacterSelectables,
+                MaxUnitsPerPlayer = Mathf.Min(battlePlayer.OwnerUnlockedUnitId.Count, config.MaxUnitsPerPlayer),
+                AllowCharacterSelectables = allowUnitIds,
                 Players = playerInfos
             }));
         }
@@ -248,8 +322,11 @@ public class Battle
         {
             return;
         }
-
-        HandlePlayerTurnDone();
+        if (currentTurnPlayer.PickedUnitIds.Count < CurrentTurnCount)
+        {
+            ForcePickUnit(currentTurnPlayer, -1);
+        }
+        // HandlePlayerTurnDone();
     }
 
     private void ProcessPlayersTurn()
@@ -308,6 +385,7 @@ public class Battle
         {
             return;
         }
+        ResetTurnState();
         isSendDeploymentInfo = true;
         currentCountDown = config.DeploymentTime;
         State = BattleState.Deployment;
@@ -321,7 +399,7 @@ public class Battle
 
             ServerNetwork.Instance.SendToClient(battlePlayer.Client, Service.LoadDeploymentPhase(new DeploymentPhaseInfo
             {
-                DeployedUnitIds = battlePlayer.DeployedUnitIds.ToList(),
+                DeployedUnitIds = battlePlayer.PickedUnitIds.ToList(),
                 tiles = currentMap.TileDatas,
                 SpawnTiles = battlePlayer.IsLeftSide ? currentMap.LeftTiles : currentMap.rightTiles
             }));
@@ -359,6 +437,11 @@ public class Battle
         return player;
     }
 
+    private BattlePlayer GetOpponent(PlayerRef playerRef)
+    {
+        return playersById.Values.FirstOrDefault(pl => pl.Client.PlayerRef != playerRef);
+    }
+
     #endregion
 
 
@@ -392,6 +475,12 @@ public class Battle
             return false;
         }
 
+        if (player.UnitCombats.Count == 0)
+        {
+            BattleEnd(GetOpponent(client.PlayerRef), false, LoseReason.OpponentNotDeployAnyUnit);
+            return false;
+        }
+
         if (playersById.Values.All(x => x.DoneSetupDeployment))
         {
             return true;
@@ -414,6 +503,7 @@ public class Battle
     {
         playerTurnIndex = 0;
         currentCountDown = 0;
+        CurrentTurnCount = 0;
         currentTurnPlayer = null;
     }
 
@@ -485,11 +575,28 @@ public class Battle
             unit.ApplyPendingDamage();
         }
         currentTurnPlayer.ListUnitHavePendingDamage.Clear();
+
+        CheckTeamElimination();
+
         if (currentTurnPlayer.ApSystem.IsEmpty)
         {
             HandleActionComplete(client);
         }
     }
+
+    private void CheckTeamElimination()
+    {
+        foreach (var player in playersById.Values)
+        {
+            if (player.IsTeamEliminated)
+            {
+                BattlePlayer opponent = GetOpponent(player.Client.PlayerRef);
+                BattleEnd(opponent, true, LoseReason.OpponentEliminated);
+                return;
+            }
+        }
+    }
+
 
     public BattleContext CreateBattleContext(BattlePlayer player, Unit unit)
     {
@@ -533,6 +640,11 @@ public class Battle
             return;
         }
         HandlePlayerTurnDone();
+    }
+
+    public void HandleLeaveBattle(Client client)
+    {
+        BattleEnd(GetOpponent(client.PlayerRef), false, LoseReason.OpponentDisconnected);
     }
 
 
@@ -584,4 +696,12 @@ public class SkillHandler
 
         return delta.y > 0 ? Vector3Int.up : Vector3Int.down;
     }
+}
+
+public enum LoseReason
+{
+    OpponentNotHaveAnyPickedUnit,
+    OpponentDisconnected,
+    OpponentEliminated,
+    OpponentNotDeployAnyUnit
 }

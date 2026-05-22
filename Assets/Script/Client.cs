@@ -9,8 +9,9 @@ using UnityEngine;
 public class Client : IEquatable<Client>
 {
     public UserApiUserData User;
-
     public PlayerRef PlayerRef;
+    public List<UserItem> UserItems;
+    public HashSet<int> OwnedCharacterIds = new();
 
     public int CurrentRoomId = -1;
 
@@ -29,14 +30,4 @@ public class Client : IEquatable<Client>
     {
         return PlayerRef == other.PlayerRef;
     }
-
-
-    // public static bool operator ==(Client left, Client right)
-    // {
-    //     return left.Equals(right);
-    // }
-    // public static bool operator !=(Client left, Client right)
-    // {
-    //     return !left.Equals(right);
-    // }
 }

@@ -169,7 +169,7 @@ namespace Assets.Script.System
                 return;
             }
 
-            battle.HandleBanPickSelected(client.PlayerRef, unitBanId);
+            battle.HandleUnitIdBanned(client, unitBanId);
         }
 
         private void HandleUnitDeploySelected(Client client, string payload)
@@ -180,7 +180,7 @@ namespace Assets.Script.System
             }
 
             UnitDeployInfo unitDeployInfo = JsonUtility.FromJson<UnitDeployInfo>(payload);
-            if (!battle.HandleUnitDeploySelected(client.PlayerRef, unitDeployInfo.UnitId))
+            if (!battle.HandleUnitIdPicked(client, unitDeployInfo.UnitId))
             {
                 ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Khong the trien khai don vi nay. Hay chac chan rang ban da chon dung don vi va chua vuot qua gioi han trien khai."));
             }
@@ -213,6 +213,14 @@ namespace Assets.Script.System
                 return;
             }
 
+            if (CheckAllPlayerIfAnyNotHaveUnlockedUnit(room))
+            {
+                ServerNetwork.Instance.SendToClient(
+                    host,
+                    Service.ShowNotification("Không thể bắt đầu trận đấu. Hãy chắc chắn rằng tất cả người chơi đã mở khóa ít nhất 1 đơn vị."));
+                return;
+            }
+
             if (!string.IsNullOrEmpty(roomName) && room.Name != roomName)
             {
                 return;
@@ -232,7 +240,9 @@ namespace Assets.Script.System
             List<BattlePlayer> battlePlayers = room.Players
                 .Select((player, index) => new BattlePlayer(player.Client, player.Name, index == 0))
                 .ToList();
+
             Battle battle = new(battleId, room.RoomId, battlePlayers);
+            battle.OnBattleEnded += RemoveBattle;
 
             if (!battles.TryAdd(battleId, battle))
             {
@@ -250,10 +260,32 @@ namespace Assets.Script.System
             }
         }
 
+        private static bool CheckAllPlayerIfAnyNotHaveUnlockedUnit(Room room)
+        {
+            foreach (RoomPlayer player in room.Players)
+            {
+                if (player.Client.OwnedCharacterIds == null || player.Client.OwnedCharacterIds.Count == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool TryGetBattle(Client client, out Battle battle)
         {
             battle = null;
             return client != null && client.CurrentBattleId > 0 && battles.TryGetValue(client.CurrentBattleId, out battle);
+        }
+
+        public static bool TryGetBattleById(int battleId, out Battle battle)
+        {
+            return battles.TryGetValue(battleId, out battle);
+        }
+
+        private static void RemoveBattle(int battleId)
+        {
+            battles.TryRemove(battleId, out _);
         }
     }
 }

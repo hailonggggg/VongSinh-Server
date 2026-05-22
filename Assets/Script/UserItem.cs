@@ -7,4 +7,5 @@ public class UserItem
     public int itemId;
     public int quantity;
     public int shopOrderId;
+    public int purchaseOrderId;
 }

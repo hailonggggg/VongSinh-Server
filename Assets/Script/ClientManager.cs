@@ -12,7 +12,7 @@ public class ClientManager
     {
         if (clients.TryAdd(client.PlayerRef, client))
         {
-            Debug.Log($"[CLIENT MANAGER] Client {client.PlayerRef.PlayerId} added.");
+            // Debug.Log($"[CLIENT MANAGER] Client {client.PlayerRef.PlayerId} added.");
         }
     }
 
@@ -21,7 +21,7 @@ public class ClientManager
         if (clients.TryGetValue(player, out Client client) && client != null)
         {
             clients.Remove(player);
-            Debug.Log($"[CLIENT MANAGER] Client {client.PlayerRef.PlayerId} removed.");
+            // Debug.Log($"[CLIENT MANAGER] Client {client.PlayerRef.PlayerId} removed.");
         }
     }
 

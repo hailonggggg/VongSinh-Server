@@ -24,7 +24,7 @@ public static class Service
             }).ToList()
         };
         string roomListJson = JsonUtility.ToJson(roomList);
-        Debug.Log($"[ROOM] Broadcasting Room List: {roomListJson}");
+        // Debug.Log($"[ROOM] Broadcasting Room List: {roomListJson}");
         byte[] payload = System.Text.Encoding.UTF8.GetBytes(roomListJson);
         return ReliableMessage.Build(Command.RoomListResponse, payload);
     }
@@ -149,12 +149,12 @@ public static class Service
         });
     }
 
-    public static byte[] SendBattlePlayerInfo(BattlePlayer player)
+    public static byte[] SendPlayerBanPickInfo(BattlePlayer player)
     {
-        return ReliableMessage.Build(Command.BattlePlayerInfo, new BattlePlayerInfo
+        return ReliableMessage.Build(Command.PlayerBanPickInfo, new PlayerBanPickInfo
         {
             Name = player.Name,
-            DeployedUnitIds = player.DeployedUnitIds.ToList(),
+            PickedUnitIds = player.PickedUnitIds.ToList(),
             BannedUnitIds = player.BannedUnitIds.ToList()
         });
     }

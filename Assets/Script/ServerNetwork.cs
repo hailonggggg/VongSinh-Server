@@ -66,6 +66,7 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        Debug.Log($"{player.PlayerId} disconnected");
         Master.Instance.ClearClientResource(ClientManager.TryGetClient(player));
         ClientManager.RemoveClient(player);
     }
@@ -94,7 +95,8 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-
+        Master.Instance.ClearClientResource(ClientManager.TryGetClient(runner.LocalPlayer));
+        ClientManager.RemoveClient(runner.LocalPlayer);
     }
     public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
     {
@@ -168,14 +170,13 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
             SendToClient(clients[i], bytes);
         }
     }
-    
+
 
     public async Task<NetworkRunner> CreateNetworkRunner()
     {
         GameObject obj = new("NetworkRunner");
         NetworkRunner networkRunner = obj.AddComponent<NetworkRunner>();
         networkRunner.AddCallbacks(this);
-
         await networkRunner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Server,

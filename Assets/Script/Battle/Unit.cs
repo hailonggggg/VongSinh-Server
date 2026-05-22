@@ -262,6 +262,12 @@ public class Unit
             Service.UnitInfoResult(owner.Client.PlayerRef.PlayerId, Id, SkillPoint, CurrentHealth), battle.PlayerClients);
         return true;
     }
+
+    public void SetCharacterStats(CharacterStats characterStats)
+    {
+        MaxHealth = characterStats.MaxHealth;
+        MoveRange = characterStats.MoveRange;
+    }
 }
 
 public enum SkillLoadoutType

@@ -34,7 +34,7 @@ public enum Command : byte
     RequestOrderStatus,
     UnitDeploySelected,
     BanPickSelected,
-    BattlePlayerInfo,
+    PlayerBanPickInfo,
     PlayerTurnToDeploy,
     TimeCountDown,
     MapIndexSelected,

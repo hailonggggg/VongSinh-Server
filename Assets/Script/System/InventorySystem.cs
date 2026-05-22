@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fusion;
 using UnityEngine;
@@ -46,6 +47,7 @@ public class InventorySystem : BaseSystem
                 );
                 return;
             }
+            client.UserItems = items.ToList();
 
             List<Task<ItemDetail>> detailTasks = new List<Task<ItemDetail>>();
             foreach (var item in items)

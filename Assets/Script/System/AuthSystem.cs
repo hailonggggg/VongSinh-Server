@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fusion;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,11 +16,11 @@ public class AuthSystem : BaseSystem
         switch (messageType)
         {
             case Command.RequestLogin:
-                LoginRequest request = JsonUtility.FromJson<LoginRequest>(payload);
+                LoginRequest request = JsonConvert.DeserializeObject<LoginRequest>(payload);
                 _ = Login(client, request);
                 break;
             case Command.RegisterRequest:
-                RegisterRequest registerRequest = JsonUtility.FromJson<RegisterRequest>(payload);
+                RegisterRequest registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(payload);
                 _ = Register(client, registerRequest);
                 break;
             case Command.LoginWithFakeAccount:
@@ -57,19 +59,24 @@ public class AuthSystem : BaseSystem
                 ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, "Định dạng email không hợp lệ"));
                 return;
             }
-            RegisterApiResponse registerApiResponse = await ApiService.Register(registerRequest);
+            (bool, string, RegisterApiResponse) result = await ApiService.Register(registerRequest);
+            bool success = result.Item1;
+            string message = result.Item2;
+            RegisterApiResponse registerApiResponse = result.Item3;
             if (registerApiResponse == null)
             {
                 Debug.LogWarning("RegisterApiResponse is null");
                 ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, "Tạo tài khoản thất bại"));
                 return;
             }
-            if (!registerApiResponse.Success)
+            if (!success)
             {
-                ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, registerApiResponse.Message));
+                ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(false, message));
                 return;
             }
-            ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(true, "Tạo tài khoản thành công, vui lòng đăng nhập để chơi"));
+            client.Token = registerApiResponse.Token;
+            await UserGift(client, registerApiResponse.Id);
+            ServerNetwork.Instance.SendToClient(client, Service.SendRegisterResponse(true, "Tạo tài khoản thành công, vui lòng xác nhận email trước khi đăng nhập"));
         }
         catch (Exception e)
         {
@@ -121,6 +128,7 @@ public class AuthSystem : BaseSystem
             client.User = userApiResponse;
 
             AnnouncementResponse[] announcements = await ApiService.GetAllAnnouncement(client);
+            UserItem[] userItems = await ApiService.GetInventory(client);
 
             if (announcements == null)
             {
@@ -131,9 +139,19 @@ public class AuthSystem : BaseSystem
                 Debug.Log($"[SERVER] Got {announcements.Length} announcements");
             }
 
+            if (userItems != null)
+            {
+                client.UserItems = userItems.ToList();
+                client.OwnedCharacterIds = userItems
+                    .Where(x => x.itemId == (int)ItemType.BinhTan)
+                    .OrderBy(x => x.itemId)
+                    .Select(x => x.itemId)
+                    .ToHashSet();
+            }
+
             ServerNetwork.Instance.SendToClient(
                 client,
-                Service.SendLoginResponse(userApiResponse.LastName, userApiResponse.AvatarUrl),
+                Service.SendLoginResponse($"{userApiResponse.FirstName} {userApiResponse.LastName}", userApiResponse.AvatarUrl),
                 Service.SendAnnouncementResponse(announcements),
                 Service.LoadLobbyScene());
         }
@@ -143,4 +161,17 @@ public class AuthSystem : BaseSystem
             ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Đăng nhập thất bại."));
         }
     }
+
+    private async Task UserGift(Client client, int userId)
+    {
+        await ApiService.AddUserItem(client, userId, (int)ItemType.BinhTan, 1);
+    }
+}
+public enum ItemType
+{
+    None,
+    BinhTan,
+    HuuNghia,
+    BinhTanSkin,
+    PhaLe
 }
