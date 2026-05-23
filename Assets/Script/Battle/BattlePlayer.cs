@@ -246,7 +246,7 @@ public class BattlePlayer
         ServerNetwork.Instance.SendToClients(Service.UnitMove(Client.PlayerRef.PlayerId, unit.Id, paths), battle.PlayerClients);
     }
 
-    public async Task SetUnitPlaced(Battle battle, PlaceUnit placeUnit)
+    public void SetUnitPlaced(Battle battle, PlaceUnit placeUnit)
     {
         if (!pickedUnitIds.Contains(placeUnit.UnitId))
         {
@@ -261,12 +261,7 @@ public class BattlePlayer
                 ServerNetwork.Instance.SendToClient(Client, Service.ShowNotification($"Đơn vị {placeUnit.UnitId} không tồn tại"));
                 return;
             }
-            CharacterStats characterStats = await ApiService.FindCharacterStatById(Client, placeUnit.UnitId);
             unit = character.Clone();
-            if (characterStats != null)
-            {
-                unit.SetCharacterStats(characterStats);
-            }
             unit.CurrentGridPosition = placeUnit.PlacedPosition;
             unit.SetOwner(this, battle);
             unitsByCharId[placeUnit.UnitId] = unit;

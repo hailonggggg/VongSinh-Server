@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 
 public static class ApiService
@@ -24,6 +25,8 @@ public static class ApiService
     private const string ItemUrl = "https://be-adminmanagementsystem.onrender.com/api/Item/{0}";
     private const string GiftUrl = "https://be-adminmanagementsystem.onrender.com/api/Gift";
     private const string SearchCharacterStatUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/stats?Search={0}";
+    private const string SearchCharacterSkillUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
+    private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
 
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
@@ -668,5 +671,55 @@ public static class ApiService
 
         }
         return null;
+    }
+
+    public static async Task<Dictionary<int, CharacterStats>> FetchAllCharacterStats()
+    {
+        try
+        {
+            string url = string.Format(SearchCharacterStatUrl, "");
+            using HttpRequestMessage request = new(HttpMethod.Get, url);
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            List<CharacterStats> list = JsonConvert.DeserializeObject<List<CharacterStats>>(responseJson);
+            return list.ToDictionary(x => x.CharacterId);
+        }
+        catch (Exception)
+        {
+
+        }
+        return new Dictionary<int, CharacterStats>();
+    }
+
+    public static async Task<Dictionary<int, CharacterSkill>> FetchAllCharacterSkill()
+    {
+        try
+        {
+            string url = string.Format(SearchCharacterSkillUrl, "");
+            using HttpRequestMessage request = new(HttpMethod.Get, url);
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            List<CharacterSkill> list = JsonConvert.DeserializeObject<List<CharacterSkill>>(responseJson);
+            return list.ToDictionary(x => x.CharacterSkillId);
+        }
+        catch (Exception)
+        {
+
+        }
+        return new Dictionary<int, CharacterSkill>();
     }
 }

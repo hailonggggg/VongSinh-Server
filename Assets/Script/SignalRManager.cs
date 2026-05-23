@@ -19,6 +19,7 @@ public class SignalRManager : MonoBehaviour
     {
         connection = new HubConnectionBuilder()
             .WithUrl("https://be-adminmanagementsystem.onrender.com/annoucementHub")
+            .WithUrl("https://be-adminmanagementsystem.onrender.com/annoucementHub")
             .WithAutomaticReconnect()
             .Build();
 
