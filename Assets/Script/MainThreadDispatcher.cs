@@ -22,6 +22,7 @@ public class MainThreadDispatcher : MonoBehaviour
         {
             while (queue.Count > 0)
             {
+                Debug.Log($"[DISPATCHER] Executing queued action, remaining={queue.Count}");
                 queue.Dequeue().Invoke();
             }
         }

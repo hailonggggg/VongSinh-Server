@@ -136,6 +136,7 @@
     <Compile Include="Assets\Script\Battle\SkillTileData.cs" />
     <Compile Include="Assets\Script\Enums\UnitAnimationState.cs" />
     <Compile Include="Assets\Script\JsonDatas\TileDataJsonData.cs" />
+    <Compile Include="Assets\Script\Api\CharacterPassive.cs" />
     <Compile Include="Assets\Script\Battle\BattlePlayer.cs" />
     <Compile Include="Assets\Script\System\CharacterSystem.cs" />
     <Compile Include="Assets\Script\Battle\SkillPattern.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Assets\Script\Shared\BattleEnums.cs" />
     <Compile Include="Assets\Script\JsonDatas\CharacterDataJsonData.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveConditionJsonData.cs" />
+    <Compile Include="Assets\Script\Api\CharacterSkill.cs" />
     <Compile Include="Assets\Script\Api\OrderResponse.cs" />
     <Compile Include="Assets\Script\Api\AnnouncementResponse.cs" />
     <Compile Include="Assets\Script\NetworkEvent\RegisterResponse.cs" />

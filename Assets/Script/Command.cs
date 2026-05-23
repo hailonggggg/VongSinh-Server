@@ -68,4 +68,6 @@ public enum Command : byte
     YuanPressureUpdate,
     EndTurn,
     RealTimeAnnouncement,
+    RealTimeAnnouncementUpdated,
+    RealTimeAnnouncementDeleted,
 }

@@ -103,10 +103,25 @@ public static class Service
         return ReliableMessage.Build(Command.AnnouncementResponse, json);
     }
 
-    public static byte[] SendRealTimeAnnouncement(AnnouncementResponse announcement)
+    public static byte[] SendRealTimeAnnouncementCreated(AnnouncementResponse announcement)
     {
         string json = JsonConvert.SerializeObject(announcement);
+        Debug.Log($"[SERVICE] SendRealTimeAnnouncementCreated json={json}");
         return ReliableMessage.Build(Command.RealTimeAnnouncement, json);
+    }
+
+    public static byte[] SendRealTimeAnnouncementUpdated(AnnouncementResponse announcement)
+    {
+        string json = JsonConvert.SerializeObject(announcement);
+        Debug.Log($"[SERVICE] SendRealTimeAnnouncementUpdated json={json}");
+        return ReliableMessage.Build(Command.RealTimeAnnouncementUpdated, json);
+    }
+
+    public static byte[] SendRealTimeAnnouncementDeleted(int announcementId)
+    {
+        string json = JsonConvert.SerializeObject(new { announcementId });
+        Debug.Log($"[SERVICE] SendRealTimeAnnouncementDeleted json={json}");
+        return ReliableMessage.Build(Command.RealTimeAnnouncementDeleted, json);
     }
 
     [Serializable]

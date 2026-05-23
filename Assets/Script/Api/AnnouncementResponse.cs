@@ -12,7 +12,6 @@ public class AnnouncementResponse
     public DateTime endDate;
     public int createdBy;
     public DateTime createdAt;
-
-    public int? updatedBy; 
-    public DateTime? updatedAt; 
+    public int? updatedBy;
+    public DateTime? updatedAt;
 }

@@ -16,22 +16,6 @@ public class AnnouncementSystem : BaseSystem
         }
     }
 
-    public void BroadcastAnnouncementToAllClients(AnnouncementResponse announcement)
-    {
-        if (announcement == null)
-        {
-            Debug.LogWarning("[ANNOUNCEMENT] Cannot broadcast null announcement");
-            return;
-        }
-
-        Debug.Log($"[ANNOUNCEMENT] Broadcasting real-time announcement '{announcement.title}' to all clients");
-
-        AnnouncementResponse[] single = new[] { announcement };
-        byte[] packet = Service.SendRealTimeAnnouncement(announcement);
-
-        ServerNetwork.Instance.BroadcastToAllClients(packet);
-    }
-
     private async Task HandleRequestAnnouncement(Client client)
     {
         try
