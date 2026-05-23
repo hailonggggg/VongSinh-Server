@@ -8,7 +8,7 @@ public class SignalRManager : MonoBehaviour
     public static SignalRManager Instance { get; private set; }
     private HubConnection connection;
 
-    async void Awake()
+    void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
@@ -53,7 +53,7 @@ public class SignalRManager : MonoBehaviour
         try
         {
             await connection.StartAsync();
-            await connection.InvokeAsync("JoinAnnouncementGroup", "announcements");
+            // await connection.InvokeAsync("JoinAnnouncementGroup", "announcements");
             Debug.Log("[SIGNALR] Connected and joined announcements group");
         }
         catch (Exception e)
