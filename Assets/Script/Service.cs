@@ -103,6 +103,12 @@ public static class Service
         return ReliableMessage.Build(Command.AnnouncementResponse, json);
     }
 
+    public static byte[] SendRealTimeAnnouncement(AnnouncementResponse announcement)
+    {
+        string json = JsonConvert.SerializeObject(announcement);
+        return ReliableMessage.Build(Command.RealTimeAnnouncement, json);
+    }
+
     [Serializable]
     private class AnnouncementWrapper
     {

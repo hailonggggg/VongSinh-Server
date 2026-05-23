@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class AnnouncementSystem : BaseSystem
 {
+    public static AnnouncementSystem Instance { get; private set; }
     public override void HandlePackage(Client client, Command messageType, string payload)
     {
         switch (messageType)
@@ -15,9 +16,22 @@ public class AnnouncementSystem : BaseSystem
         }
     }
 
-    // =========================
-    // 📡 HANDLE REQUEST
-    // =========================
+    public void BroadcastAnnouncementToAllClients(AnnouncementResponse announcement)
+    {
+        if (announcement == null)
+        {
+            Debug.LogWarning("[ANNOUNCEMENT] Cannot broadcast null announcement");
+            return;
+        }
+
+        Debug.Log($"[ANNOUNCEMENT] Broadcasting real-time announcement '{announcement.title}' to all clients");
+
+        AnnouncementResponse[] single = new[] { announcement };
+        byte[] packet = Service.SendRealTimeAnnouncement(announcement);
+
+        ServerNetwork.Instance.BroadcastToAllClients(packet);
+    }
+
     private async Task HandleRequestAnnouncement(Client client)
     {
         try
