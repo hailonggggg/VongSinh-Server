@@ -328,4 +328,16 @@ public static class Service
             Current = current
         });
     }
+
+    public static byte[] BattleResult(int playerId, bool isWin, int newRankPoint, int currentRank, int upRankPointLimit)
+    {
+        return ReliableMessage.Build(Command.BattleResult, new BattleCombatResult
+        {
+            PlayerId = playerId,
+            IsWin = isWin,
+            NewRankPoint = newRankPoint,
+            CurrentRank = currentRank,
+            RankLimit = upRankPointLimit
+        });
+    }
 }

@@ -17,6 +17,7 @@ public class BattleConfig
     public int MoveActionCost = 1;
     public int[] AllowMapIds = new int[] { 1 };
     public int[] ListUnitIdHasData = new int[] { 1, 2 };
+    public int RankPointLimitToUpRank = 100;
 }
 
 

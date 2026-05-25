@@ -26,7 +26,8 @@ public static class ApiService
     private const string GiftUrl = "https://be-adminmanagementsystem.onrender.com/api/Gift";
     private const string SearchCharacterStatUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/stats?Search={0}";
     private const string SearchCharacterSkillUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
-    private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
+    private const string SearchCharacterAttackUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/attacks?Search={0}";
+    private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/passives?Search={0}";
 
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
@@ -71,6 +72,14 @@ public static class ApiService
                             Message = "Vui lòng xác nhận email"
                         };
                     }
+                }
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new LoginApiResponse
+                    {
+                        Success = false,
+                        Message = "Tài khoản hoặc mật khẩu sai"
+                    };
                 }
                 return null;
             }
@@ -721,5 +730,30 @@ public static class ApiService
 
         }
         return new Dictionary<int, CharacterSkill>();
+    }
+
+    public static async Task<Dictionary<int, CharacterBasicAttack>> FetchAllCharacterBasicAttacks()
+    {
+        try
+        {
+            string url = string.Format(SearchCharacterAttackUrl, "");
+            using HttpRequestMessage request = new(HttpMethod.Get, url);
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            List<CharacterBasicAttack> list = JsonConvert.DeserializeObject<List<CharacterBasicAttack>>(responseJson);
+            return list.ToDictionary(x => x.CharacterAttackId);
+        }
+        catch (Exception)
+        {
+
+        }
+        return new Dictionary<int, CharacterBasicAttack>();
     }
 }

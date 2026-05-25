@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Assets.Script.System;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -31,9 +32,8 @@ public class Master : MonoBehaviour
         Instance = this;
     }
 
-    void Start()
+    async void Start()
     {
-        LoadTacticalSODataFromJson();
         authSystem = new AuthSystem();
         roomSystem = new RoomSystem();
         battleSystem = new BattleSystem();
@@ -42,6 +42,8 @@ public class Master : MonoBehaviour
         orderSystem = new OrderSystem();
         inventorySystem = new InventorySystem();
         characterSystem = new CharacterSystem();
+        await characterSystem.FetchCharacterStatsAndSkill();
+        LoadTacticalSODataFromJson();
     }
 
     void Update()
@@ -88,6 +90,7 @@ public class Master : MonoBehaviour
                 continue;
 
             CharactersById[characterData.Id] = new Unit(characterData);
+            ApplyCharacterStatsFromDatabase(CharactersById[characterData.Id]);
         }
         foreach (var skillData in TacticalSOExportData.BasicAttackSkillJsonDatas)
         {
@@ -96,6 +99,7 @@ public class Master : MonoBehaviour
                 continue;
 
             BasicAttackSkillsById[skillData.Id] = BasicAttackSkill.FromJson(skillData);
+            ApplyBasicAttackStatsFromDatabase(BasicAttackSkillsById[skillData.Id]);
         }
         foreach (var yuanSkillData in TacticalSOExportData.YuanSkillJsonDatas)
         {
@@ -104,6 +108,7 @@ public class Master : MonoBehaviour
                 continue;
 
             YuanSkillsById[yuanSkillData.Id] = YuanSkill.FromJson(yuanSkillData);
+            ApplyYuanSkillStatsFromDatabase(YuanSkillsById[yuanSkillData.Id]);
         }
         foreach (var statusEffectData in TacticalSOExportData.StatusEffects)
         {
@@ -127,6 +132,30 @@ public class Master : MonoBehaviour
             {TacticalSOExportData.Maps.Count} maps, 
             {StatusEffectByIds.Count} statusEffects
             {PassiveByIds.Count} Passives");
+    }
+
+    private void ApplyYuanSkillStatsFromDatabase(YuanSkill yuanSkill)
+    {
+        if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkill.Id, out CharacterSkill characterSkill))
+        {
+            yuanSkill.SetStats(characterSkill);
+        }
+    }
+
+    private void ApplyBasicAttackStatsFromDatabase(BasicAttackSkill basicAttackSkill)
+    {
+        if (CharacterSystem.CharacterBasicAttacks.TryGetValue(basicAttackSkill.Id, out CharacterBasicAttack basicAttackStats))
+        {
+            basicAttackSkill.SetStats(basicAttackStats);
+        }
+    }
+
+    private void ApplyCharacterStatsFromDatabase(Unit unit)
+    {
+        if (CharacterSystem.CharacterStats.TryGetValue(unit.Id, out CharacterStats characterStats))
+        {
+            unit.SetCharacterStats(characterStats);
+        }
     }
 
     public Map LoadMap(int mapIndexSelected)

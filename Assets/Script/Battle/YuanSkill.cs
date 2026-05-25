@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class YuanSkill : Skill
 {
-    private readonly int actionPointCost;
-    private readonly int yuanLiCost;
-    private readonly int skillPointCost;
+    private int actionPointCost;
+    private int yuanLiCost;
+    private int skillPointCost;
     private readonly SkillPattern skillPattern;
     private readonly UnitAnimationState animationTrigger;
 
@@ -55,5 +55,15 @@ public class YuanSkill : Skill
     public override Skill Clone()
     {
         return new YuanSkill(this);
+    }
+
+    public void SetStats(CharacterSkill characterSkill)
+    {
+        SkillName = characterSkill.Name;
+        Description = characterSkill.Description;
+        Damage = characterSkill.Damage;
+        skillPointCost = characterSkill.SP;
+        yuanLiCost = characterSkill.YuanPressure;
+        CritRate = characterSkill.CritRate;
     }
 }

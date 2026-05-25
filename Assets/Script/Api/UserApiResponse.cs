@@ -21,4 +21,5 @@ public class UserApiUserData
     public string AvatarUrl;
     public DateTime? LastOnline;
     public DateTime? BannedUntil;
+    public int RankPoint;
 }

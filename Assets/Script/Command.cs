@@ -70,4 +70,6 @@ public enum Command : byte
     RealTimeAnnouncement,
     RealTimeAnnouncementUpdated,
     RealTimeAnnouncementDeleted,
+    RankList,
+    BattleResult
 }

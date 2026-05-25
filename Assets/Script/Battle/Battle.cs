@@ -39,16 +39,18 @@ public class Battle
     private bool isSendDeploymentInfo;
     private float currentCountDown = 0f;
     private bool isEnd;
+    private bool isRank;
     private Map currentMap;
     private BattlePlayer currentTurnPlayer;
 
-    public Battle(int battleId, int roomId, IEnumerable<BattlePlayer> players)
+    public Battle(int battleId, int roomId, IEnumerable<BattlePlayer> players, bool isRank = false)
     {
         BattleId = battleId;
         RoomId = roomId;
         State = BattleState.WaitingForSceneLoad;
         playersById = players.ToDictionary(player => player.Client.PlayerRef.PlayerId);
         playerClients = players.Select(player => player.Client).ToArray();
+        this.isRank = isRank;
     }
 
     public void Tick(float deltaTime)
@@ -219,7 +221,7 @@ public class Battle
             if (currentTurnPlayer.PickedUnitIds.Count(x => x != -1) < config.MinUnitsPerPlayer)
             {
                 State = BattleState.Finished;
-                BattleEnd(GetOpponent(currentTurnPlayer.Client.PlayerRef), false, LoseReason.OpponentNotHaveAnyPickedUnit);
+                BattleEnd(GetOpponent(currentTurnPlayer.Client.PlayerRef), LoseReason.OpponentNotHaveAnyPickedUnit);
                 return;
             }
             if (playersById.Values.All(p => p.PickedUnitIds.Count >= CurrentTurnCount) &&
@@ -236,14 +238,17 @@ public class Battle
         ProcessPlayersTurn();
     }
 
-    private void BattleEnd(BattlePlayer winner, bool rewardOrUpRank, LoseReason loseReason)
+    private void BattleEnd(BattlePlayer winner, LoseReason loseReason)
     {
         isEnd = true;
-        if (rewardOrUpRank)
+        int newRankPoint = winner.Client.User.RankPoint;
+        int currentRank = 0;
+        if (isRank)
         {
-            //use api to update rank here
+            RankPointHandler.UpRankPoint(ref newRankPoint, out currentRank, config.RankPointLimitToUpRank);
         }
 
+        bool isWin = false;
         RoomSystem.TryGetRoomById(RoomId, out Room room);
         foreach (var player in room.Players)
         {
@@ -254,6 +259,7 @@ public class Battle
                 ServerNetwork.Instance.SendToClient(player.Client, Service.UpdateRoom(room));
                 if (player.PlayerId == winner.Client.PlayerRef.PlayerId)
                 {
+                    isWin = true;
                     string msg = loseReason switch
                     {
                         LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
@@ -264,9 +270,14 @@ public class Battle
                     ServerNetwork.Instance.SendToClient(player.Client, Service.ShowNotification(msg));
                 }
             });
-            ServerNetwork.Instance.SendToClient(player.Client, Service.LoadRoomScene());
+            ServerNetwork.Instance.SendToClient(player.Client, Service.BattleResult(
+                player.Client.PlayerRef.PlayerId,
+                isWin,
+                newRankPoint,
+                currentRank,
+                config.RankPointLimitToUpRank
+            ));
         }
-        Debug.LogWarning(loseReason.ToString());
         OnBattleEnded?.Invoke(BattleId);
     }
 
@@ -477,7 +488,7 @@ public class Battle
 
         if (player.UnitCombats.Count == 0)
         {
-            BattleEnd(GetOpponent(client.PlayerRef), false, LoseReason.OpponentNotDeployAnyUnit);
+            BattleEnd(GetOpponent(client.PlayerRef), LoseReason.OpponentNotDeployAnyUnit);
             return false;
         }
 
@@ -591,7 +602,7 @@ public class Battle
             if (player.IsTeamEliminated)
             {
                 BattlePlayer opponent = GetOpponent(player.Client.PlayerRef);
-                BattleEnd(opponent, true, LoseReason.OpponentEliminated);
+                BattleEnd(opponent, LoseReason.OpponentEliminated);
                 return;
             }
         }
@@ -644,7 +655,7 @@ public class Battle
 
     public void HandleLeaveBattle(Client client)
     {
-        BattleEnd(GetOpponent(client.PlayerRef), false, LoseReason.OpponentDisconnected);
+        BattleEnd(GetOpponent(client.PlayerRef), LoseReason.OpponentDisconnected);
     }
 
 

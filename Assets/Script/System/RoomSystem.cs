@@ -116,10 +116,7 @@ public class RoomSystem : BaseSystem
         };
 
         client.CurrentRoomId = roomId;
-        client.PendingPacket.Enqueue(() =>
-        {
-            ServerNetwork.Instance.SendToClient(client, Service.UpdateRoom(rooms[roomId]));
-        });
+        ServerNetwork.Instance.SendToClient(client, Service.UpdateRoom(rooms[roomId]));
         ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
@@ -144,11 +141,8 @@ public class RoomSystem : BaseSystem
 
         room.Players.Add(roomPlayer);
         client.CurrentRoomId = room.RoomId;
-        client.PendingPacket.Enqueue(() =>
-        {
-            ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
-        });
         Debug.Log($"[ROOM] Client {client.User.LastName} joined room {joinRequest.RoomName}");
+        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
         ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.UpdateRoomInfo(new RoomInfo
         {
@@ -183,7 +177,7 @@ public class RoomSystem : BaseSystem
 
         rooms.Remove(room.RoomId);
         // Debug.Log($"[ROOM] Room {roomName} removed by player {client.User.LastName}");
-        ServerNetwork.Instance.SendToClients(Service.LoadLobbyScene(), clients);
+        // ServerNetwork.Instance.SendToClients(Service.LoadLobbyScene(), clients);
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
 
@@ -214,7 +208,7 @@ public class RoomSystem : BaseSystem
         if (RemoveClientFromRoom(client, room))
         {
             ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
-            ServerNetwork.Instance.SendToClient(client, Service.LoadLobbyScene());
+            // ServerNetwork.Instance.SendToClient(client, Service.LoadLobbyScene());
         }
     }
 

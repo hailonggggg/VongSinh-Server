@@ -63,6 +63,26 @@ public class BasicAttackSkill : Skill
     {
         return new BasicAttackSkill(this);
     }
+
+    public void SetStats(CharacterBasicAttack basicAttackStats)
+    {
+        SkillName = basicAttackStats.Name;
+        Description = basicAttackStats.Description;
+        Damage = basicAttackStats.Damage;
+        CritRate = basicAttackStats.CritRate;
+        if (basicAttackStats.NormalInfo != null && NormalInfo != null)
+        {
+            NormalInfo.ActionPointCost = basicAttackStats.NormalInfo.ActionPointCost;
+            NormalInfo.SkillPointCost = basicAttackStats.NormalInfo.SkillPointCost;
+            NormalInfo.YuanLiCost = basicAttackStats.NormalInfo.YuanLiCost;
+        }
+        if (basicAttackStats.YuanInfo != null && YuanInfo != null)
+        {
+            YuanInfo.ActionPointCost = basicAttackStats.YuanInfo.ActionPointCost;
+            YuanInfo.SkillPointCost = basicAttackStats.YuanInfo.SkillPointCost;
+            YuanInfo.YuanLiCost = basicAttackStats.YuanInfo.YuanLiCost;
+        }
+    }
 }
 
 public class SkillInfo
