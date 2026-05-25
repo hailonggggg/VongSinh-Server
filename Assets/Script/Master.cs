@@ -18,6 +18,7 @@ public class Master : MonoBehaviour
     public Dictionary<int, BasicAttackSkill> BasicAttackSkillsById { get; private set; } = new();
     public Dictionary<int, StatusEffect> StatusEffectByIds { get; private set; } = new();
     public Dictionary<int, Passive> PassiveByIds { get; private set; } = new();
+    public BattleConfig Config;
     private AuthSystem authSystem;
     private RoomSystem roomSystem;
     private BattleSystem battleSystem;
@@ -46,9 +47,18 @@ public class Master : MonoBehaviour
         LoadTacticalSODataFromJson();
     }
 
+    private float matchmakingTimer = 0;
+
     void Update()
     {
         battleSystem?.Tick(Time.deltaTime);
+
+        matchmakingTimer += Time.deltaTime;
+        if (matchmakingTimer >= 1.0f)
+        {
+            RoomSystem.SendMatchmakingUpdates();
+            matchmakingTimer = 0;
+        }
     }
 
 

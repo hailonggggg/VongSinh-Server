@@ -25,14 +25,14 @@ public class Battle
     public int CurrentTurnCount;
     public BattleState State { get; private set; }
     public Client[] PlayerClients => playerClients;
-    public BattleConfig Config => config;
     public Map CurrentMap => currentMap;
     public Dictionary<int, BattlePlayer> PlayersById => playersById;
+    public BattleConfig Config => config;
     public event Action<int> OnBattleEnded;
 
     private readonly Dictionary<int, BattlePlayer> playersById;
     private readonly Client[] playerClients;
-    private readonly BattleConfig config = new();
+    private readonly BattleConfig config = Master.Instance.Config;
 
     private int playerTurnIndex = 0;
     private int lastBroadcastCountDownSecond = -1;
@@ -249,34 +249,67 @@ public class Battle
         }
 
         bool isWin = false;
-        RoomSystem.TryGetRoomById(RoomId, out Room room);
-        foreach (var player in room.Players)
+        if (RoomSystem.TryGetRoomById(RoomId, out Room room))
         {
-            if (player == null) continue;
-            player.Reset();
-            player.Client.PendingPacket.Enqueue(() =>
+            foreach (RoomPlayer player in room.Players)
             {
-                ServerNetwork.Instance.SendToClient(player.Client, Service.UpdateRoom(room));
-                if (player.PlayerId == winner.Client.PlayerRef.PlayerId)
+                if (player == null) continue;
+                player.Reset();
+                player.Client.PendingPacket.Enqueue(() =>
                 {
-                    isWin = true;
-                    string msg = loseReason switch
+                    ServerNetwork.Instance.SendToClient(player.Client, Service.UpdateRoom(room));
+                    if (player.PlayerId == winner.Client.PlayerRef.PlayerId)
                     {
-                        LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
-                        LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
-                        LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
-                        _ => ""
-                    };
-                    ServerNetwork.Instance.SendToClient(player.Client, Service.ShowNotification(msg));
-                }
-            });
-            ServerNetwork.Instance.SendToClient(player.Client, Service.BattleResult(
-                player.Client.PlayerRef.PlayerId,
-                isWin,
-                newRankPoint,
-                currentRank,
-                config.RankPointLimitToUpRank
-            ));
+                        isWin = true;
+                        string msg = loseReason switch
+                        {
+                            LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
+                            LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
+                            LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
+                            _ => ""
+                        };
+                        ServerNetwork.Instance.SendToClient(player.Client, Service.ShowNotification(msg));
+                    }
+                });
+                ServerNetwork.Instance.SendToClient(player.Client, Service.BattleResult(
+                    player.Client.PlayerRef.PlayerId,
+                    isWin,
+                    newRankPoint,
+                    currentRank,
+                    config.RankPointLimitToUpRank
+                ));
+            }
+        }
+        else
+        {
+            foreach (var player in playerClients)
+            {
+                if (player == null) continue;
+                player.ResetCurrentBattleAndRoom();
+                player.PendingPacket.Enqueue(() =>
+                {
+                    ServerNetwork.Instance.SendToClient(player, Service.UpdateRoom(room));
+                    if (player.PlayerRef.PlayerId == winner.Client.PlayerRef.PlayerId)
+                    {
+                        isWin = true;
+                        string msg = loseReason switch
+                        {
+                            LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
+                            LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
+                            LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
+                            _ => ""
+                        };
+                        ServerNetwork.Instance.SendToClient(player, Service.ShowNotification(msg));
+                    }
+                });
+                ServerNetwork.Instance.SendToClient(player, Service.BattleResult(
+                    player.PlayerRef.PlayerId,
+                    isWin,
+                    newRankPoint,
+                    currentRank,
+                    config.RankPointLimitToUpRank
+                ));
+            }
         }
         OnBattleEnded?.Invoke(BattleId);
     }
@@ -290,7 +323,8 @@ public class Battle
         }
 
         RoomSystem.TryGetRoomById(RoomId, out Room room);
-        currentMap = Master.Instance.LoadMap(room.MapIndexSelected);
+        int mapIndex = room != null ? room.MapIndexSelected : UnityEngine.Random.Range(0, Master.Instance.Config.AllowMapIds.Length);
+        currentMap = Master.Instance.LoadMap(mapIndex);
 
         PlayerBanPickInfo[] playerInfos = playersById.Values.Select(player => new PlayerBanPickInfo
         {
@@ -312,7 +346,7 @@ public class Battle
             {
                 LeftSidePlayerId = battlePlayer.IsLeftSide ? battlePlayer.Client.PlayerRef.PlayerId : -1,
                 HasBanPhase = config.HasBanPhase,
-                MapIndexSelected = room.MapIndexSelected,
+                MapIndexSelected = mapIndex,
                 MaxUnitsPerPlayer = Mathf.Min(battlePlayer.OwnerUnlockedUnitId.Count, config.MaxUnitsPerPlayer),
                 AllowCharacterSelectables = allowUnitIds,
                 Players = playerInfos

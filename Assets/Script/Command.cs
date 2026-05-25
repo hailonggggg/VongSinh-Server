@@ -54,7 +54,7 @@ public enum Command : byte
     UnitMove,
     RequestSkinAndCharacterBundle,
     SkinAndCharacterBundleResponse,
-    RequestPurchaseSkinBundle,
+    PurchaseSkinBundle,
     PurchaseSkinBundleResponse,
     CombatTurnInfo,
     PlayerResourceInfo,
@@ -71,5 +71,11 @@ public enum Command : byte
     RealTimeAnnouncementUpdated,
     RealTimeAnnouncementDeleted,
     RankList,
-    BattleResult
+    BattleResult,
+    BattleConfig,
+    RequestRandomMatch,
+    CancelRandomMatch,
+    ConfirmMatch,
+    MatchmakingUpdate,
+    MatchFoundResponse
 }

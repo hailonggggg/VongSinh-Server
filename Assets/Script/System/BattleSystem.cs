@@ -59,6 +59,7 @@ namespace Assets.Script.System
             }
         }
 
+
         private void HandleEndTurn(Client client)
         {
             if (!TryGetBattle(client, out Battle battle))
@@ -213,7 +214,7 @@ namespace Assets.Script.System
                 return;
             }
 
-            if (CheckAllPlayerIfAnyNotHaveUnlockedUnit(room))
+            if (CheckAllPlayerIfAnyNotHaveUnlockedUnit(room.Players.Select(p => p.Client).ToList()))
             {
                 ServerNetwork.Instance.SendToClient(
                     host,
@@ -260,11 +261,50 @@ namespace Assets.Script.System
             }
         }
 
-        private static bool CheckAllPlayerIfAnyNotHaveUnlockedUnit(Room room)
+        public static void CreateBattle(List<Client> clients)
         {
-            foreach (RoomPlayer player in room.Players)
+            if (clients.Any(x => x == null || x.CurrentRoomId > 0 || x.CurrentBattleId > 0))
             {
-                if (player.Client.OwnedCharacterIds == null || player.Client.OwnedCharacterIds.Count == 0)
+                return;
+            }
+
+            if (CheckAllPlayerIfAnyNotHaveUnlockedUnit(clients))
+            {
+                ServerNetwork.Instance.SendToClients(
+                    Service.ShowNotification("Không thể bắt đầu trận đấu. Hãy chắc chắn rằng tất cả người chơi đã mở khóa ít nhất 1 đơn vị."),
+                    clients.ToArray()
+                );
+                return;
+            }
+            int battleId = nextBattleId++;
+            List<BattlePlayer> battlePlayers = clients
+                .Select((player, index) => new BattlePlayer(player, player.Name, index == 0))
+                .ToList();
+
+            Battle battle = new(battleId, -1, battlePlayers);
+            battle.OnBattleEnded += RemoveBattle;
+
+            if (!battles.TryAdd(battleId, battle))
+            {
+                return;
+            }
+
+            foreach (Client client in clients)
+            {
+                client.CurrentBattleId = battleId;
+                client.PendingPacket.Enqueue(() =>
+                {
+                    BattleSceneLoaded(client);
+                });
+                ServerNetwork.Instance.SendToClient(client, Service.LoadBattleScene());
+            }
+        }
+
+        private static bool CheckAllPlayerIfAnyNotHaveUnlockedUnit(List<Client> clients)
+        {
+            foreach (var client in clients)
+            {
+                if (client.OwnedCharacterIds == null || client.OwnedCharacterIds.Count == 0)
                 {
                     return true;
                 }

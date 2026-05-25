@@ -4,5 +4,5 @@ using UnityEngine;
 [Serializable]
 public class JoinRoomRequest
 {
-    public string RoomName;
+    public int RoomId;
 }

@@ -18,6 +18,7 @@ public static class Service
         {
             Rooms = rooms.Select(x => new RoomInfo
             {
+                RoomId = x.RoomId,
                 Name = x.Name,
                 PlayerCount = x.Players.Count,
                 MaxPlayers = x.MaxPlayers
@@ -29,13 +30,14 @@ public static class Service
         return ReliableMessage.Build(Command.RoomListResponse, payload);
     }
 
-    public static byte[] SendLoginResponse(string playerName, string avatarUrl)
+    public static byte[] SendLoginResponse(string playerName, string avatarUrl, int rankPoint)
     {
         LoginResponse loginResponse = new LoginResponse
         {
             Success = true,
             PlayerName = playerName,
-            PlayerAvatarUrl = avatarUrl
+            PlayerAvatarUrl = avatarUrl,
+            RankPoint = rankPoint
         };
         return ReliableMessage.Build(Command.LoginResponse, loginResponse);
     }
@@ -339,5 +341,39 @@ public static class Service
             CurrentRank = currentRank,
             RankLimit = upRankPointLimit
         });
+    }
+
+    public static byte[] SendBattleConfig(BattleConfig config)
+    {
+        return ReliableMessage.Build(Command.BattleConfig, new BattleConfigResponse
+        {
+            DeploymentTime = config.DeploymentTime,
+            HasBanPhase = config.HasBanPhase,
+            MaxPlayers = config.MaxPlayers,
+            MaxUnitsPerPlayer = config.MaxUnitsPerPlayer,
+            MinUnitsPerPlayer = config.MinUnitsPerPlayer,
+            MoveActionCost = config.MoveActionCost,
+            RankPointLimitToUpRank = config.RankPointLimitToUpRank,
+            TurnTimeLimit = config.TurnTimeLimit
+        });
+    }
+
+    public static byte[] SendMatchmakingResponse(bool success, string message)
+    {
+        return ReliableMessage.Build(Command.MatchmakingUpdate, new MatchmakingResponse
+        {
+            Success = success,
+            Message = message
+        });
+    }
+
+    public static byte[] SendMatchFound(MatchFoundResponse matchFoundResponse)
+    {
+        return ReliableMessage.Build(Command.MatchFoundResponse, matchFoundResponse);
+    }
+
+    public static byte[] SendMatchmakingUpdate(MatchmakingUpdate matchmakingUpdate)
+    {
+        return ReliableMessage.Build(Command.MatchmakingUpdate, matchmakingUpdate);
     }
 }

@@ -6,5 +6,6 @@ public class LoginResponse
     public bool Success;
     public string Message;
     public string PlayerName;
+    public int RankPoint;
     public string PlayerAvatarUrl;
 }

@@ -46,7 +46,7 @@ public class AuthSystem : BaseSystem
         {
             LastName = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
         };
-        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.User.LastName, ""), Service.LoadLobbyScene());
+        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.User.LastName, "", 0), Service.LoadLobbyScene());
     }
 
 
@@ -107,7 +107,7 @@ public class AuthSystem : BaseSystem
             if (userApiResponse == null)
             {
                 Debug.LogWarning($"[AUTH] Get user returned no data for '{request?.Email}'.");
-                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification(apiResponse.Message ?? "Không tìm thấy tài khoản"));
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification(apiResponse.Message ?? "Không tìm thấy thông tin tài khoản"));
                 return;
             }
 
@@ -151,7 +151,12 @@ public class AuthSystem : BaseSystem
 
             ServerNetwork.Instance.SendToClient(
                 client,
-                Service.SendLoginResponse($"{userApiResponse.FirstName} {userApiResponse.LastName}", userApiResponse.AvatarUrl),
+                Service.SendLoginResponse(
+                    $"{userApiResponse.FirstName} {userApiResponse.LastName}",
+                    userApiResponse.AvatarUrl,
+                    userApiResponse.RankPoint
+                ),
+                Service.SendBattleConfig(Master.Instance.Config),
                 Service.SendAnnouncementResponse(announcements),
                 Service.LoadLobbyScene());
         }

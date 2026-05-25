@@ -18,7 +18,7 @@ public class BundleSystem : BaseSystem
                 _ = HandleRequestSkinBundle(client);
                 break;
 
-            case Command.RequestPurchaseSkinBundle:
+            case Command.PurchaseSkinBundle:
                 _ = HandlePurchaseSkinBundle(client, payload);
                 break;
         }

@@ -143,6 +143,7 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 
     public void SendToClient(Client client, byte[] packet)
     {
+        if(client == null) return;
         SendToClient(client.PlayerRef, packet);
     }
 

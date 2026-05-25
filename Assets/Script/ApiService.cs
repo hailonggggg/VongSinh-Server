@@ -20,6 +20,7 @@ public static class ApiService
     private const string OrderUrl = "https://be-adminmanagementsystem.onrender.com/api/Order";
     private const string InventoryUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/inventory";
     private const string GetUserById = "https://be-adminmanagementsystem.onrender.com/api/User/{0}";
+    private const string GetPlayerProfile = "https://be-adminmanagementsystem.onrender.com/api/Player/Profile";
     private const string SkinBundleUrl = "https://be-adminmanagementsystem.onrender.com/api/Shop/skin-and-character-bundles";
     private const string PurchaseOrderUrl = "https://be-adminmanagementsystem.onrender.com/api/PurchaseOrder";
     private const string ItemUrl = "https://be-adminmanagementsystem.onrender.com/api/Item/{0}";
@@ -111,8 +112,8 @@ public static class ApiService
     {
         try
         {
-            string requestUrl = string.Format(GetUserById, userId);
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+            // string requestUrl = string.Format(GetUserById, userId);
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, GetPlayerProfile);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
 
             using HttpResponseMessage response = await httpClient.SendAsync(request);

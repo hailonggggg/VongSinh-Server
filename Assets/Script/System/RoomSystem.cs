@@ -9,6 +9,16 @@ public class RoomSystem : BaseSystem
     private static readonly Dictionary<int, Room> rooms = new();
     private static int nextRoomId = 1;
 
+    private static readonly Dictionary<string, PendingMatch> pendingMatches = new();
+
+    public class PendingMatch
+    {
+        public Client Player1 { get; set; }
+        public Client Player2 { get; set; }
+        public bool Player1Ready { get; set; }
+        public bool Player2Ready { get; set; }
+    }
+
     public static bool TryGetRoomById(int roomId, out Room room)
     {
         return rooms.TryGetValue(roomId, out room);
@@ -45,6 +55,15 @@ public class RoomSystem : BaseSystem
                 break;
             case Command.MapIndexSelected:
                 HandleMapIndexSelected(client, payload);
+                break;
+            case Command.RequestRandomMatch:
+                HandleRequestRandomMatch(client);
+                break;
+            case Command.CancelRandomMatch:
+                HandleCancelRandomMatch(client);
+                break;
+            case Command.ConfirmMatch:
+                HandleConfirmMatch(client, payload);
                 break;
             default:
                 break;
@@ -123,9 +142,9 @@ public class RoomSystem : BaseSystem
 
     public void JoinRoom(Client client, JoinRoomRequest joinRequest)
     {
-        if (!TryGetRoomByName(joinRequest.RoomName, out Room room))
+        if (!TryGetRoomById(joinRequest.RoomId, out Room room))
         {
-            Debug.LogError($"[ROOM] Room {joinRequest.RoomName} does not exist.");
+            Debug.LogError($"[ROOM] Room {joinRequest.RoomId} does not exist.");
             return;
         }
 
@@ -141,8 +160,8 @@ public class RoomSystem : BaseSystem
 
         room.Players.Add(roomPlayer);
         client.CurrentRoomId = room.RoomId;
-        Debug.Log($"[ROOM] Client {client.User.LastName} joined room {joinRequest.RoomName}");
-        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
+        Debug.Log($"[ROOM] Client {client.User.LastName} joined room {room.Name}");
+        ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client).ToArray());
         ServerNetwork.Instance.SendToClient(client, Service.LoadRoomScene());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.UpdateRoomInfo(new RoomInfo
         {
@@ -157,27 +176,25 @@ public class RoomSystem : BaseSystem
         return rooms.Values;
     }
 
-    public void RemoveRoom(Client client, string roomName)
+    public void RemoveRoom(Client client)
     {
-        if (!TryGetRoomByName(roomName, out Room room))
+        if (!TryGetRoomById(client.CurrentRoomId, out Room room))
         {
             // Debug.Log("[ROOM] Room not found.");
             return;
         }
 
-        Client[] clients = new Client[room.Players.Count];
-        for (int i = 0; i < clients.Length; i++)
+        Client clientNotHost = room.Players.FirstOrDefault(x => !x.IsHost)?.Client;
+        for (int i = 0; i < room.Players.Count; i++)
         {
             room.Players[i].IsReady = false;
             room.Players[i].IsHost = false;
             room.Players[i].Client.CurrentRoomId = -1;
             room.Players[i].Client.CurrentBattleId = -1;
-            clients[i] = room.Players[i].Client;
         }
 
         rooms.Remove(room.RoomId);
-        // Debug.Log($"[ROOM] Room {roomName} removed by player {client.User.LastName}");
-        // ServerNetwork.Instance.SendToClients(Service.LoadLobbyScene(), clients);
+        ServerNetwork.Instance.SendToClient(clientNotHost, Service.LoadLobbyScene());
         ServerNetwork.Instance.BroadcastToAllClientsExcept(client, Service.SendRoomList(GetAllRooms()));
     }
 
@@ -201,14 +218,13 @@ public class RoomSystem : BaseSystem
 
         if (roomPlayer.IsHost)
         {
-            RemoveRoom(client, room.Name);
+            RemoveRoom(client);
             return;
         }
 
         if (RemoveClientFromRoom(client, room))
         {
-            ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
-            // ServerNetwork.Instance.SendToClient(client, Service.LoadLobbyScene());
+            ServerNetwork.Instance.SendToClient(room.Players.FirstOrDefault(x => x.Client != client).Client, Service.UpdateRoom(room));
         }
     }
 
@@ -248,6 +264,112 @@ public class RoomSystem : BaseSystem
         else
         {
             ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(x => x.Client.PlayerRef).ToArray());
+        }
+    }
+
+    private void HandleRequestRandomMatch(Client client)
+    {
+        if (client.CurrentRoomId > 0)
+        {
+            Debug.LogError("Player is already in a room!");
+            return;
+        }
+
+        MatchmakingQueue.AddPlayer(client);
+        TryCreatePendingMatch();
+        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(true, "Joined queue"));
+    }
+
+    private void HandleCancelRandomMatch(Client client)
+    {
+        MatchmakingQueue.RemovePlayer(client);
+
+        var matchKey = pendingMatches.Keys.FirstOrDefault(k =>
+            pendingMatches[k].Player1 == client || pendingMatches[k].Player2 == client);
+        if (matchKey != null)
+        {
+            pendingMatches.Remove(matchKey);
+        }
+
+        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(false, "Left queue"));
+    }
+
+    private void HandleConfirmMatch(Client client, string payload)
+    {
+        var request = JsonUtility.FromJson<ConfirmMatchRequest>(payload);
+        bool confirmed = request.Confirmed;
+
+        var match = pendingMatches.Values.FirstOrDefault(m =>
+            m.Player1 == client || m.Player2 == client);
+
+        if (match == null) return;
+
+        if (match.Player1 == client)
+        {
+            match.Player1Ready = confirmed;
+        }
+        else if (match.Player2 == client)
+        {
+            match.Player2Ready = confirmed;
+        }
+
+        if (match.Player1Ready && match.Player2Ready)
+        {
+            StartBattleFromMatch(match);
+        }
+        else if (!confirmed)
+        {
+            var otherClient = match.Player1 == client ? match.Player2 : match.Player1;
+            pendingMatches.Remove(pendingMatches.FirstOrDefault(k => k.Value == match).Key);
+            MatchmakingQueue.AddPlayer(otherClient);
+            ServerNetwork.Instance.SendToClient(otherClient, Service.SendMatchmakingResponse(true, "Partner declined, back to queue"));
+        }
+    }
+
+    private void TryCreatePendingMatch()
+    {
+        var pair = MatchmakingQueue.GetPair();
+        if (pair == null) return;
+
+        string matchKey = Guid.NewGuid().ToString();
+
+        var pending = new PendingMatch
+        {
+            Player1 = pair[0].Client,
+            Player2 = pair[1].Client
+        };
+
+        pendingMatches[matchKey] = pending;
+        MatchmakingQueue.RemovePair(pair);
+
+        var response = new MatchFoundResponse
+        {
+            MatchId = matchKey,
+            PlayerName = pending.Player2.User.LastName
+        };
+        ServerNetwork.Instance.SendToClient(pending.Player1, Service.SendMatchFound(response));
+
+        response.PlayerName = pending.Player1.User.LastName;
+        ServerNetwork.Instance.SendToClient(pending.Player2, Service.SendMatchFound(response));
+    }
+
+    private void StartBattleFromMatch(PendingMatch match)
+    {
+        BattleSystem.CreateBattle(new List<Client> { match.Player1, match.Player2 });
+        pendingMatches.Remove(pendingMatches.FirstOrDefault(k => k.Value == match).Key);
+    }
+
+    public static void SendMatchmakingUpdates()
+    {
+        foreach (var player in MatchmakingQueue.GetQueue())
+        {
+            var update = new MatchmakingUpdate
+            {
+                WaitTime = player.WaitTime,
+                QueuePosition = MatchmakingQueue.GetQueue().IndexOf(player) + 1,
+                TotalInQueue = MatchmakingQueue.GetQueue().Count
+            };
+            ServerNetwork.Instance.SendToClient(player.Client, Service.SendMatchmakingUpdate(update));
         }
     }
 }
