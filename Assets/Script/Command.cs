@@ -77,5 +77,6 @@ public enum Command : byte
     CancelRandomMatch,
     ConfirmMatch,
     MatchmakingUpdate,
-    MatchFoundResponse
+    MatchFoundResponse,
+    MatchmakingResponse
 }

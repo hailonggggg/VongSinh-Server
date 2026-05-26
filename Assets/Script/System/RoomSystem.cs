@@ -88,7 +88,7 @@ public class RoomSystem : BaseSystem
             return;
         }
 
-        RoomPlayer hostPlayer = room.Players.Find(p => p.IsHost && p.Client == client);
+        BattlePlayerInfo hostPlayer = room.Players.Find(p => p.IsHost && p.Client == client);
         if (hostPlayer == null)
         {
             return;
@@ -100,7 +100,7 @@ public class RoomSystem : BaseSystem
             return;
         }
 
-        RoomPlayer playerKicked = room.Players[playerKickedIndex];
+        BattlePlayerInfo playerKicked = room.Players[playerKickedIndex];
         room.Players.RemoveAt(playerKickedIndex);
         playerKicked.Client.CurrentRoomId = -1;
         playerKicked.Client.CurrentBattleId = -1;
@@ -118,7 +118,7 @@ public class RoomSystem : BaseSystem
         }
 
         int roomId = nextRoomId++;
-        var hostPlayer = new RoomPlayer
+        var hostPlayer = new BattlePlayerInfo
         {
             PlayerId = client.PlayerRef.PlayerId,
             Name = client.User.LastName,
@@ -131,7 +131,7 @@ public class RoomSystem : BaseSystem
         {
             RoomId = roomId,
             Name = createRoomRequest.RoomName,
-            Players = new List<RoomPlayer>(createRoomRequest.MaxPlayers) { hostPlayer },
+            Players = new List<BattlePlayerInfo>(createRoomRequest.MaxPlayers) { hostPlayer },
             MaxPlayers = createRoomRequest.MaxPlayers
         };
 
@@ -149,7 +149,7 @@ public class RoomSystem : BaseSystem
             return;
         }
 
-        var roomPlayer = new RoomPlayer
+        var roomPlayer = new BattlePlayerInfo
         {
             PlayerId = client.PlayerRef.PlayerId,
             Name = client.User.LastName,
@@ -211,7 +211,7 @@ public class RoomSystem : BaseSystem
             return;
         }
 
-        RoomPlayer roomPlayer = room.Players.Find(p => p.Client == client);
+        BattlePlayerInfo roomPlayer = room.Players.Find(p => p.Client == client);
         if (roomPlayer == null)
         {
             return;
@@ -250,7 +250,7 @@ public class RoomSystem : BaseSystem
             return;
         }
 
-        RoomPlayer me = room.Players.FirstOrDefault(p => p.Client == client);
+        BattlePlayerInfo me = room.Players.FirstOrDefault(p => p.Client == client);
         if (me == null)
         {
             Debug.Log("RoomPlayer not found!");
@@ -275,11 +275,11 @@ public class RoomSystem : BaseSystem
             Debug.LogError("Player is already in a room!");
             return;
         }
-
         MatchmakingQueue.AddPlayer(client);
+        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(true, "Đang tìm trận"));
     }
 
-    private void HandleCancelRandomMatch(Client client)
+    public static void HandleCancelRandomMatch(Client client)
     {
         MatchmakingQueue.RemovePlayer(client);
 
@@ -290,7 +290,7 @@ public class RoomSystem : BaseSystem
             pendingMatches.Remove(matchKey);
         }
 
-        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(false, "Left queue"));
+        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(false, "Tìm trận"));
     }
 
     private void HandleConfirmMatch(Client client, string payload)
@@ -321,7 +321,7 @@ public class RoomSystem : BaseSystem
             var otherClient = match.Player1 == client ? match.Player2 : match.Player1;
             pendingMatches.Remove(pendingMatches.FirstOrDefault(k => k.Value == match).Key);
             MatchmakingQueue.AddPlayer(otherClient);
-            ServerNetwork.Instance.SendToClient(otherClient, Service.SendMatchmakingResponse(true, "Partner declined, back to queue"));
+            HandleCancelRandomMatch(client);
         }
     }
 
@@ -367,14 +367,14 @@ public class RoomSystem : BaseSystem
 
             if (!match.Player1Ready)
             {
-                MatchmakingQueue.AddPlayer(match.Player1);
-                ServerNetwork.Instance.SendToClient(match.Player1, Service.SendMatchmakingResponse(true, "Match timeout, returning to queue"));
+                MatchmakingQueue.RemovePlayer(match.Player1);
+                ServerNetwork.Instance.SendToClient(match.Player1, Service.SendMatchmakingResponse(false, "Tìm trận"));
             }
 
             if (!match.Player2Ready)
             {
-                MatchmakingQueue.AddPlayer(match.Player2);
-                ServerNetwork.Instance.SendToClient(match.Player2, Service.SendMatchmakingResponse(true, "Match timeout, returning to queue"));
+                MatchmakingQueue.RemovePlayer(match.Player2);
+                ServerNetwork.Instance.SendToClient(match.Player2, Service.SendMatchmakingResponse(false, "Tìm trận"));
             }
         }
     }

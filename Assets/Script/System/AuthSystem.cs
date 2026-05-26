@@ -143,9 +143,8 @@ public class AuthSystem : BaseSystem
             {
                 client.UserItems = userItems.ToList();
                 client.OwnedCharacterIds = userItems
-                    .Where(x => x.itemId == (int)ItemType.BinhTan)
-                    .OrderBy(x => x.itemId)
-                    .Select(x => x.itemId)
+                    .Where(x => x.itemId is (int)ItemType.BinhTan or (int)ItemType.HuuNghia)
+                    .Select(x => x.itemId - 1)
                     .ToHashSet();
             }
 

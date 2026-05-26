@@ -42,8 +42,6 @@ public static class MatchmakingQueue
     public static List<MatchmakingPlayer> GetPair()
     {
         if (queue.Count < 2) return null;
-
-        // Lấy 2 người chờ lâu nhất
         var pair = queue.Take(2).ToList();
         return pair;
     }

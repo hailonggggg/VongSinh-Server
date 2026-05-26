@@ -250,14 +250,15 @@ namespace Assets.Script.System
                 return;
             }
 
-            foreach (RoomPlayer roomPlayer in room.Players)
+            foreach (BattlePlayerInfo info in room.Players)
             {
-                roomPlayer.Client.CurrentBattleId = battleId;
-                roomPlayer.Client.PendingPacket.Enqueue(() =>
+                info.Client.CurrentBattleId = battleId;
+                info.IsReady = false;
+                info.Client.PendingPacket.Enqueue(() =>
                 {
-                    BattleSceneLoaded(roomPlayer.Client);
+                    BattleSceneLoaded(info.Client);
                 });
-                ServerNetwork.Instance.SendToClient(roomPlayer.Client, Service.LoadBattleScene());
+                ServerNetwork.Instance.SendToClient(info.Client, Service.LoadBattleScene());
             }
         }
 
@@ -281,7 +282,7 @@ namespace Assets.Script.System
                 .Select((player, index) => new BattlePlayer(player, player.Name, index == 0))
                 .ToList();
 
-            Battle battle = new(battleId, -1, battlePlayers);
+            Battle battle = new(battleId, -1, battlePlayers, true);
             battle.OnBattleEnded += RemoveBattle;
 
             if (!battles.TryAdd(battleId, battle))

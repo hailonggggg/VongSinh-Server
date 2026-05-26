@@ -8,5 +8,5 @@ public class BattleBanPickInfo
     public int MaxUnitsPerPlayer = 0;
     public int MapIndexSelected = 0;
     public int[] AllowCharacterSelectables;
-    public PlayerBanPickInfo[] Players;
+    public BattlePlayerInfo[] Players;
 }

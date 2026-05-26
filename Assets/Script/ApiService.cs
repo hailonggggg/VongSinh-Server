@@ -29,7 +29,7 @@ public static class ApiService
     private const string SearchCharacterSkillUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
     private const string SearchCharacterAttackUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/attacks?Search={0}";
     private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/passives?Search={0}";
-
+    private const string RankPointUrl = "https://be-adminmanagementsystem.onrender.com/api/User/{0}/rank-point";
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -756,5 +756,33 @@ public static class ApiService
 
         }
         return new Dictionary<int, CharacterBasicAttack>();
+    }
+
+    public static async Task SetRankPoint(Client winner, int newRankPoint)
+    {
+        try
+        {
+            string url = string.Format(RankPointUrl, winner.User.UserId);
+            using HttpRequestMessage request = new(HttpMethod.Post, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", winner.Token);
+            var body = new
+            {
+                points = newRankPoint,
+                isAddition = true
+            };
+
+            string json = JsonConvert.SerializeObject(body);
+
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogError("Set new point rank failed");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Error at SetRankPoint: {e.Message}");
+        }
     }
 }

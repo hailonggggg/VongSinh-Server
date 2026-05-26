@@ -40,11 +40,11 @@
       "IsAvailable": true,
       "InitialSkillPoint": 10,
       "basicAttackSkillIds": [
-        10
+        4
       ],
       "yuanSkillIds": [
-        11,
-        12
+        5,
+        6
       ],
       "PassiveIds": [
         3,
@@ -638,7 +638,7 @@
         "AnimationTrigger": "Idle",
         "SkillPattern": null
       },
-      "Id": 10,
+      "Id": 4,
       "AssetName": "No1_Attack_1",
       "SkillType": "BasicAttackSkillSO",
       "SkillName": "Đâm thẳng",
@@ -807,7 +807,7 @@
           }
         ]
       },
-      "Id": 11,
+      "Id": 5,
       "AssetName": "No1_YuanSkill_1",
       "SkillType": "YuanSkillSO",
       "SkillName": "Long Nha Kích",
@@ -1010,7 +1010,7 @@
           }
         ]
       },
-      "Id": 12,
+      "Id": 6,
       "AssetName": "No1_YuanSkill_2",
       "SkillType": "YuanSkillSO",
       "SkillName": "Huyền thương tam ảnh",

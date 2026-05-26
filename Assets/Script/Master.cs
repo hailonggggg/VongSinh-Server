@@ -71,7 +71,6 @@ public class Master : MonoBehaviour
             Debug.LogWarning("Cannot clear Resource because client is null");
             return;
         }
-        // Debug.Log($"{client.User.Email} clear resources, currentBattleId: {client.CurrentBattleId}");
         if (client.CurrentBattleId != -1 && BattleSystem.TryGetBattleById(client.CurrentBattleId, out Battle battle))
         {
             battle.HandleLeaveBattle(client);
@@ -81,6 +80,7 @@ public class Master : MonoBehaviour
         {
             roomSystem.LeaveRoom(client);
         }
+        RoomSystem.HandleCancelRandomMatch(client);
     }
 
     private void LoadTacticalSODataFromJson()
@@ -98,6 +98,12 @@ public class Master : MonoBehaviour
 
         foreach (var characterData in TacticalSOExportData.Characters)
         {
+            if (CharacterSystem.CharacterStats.TryGetValue(characterData.Id, out CharacterStats characterStats))
+            {
+                characterData.MoveRange = characterStats.MoveRange;
+                characterData.MaxHP = characterStats.MaxHealth;
+            }
+
             if (CharactersById.ContainsKey(characterData.Id))
                 continue;
 
@@ -106,6 +112,26 @@ public class Master : MonoBehaviour
         }
         foreach (var skillData in TacticalSOExportData.BasicAttackSkillJsonDatas)
         {
+            if (CharacterSystem.CharacterBasicAttacks.TryGetValue(skillData.Id, out CharacterBasicAttack attack))
+            {
+                skillData.SkillName = attack.Name;
+                skillData.Description = attack.Description;
+                skillData.Damage = attack.Damage;
+                skillData.CritRate = attack.CritRate;
+                if (skillData.NormalInfo != null && attack.NormalInfo != null)
+                {
+                    skillData.NormalInfo.ActionPointCost = attack.NormalInfo.ActionPointCost;
+                    skillData.NormalInfo.SkillPointCost = attack.NormalInfo.SkillPointCost;
+                    skillData.NormalInfo.YuanLiCost = attack.NormalInfo.YuanLiCost;
+                }
+                if (skillData.YuanInfo != null && attack.YuanInfo != null)
+                {
+                    skillData.YuanInfo.ActionPointCost = attack.YuanInfo.ActionPointCost;
+                    skillData.YuanInfo.SkillPointCost = attack.YuanInfo.SkillPointCost;
+                    skillData.YuanInfo.YuanLiCost = attack.YuanInfo.YuanLiCost;
+                }
+            }
+
             skillData.IsUnlocked = true;
             if (BasicAttackSkillsById.ContainsKey(skillData.Id))
                 continue;
@@ -115,6 +141,15 @@ public class Master : MonoBehaviour
         }
         foreach (var yuanSkillData in TacticalSOExportData.YuanSkillJsonDatas)
         {
+            if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkillData.Id, out CharacterSkill skill))
+            {
+                yuanSkillData.SkillName = skill.Name;
+                yuanSkillData.Description = skill.Description;
+                yuanSkillData.Damage = skill.Damage;
+                yuanSkillData.SkillPointCost = skill.SP;
+                yuanSkillData.YuanLiCost = skill.YuanPressure;
+                yuanSkillData.CritRate = skill.CritRate;
+            }
             yuanSkillData.IsUnlocked = true;
             if (YuanSkillsById.ContainsKey(yuanSkillData.Id))
                 continue;

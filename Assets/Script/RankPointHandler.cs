@@ -3,12 +3,21 @@ using UnityEngine;
 
 public static class RankPointHandler
 {
-    private static int[] pointReceives = new int[3] { 30, 20, 10 };
-    public static void UpRankPoint(ref int currentRankPoint, out int currentRank, int rankPointRequireToUpRank)
+
+
+    public static void UpRankPoint(int currentRankPoint, out int currentRank, int rankPointRequireToUpRank, out int newRankPoint)
     {
         currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        int pointReceive = pointReceives[currentRank];
-        currentRankPoint += pointReceive;
+        int pointReceive = Master.Instance.Config.PointReceives[currentRank];
+        newRankPoint = currentRankPoint + pointReceive;
         currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
+    }
+
+    public static void DownRankPoint(int currentRankPoint, out int currentRank, int rankPointRequireToUpRank, out int newRankPoint)
+    {
+        currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
+        int pointDeduction = Master.Instance.Config.PointDeductions[currentRank];
+        newRankPoint = Mathf.Max(0, currentRankPoint - pointDeduction);
+        currentRank = Mathf.FloorToInt(newRankPoint / rankPointRequireToUpRank);
     }
 }

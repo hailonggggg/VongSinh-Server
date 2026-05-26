@@ -18,6 +18,8 @@ public class BattleConfig
     public int[] AllowMapIds = new int[] { 1 };
     public int[] ListUnitIdHasData = new int[] { 1, 2 };
     public int RankPointLimitToUpRank = 100;
+    public int[] PointReceives = new int[3] { 30, 20, 10 };
+    public int[] PointDeductions = new int[3] { 20, 15, 10 };
 }
 
 

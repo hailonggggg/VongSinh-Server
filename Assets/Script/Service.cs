@@ -174,8 +174,9 @@ public static class Service
 
     public static byte[] SendPlayerBanPickInfo(BattlePlayer player)
     {
-        return ReliableMessage.Build(Command.PlayerBanPickInfo, new PlayerBanPickInfo
+        return ReliableMessage.Build(Command.PlayerBanPickInfo, new BattlePlayerInfo
         {
+            PlayerId = player.Client.PlayerRef.PlayerId,
             Name = player.Name,
             PickedUnitIds = player.PickedUnitIds.ToList(),
             BannedUnitIds = player.BannedUnitIds.ToList()
@@ -331,15 +332,21 @@ public static class Service
         });
     }
 
-    public static byte[] BattleResult(int playerId, bool isWin, int newRankPoint, int currentRank, int upRankPointLimit)
+    public static byte[] BattleResult(int playerId,
+    bool isRank,
+    bool isWin,
+    int currentRankPoint,
+    int lastRankPoint,
+    int upRankPointLimit)
     {
         return ReliableMessage.Build(Command.BattleResult, new BattleCombatResult
         {
             PlayerId = playerId,
             IsWin = isWin,
-            NewRankPoint = newRankPoint,
-            CurrentRank = currentRank,
-            RankLimit = upRankPointLimit
+            IsRank = isRank,
+            CurrentRankPoint = currentRankPoint,
+            LastRankPoint = lastRankPoint,
+            RankLimit = upRankPointLimit,
         });
     }
 
@@ -360,7 +367,7 @@ public static class Service
 
     public static byte[] SendMatchmakingResponse(bool success, string message)
     {
-        return ReliableMessage.Build(Command.MatchmakingUpdate, new MatchmakingResponse
+        return ReliableMessage.Build(Command.MatchmakingResponse, new MatchmakingResponse
         {
             Success = success,
             Message = message

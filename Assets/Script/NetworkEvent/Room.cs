@@ -6,7 +6,7 @@ public class Room
 {
     public int RoomId;
     public string Name;
-    public List<RoomPlayer> Players;
+    public List<BattlePlayerInfo> Players;
     public int MaxPlayers;
     public int MapIndexSelected = 0;
 
