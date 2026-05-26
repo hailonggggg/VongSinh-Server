@@ -175,8 +175,8 @@ public class AuthSystem : BaseSystem
 public enum ItemType
 {
     None,
+    Gem,
     BinhTan,
     HuuNghia,
-    BinhTanSkin,
     PhaLe
 }

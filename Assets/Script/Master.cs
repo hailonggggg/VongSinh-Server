@@ -59,6 +59,8 @@ public class Master : MonoBehaviour
             RoomSystem.SendMatchmakingUpdates();
             matchmakingTimer = 0;
         }
+        RoomSystem.TryCreatePendingMatch();
+        RoomSystem.CheckPendingMatchTimeouts();
     }
 
 

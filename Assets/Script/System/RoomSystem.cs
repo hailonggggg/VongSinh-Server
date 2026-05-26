@@ -17,6 +17,7 @@ public class RoomSystem : BaseSystem
         public Client Player2 { get; set; }
         public bool Player1Ready { get; set; }
         public bool Player2Ready { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
     public static bool TryGetRoomById(int roomId, out Room room)
@@ -276,8 +277,6 @@ public class RoomSystem : BaseSystem
         }
 
         MatchmakingQueue.AddPlayer(client);
-        TryCreatePendingMatch();
-        ServerNetwork.Instance.SendToClient(client, Service.SendMatchmakingResponse(true, "Joined queue"));
     }
 
     private void HandleCancelRandomMatch(Client client)
@@ -326,7 +325,7 @@ public class RoomSystem : BaseSystem
         }
     }
 
-    private void TryCreatePendingMatch()
+    public static void TryCreatePendingMatch()
     {
         var pair = MatchmakingQueue.GetPair();
         if (pair == null) return;
@@ -336,7 +335,8 @@ public class RoomSystem : BaseSystem
         var pending = new PendingMatch
         {
             Player1 = pair[0].Client,
-            Player2 = pair[1].Client
+            Player2 = pair[1].Client,
+            CreatedAt = DateTime.UtcNow
         };
 
         pendingMatches[matchKey] = pending;
@@ -351,6 +351,32 @@ public class RoomSystem : BaseSystem
 
         response.PlayerName = pending.Player1.User.LastName;
         ServerNetwork.Instance.SendToClient(pending.Player2, Service.SendMatchFound(response));
+    }
+
+    public static void CheckPendingMatchTimeouts()
+    {
+        var now = DateTime.UtcNow;
+        var timedOutMatches = pendingMatches.Where(kvp => (now - kvp.Value.CreatedAt).TotalSeconds >= 10).ToList();
+
+        foreach (var entry in timedOutMatches)
+        {
+            var match = entry.Value;
+            string matchKey = entry.Key;
+
+            pendingMatches.Remove(matchKey);
+
+            if (!match.Player1Ready)
+            {
+                MatchmakingQueue.AddPlayer(match.Player1);
+                ServerNetwork.Instance.SendToClient(match.Player1, Service.SendMatchmakingResponse(true, "Match timeout, returning to queue"));
+            }
+
+            if (!match.Player2Ready)
+            {
+                MatchmakingQueue.AddPlayer(match.Player2);
+                ServerNetwork.Instance.SendToClient(match.Player2, Service.SendMatchmakingResponse(true, "Match timeout, returning to queue"));
+            }
+        }
     }
 
     private void StartBattleFromMatch(PendingMatch match)
