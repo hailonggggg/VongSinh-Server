@@ -1,6 +1,10 @@
 using System;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Fusion;
+using Newtonsoft.Json;
+using UnityEngine;
 
 public abstract class BaseSystem
 {
@@ -29,6 +33,18 @@ public abstract class BaseSystem
                     action?.Invoke();
                 }
                 break;
+            case Command.RequestUploadAvatar:
+                _ = HandleUploadAvatar(client, payload);
+                break;
+
         }
+    }
+
+    private async Task HandleUploadAvatar(Client client, string payload)
+    {
+        UploadAvatarRequest uploadAvatarRequest = JsonConvert.DeserializeObject<UploadAvatarRequest>(payload);
+        byte[] imageByteArr = Convert.FromBase64String(uploadAvatarRequest.ImageBase64);
+        string url = await ApiService.UpLoadImage(client, imageByteArr);
+        Debug.Log(url);
     }
 }

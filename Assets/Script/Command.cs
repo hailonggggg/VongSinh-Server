@@ -78,5 +78,9 @@ public enum Command : byte
     ConfirmMatch,
     MatchmakingUpdate,
     MatchFoundResponse,
-    MatchmakingResponse
+    MatchmakingResponse,
+    RequestUpdateProfile,
+    UpdateProfileResponse,
+    RequestUploadAvatar,
+    UploadAvatarResponse
 }

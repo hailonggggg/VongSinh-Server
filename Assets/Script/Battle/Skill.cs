@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class Skill
@@ -16,6 +17,8 @@ public abstract class Skill
     public SkillOrigin SkillOrigin = SkillOrigin.CharacterPosition;
     public int MoveRange = 0;
     public int CooldownTurns;
+    public List<SkillOption> Buffs;
+    public List<SkillOption> Debuffs;
 
 
     public virtual int ActionPointCost { get; }
@@ -65,6 +68,24 @@ public abstract class Skill
             : Enum.Parse<SkillOrigin>(data.SkillOrigin);
         MoveRange = data.MoveRange;
         CooldownTurns = data.CooldownTurns;
+        if (data.BuffOptions != null && data.BuffOptions.Count > 0)
+        {
+            Buffs = data.BuffOptions.Select(x => new SkillOption
+            {
+                EffectType = (SkillEffectType)x.StatusEffectId,
+                TurnApply = x.TurnApply,
+                Value = x.Value
+            }).ToList();
+        }
+        if (data.DebuffOptions != null && data.DebuffOptions.Count > 0)
+        {
+            Debuffs = data.DebuffOptions.Select(x => new SkillOption
+            {
+                EffectType = (SkillEffectType)x.StatusEffectId,
+                TurnApply = x.TurnApply,
+                Value = x.Value
+            }).ToList();
+        }
     }
 
 

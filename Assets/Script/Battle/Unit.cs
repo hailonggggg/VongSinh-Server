@@ -31,10 +31,13 @@ public class Unit
     private readonly List<int> equippedBasicAttackSkillIds = new(MaxBasicAttackSkills);
     private readonly List<int> equippedYuanSkillIds = new(MaxYuanSkills);
     private readonly List<int> equippedPassiveIds = new(MaxPassives);
+    private readonly List<SkillOption> appliedSkillBuff = new();
+    private readonly List<SkillOption> appliedSkillDebuff = new();
 
     private readonly Dictionary<int, BasicAttackSkill> basicAttackByIds = new(MaxBasicAttackSkills);
     private readonly Dictionary<int, YuanSkill> yuanSkillByIds = new(MaxYuanSkills);
     private readonly Dictionary<int, Passive> passiveByIds = new(MaxPassives);
+
 
     private BattlePlayer owner;
     private Battle battle;
@@ -87,6 +90,18 @@ public class Unit
             SkillLoadoutType.Passive => TryAssignToList(equippedPassiveIds, skillId, MaxPassives),
             _ => false
         };
+    }
+
+    public void ApplySkillBuff(List<SkillOption> buff)
+    {
+        if (buff == null) return;
+        appliedSkillBuff.AddRange(buff);
+    }
+
+    public void ApplySkillDebuff(List<SkillOption> debuff)
+    {
+        if (debuff == null) return;
+        appliedSkillDebuff.AddRange(debuff);
     }
 
     public List<int> GetListSkillLoadout(SkillLoadoutType loadoutType)
@@ -267,6 +282,41 @@ public class Unit
     {
         MaxHealth = characterStats.MaxHealth;
         MoveRange = characterStats.MoveRange;
+    }
+
+    public void ExecuteSkillBuff()
+    {
+        for (int i = appliedSkillBuff.Count - 1; i >= 0; i--)
+        {
+            var buff = appliedSkillBuff[i];
+
+            if (buff.TurnApply > 0)
+            {
+                buff.Execute(this);
+            }
+            if (buff.TurnApply <= 0)
+            {
+                appliedSkillBuff.RemoveAt(i);
+            }
+        }
+    }
+
+    public void ExecuteSkillDebuff()
+    {
+        for (int i = appliedSkillDebuff.Count - 1; i >= 0; i--)
+        {
+            var debuff = appliedSkillDebuff[i];
+
+            if (debuff.TurnApply > 0)
+            {
+                debuff.Execute(this);
+            }
+            if (debuff.TurnApply <= 0)
+            {
+                appliedSkillDebuff.RemoveAt(i);
+            }
+
+        }
     }
 }
 

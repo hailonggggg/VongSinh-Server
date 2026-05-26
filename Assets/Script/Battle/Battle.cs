@@ -217,6 +217,7 @@ public class Battle
         {
             return;
         }
+        currentTurnPlayer.ExecuteTurnDone();
         if (State == BattleState.BanPick)
         {
             if (currentTurnPlayer.PickedUnitIds.Count(x => x != -1) < config.MinUnitsPerPlayer)
@@ -244,12 +245,12 @@ public class Battle
         isEnd = true;
         BattlePlayer loser = GetOpponent(winner.Client.PlayerRef);
 
-        // Process rank points for both players
         foreach (var player in playerClients)
         {
             if (player == null) continue;
 
             BattlePlayer battlePlayer = GetPlayer(player.PlayerRef);
+            battlePlayer.Client.CurrentBattleId = -1;
             bool isWinner = battlePlayer == winner;
             int currentRankPoint = player.User.RankPoint;
             int currentRank = 0;
@@ -301,8 +302,8 @@ public class Battle
                 player.PlayerRef.PlayerId,
                 isRank,
                 isWinner,
+                newRankPoint,
                 currentRankPoint,
-                currentRank,
                 config.RankPointLimitToUpRank
             ));
         }

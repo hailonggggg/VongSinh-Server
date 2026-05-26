@@ -183,12 +183,24 @@ public class BattlePlayer
             {
                 continue;
             }
+            unit.ExecuteSkillBuff();
             if (unit.Data.IsYuanUser)
             {
                 unit.PlusSkillPoint(1);
             }
             unit.TriggerPassives(PassiveTriggerType.TurnStart, new TurnStartEvent(unit), battle.CreateBattleContext(this, unit));
         }
+    }
+
+    private void TriggerYuanBuff(Unit unit)
+    {
+        YuanBuff yuanBuff = yuanPressureSystem.Buff;
+        if (yuanBuff.HealApply < 0)
+        {
+            unit.TakeDamage(-yuanBuff.HealApply);
+            return;
+        }
+        unit.PlusHp(yuanBuff.HealApply);
     }
 
     public void InitializeUnit()
@@ -241,6 +253,7 @@ public class BattlePlayer
             return;
         }
         unit.CurrentGridPosition = targetCell;
+        TriggerYuanBuff(unit);
         unit.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(unit), battle.CreateBattleContext(this, unit));
         ServerNetwork.Instance.SendToClient(Client, Service.PlayerResourceInfo(ApSystem.Current, YuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(Service.UnitMove(Client.PlayerRef.PlayerId, unit.Id, paths), battle.PlayerClients);
@@ -387,21 +400,36 @@ public class BattlePlayer
                 continue;
             }
             enemy.PendingDamage += (int)(tileData.damageMultiplier * selectedSkill.Damage);
+            enemy.ApplySkillBuff(selectedSkill.Buffs);
+            enemy.ApplySkillDebuff(selectedSkill.Debuffs);
             affectedUnits.Add(enemy);
         }
         listUnitHavePendingDamage.Clear();
         listUnitHavePendingDamage.AddRange(affectedUnits);
         yuanPressureSystem.AdjustValue(selectedSkill.YuanLiCost);
+        TriggerYuanBuff(unit);
         unit.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(unit), battle.CreateBattleContext(this, unit));
         ServerNetwork.Instance.SendToClient(Client, Service.YuanPressureUpdate(yuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(
            Service.UseSkillResult(
                Client.PlayerRef.PlayerId,
                unit.Id,
+               yuanPressureSystem.IsYuanMode,
                selectedSkill.AnimationTrigger.ToString(),
                request.TargetCell),
                battle.PlayerClients
            );
+    }
+
+    public void ExecuteTurnDone()
+    {
+        foreach (var unit in unitsByCharId.Values)
+        {
+            if (!unit.IsAlive)
+                continue;
+
+            unit.ExecuteSkillDebuff();
+        }
     }
 }
 

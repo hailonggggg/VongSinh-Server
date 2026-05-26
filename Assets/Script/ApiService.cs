@@ -29,7 +29,8 @@ public static class ApiService
     private const string SearchCharacterSkillUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/skills?Search={0}";
     private const string SearchCharacterAttackUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/attacks?Search={0}";
     private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/passives?Search={0}";
-    private const string RankPointUrl = "https://be-adminmanagementsystem.onrender.com/api/User/{0}/rank-point";
+    private const string RankPointUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/rank-point";
+    private const string UploadImageUrl = "https://be-adminmanagementsystem.onrender.com/api/Upload/image";
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -762,8 +763,7 @@ public static class ApiService
     {
         try
         {
-            string url = string.Format(RankPointUrl, winner.User.UserId);
-            using HttpRequestMessage request = new(HttpMethod.Post, url);
+            using HttpRequestMessage request = new(HttpMethod.Post, RankPointUrl);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", winner.Token);
             var body = new
             {
@@ -783,6 +783,38 @@ public static class ApiService
         catch (Exception e)
         {
             Debug.LogError($"Error at SetRankPoint: {e.Message}");
+        }
+    }
+
+    public static async Task<string> UpLoadImage(Client client, byte[] imageByteArr)
+    {
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var imageContent = new ByteArrayContent(imageByteArr);
+            imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+            content.Add(imageContent, "file");
+
+            using HttpRequestMessage request = new(HttpMethod.Post, UploadImageUrl);
+            // request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+            request.Content = content;
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogError($"[UPLOAD IMAGE] Failed: {(int)response.StatusCode} - {responseJson}");
+                return null;
+            }
+
+            Debug.Log($"[UPLOAD IMAGE] Success: {responseJson}");
+            return responseJson;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[UPLOAD IMAGE] Error: {e.Message}");
+            return null;
         }
     }
 }

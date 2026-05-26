@@ -271,14 +271,15 @@ public static class Service
         });
     }
 
-    public static byte[] UseSkillResult(int playerId, int unitId, string AnimationTrigger, Vector3Int targetCell)
+    public static byte[] UseSkillResult(int playerId, int unitId, bool isYuanMode, string AnimationTrigger, Vector3Int targetCell)
     {
         return ReliableMessage.Build(Command.UseSkill, new UseSkillResult
         {
             PlayerId = playerId,
             UnitId = unitId,
             AnimationTrigger = AnimationTrigger,
-            TargetCell = targetCell
+            TargetCell = targetCell,
+            IsYuanMode = isYuanMode
         });
     }
 
@@ -332,7 +333,8 @@ public static class Service
         });
     }
 
-    public static byte[] BattleResult(int playerId,
+    public static byte[] BattleResult(
+    int playerId,
     bool isRank,
     bool isWin,
     int currentRankPoint,
