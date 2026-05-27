@@ -29,9 +29,60 @@ public class AuthSystem : BaseSystem
             case Command.Logout:
                 Logout(client);
                 break;
+            case Command.ForgetPasswordRequest:
+                _ = HandleForgetPasswordRequest(client, payload);
+                break;
+            case Command.RequestUpdateProfile:
+                _ = HandleUpdateProfile(client, payload);
+                break;
             default:
                 break;
         }
+    }
+
+    private async Task HandleUpdateProfile(Client client, string payload)
+    {
+        UpdateProfileRequest request = JsonConvert.DeserializeObject<UpdateProfileRequest>(payload);
+        if (string.IsNullOrEmpty(request.FirstName)
+        || string.IsNullOrEmpty(request.LastName)
+        || string.IsNullOrEmpty(request.NewPassword)
+        || string.IsNullOrEmpty(request.CurrentPassword)
+        || string.IsNullOrEmpty(request.ConfirmNewPassword))
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Vui lòng điền đủ thông tin!"));
+            return;
+        }
+        if (!request.ConfirmNewPassword.Equals(request.NewPassword))
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Mật khẩu xác nhận không khớp với mật khẩu mới!"));
+            return;
+        }
+        if (!request.CurrentPassword.Equals(client.Password))
+        {
+            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Mật khẩu hiện tại không khớp!"));
+            return;
+        }
+        await ApiService.UpdateProfile(client, request.FirstName, request.LastName, request.NewPassword);
+    }
+
+    private async Task HandleForgetPasswordRequest(Client client, string payload)
+    {
+        var request = JsonConvert.DeserializeObject<ForgetPasswordRequest>(payload);
+        if (!IsValidEmail(request.Email))
+        {
+            ServerNetwork.Instance.SendToClient(
+                client,
+                Service.ShowNotification("Định dạng email sai. Vui lòng nhập đúng!")
+            );
+            return;
+        }
+        bool success = await ApiService.SendForgetPassword(client, request);
+        if (!success)
+            return;
+        ServerNetwork.Instance.SendToClient(
+            client,
+            Service.ForgetPasswordResponse(true, "Lấy lại mật khẩu thành công, bạn vui lòng vào email để tiến hành thay đổi mật khẩu mới.")
+        );
     }
 
     private void Logout(Client client)
@@ -46,7 +97,7 @@ public class AuthSystem : BaseSystem
         {
             LastName = $"FakeUser{UnityEngine.Random.Range(1000, 9999)}"
         };
-        ServerNetwork.Instance.SendToClient(client, Service.SendLoginResponse(client.User.LastName, "", 0), Service.LoadLobbyScene());
+        ServerNetwork.Instance.SendToClient(client, Service.LoadLobbyScene());
     }
 
 
@@ -126,6 +177,7 @@ public class AuthSystem : BaseSystem
             }
 
             client.User = userApiResponse;
+            client.Password = request.Password;
 
             AnnouncementResponse[] announcements = await ApiService.GetAllAnnouncement(client);
             UserItem[] userItems = await ApiService.GetInventory(client);
@@ -151,7 +203,8 @@ public class AuthSystem : BaseSystem
             ServerNetwork.Instance.SendToClient(
                 client,
                 Service.SendLoginResponse(
-                    $"{userApiResponse.FirstName} {userApiResponse.LastName}",
+                    userApiResponse.FirstName,
+                    userApiResponse.LastName,
                     userApiResponse.AvatarUrl,
                     userApiResponse.RankPoint
                 ),

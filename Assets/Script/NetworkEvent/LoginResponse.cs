@@ -5,7 +5,8 @@ public class LoginResponse
 {
     public bool Success;
     public string Message;
-    public string PlayerName;
+    public string FirstName;
+    public string LastName; 
     public int RankPoint;
     public string PlayerAvatarUrl;
 }

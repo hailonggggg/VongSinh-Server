@@ -14,10 +14,9 @@ public class Client : IEquatable<Client>
     public HashSet<int> OwnedCharacterIds = new();
     public string Name => User != null ? $"{User.FirstName} {User.LastName}" : $"Player {PlayerRef.PlayerId}";
     public int CurrentRoomId = -1;
-
     public int CurrentBattleId = -1;
-
     public string Token;
+    public string Password;
 
     public Queue<Action> PendingPacket = new();
 

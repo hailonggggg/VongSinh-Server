@@ -77,6 +77,11 @@ public class RoomSystem : BaseSystem
         {
             return;
         }
+        BattlePlayerInfo playerInfo = room.Players.FirstOrDefault(x => x.Client == client);
+        if (!playerInfo.IsHost)
+        {
+            return;
+        }
         room.MapIndexSelected = JsonUtility.FromJson<SelectedMapIndexRequest>(payload).Index;
         ServerNetwork.Instance.SendToClients(Service.UpdateRoom(room), room.Players.Select(p => p.Client).ToArray());
     }

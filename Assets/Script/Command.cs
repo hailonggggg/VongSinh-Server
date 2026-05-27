@@ -82,5 +82,7 @@ public enum Command : byte
     RequestUpdateProfile,
     UpdateProfileResponse,
     RequestUploadAvatar,
-    UploadAvatarResponse
+    UploadAvatarResponse,
+    ForgetPasswordRequest,
+    ForgetPasswordResponse
 }

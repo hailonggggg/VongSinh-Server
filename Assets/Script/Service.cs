@@ -30,12 +30,13 @@ public static class Service
         return ReliableMessage.Build(Command.RoomListResponse, payload);
     }
 
-    public static byte[] SendLoginResponse(string playerName, string avatarUrl, int rankPoint)
+    public static byte[] SendLoginResponse(string firstName, string lastName, string avatarUrl, int rankPoint)
     {
         LoginResponse loginResponse = new LoginResponse
         {
             Success = true,
-            PlayerName = playerName,
+            FirstName = firstName,
+            LastName = lastName,
             PlayerAvatarUrl = avatarUrl,
             RankPoint = rankPoint
         };
@@ -384,5 +385,26 @@ public static class Service
     public static byte[] SendMatchmakingUpdate(MatchmakingUpdate matchmakingUpdate)
     {
         return ReliableMessage.Build(Command.MatchmakingUpdate, matchmakingUpdate);
+    }
+
+    public static byte[] ForgetPasswordResponse(bool success, string message)
+    {
+        var response = new ForgetPasswordResponse
+        {
+            Success = success,
+            Message = message
+        };
+        return ReliableMessage.Build(Command.ForgetPasswordResponse, response);
+    }
+
+    public static byte[] UpLoadAvatarResponse(bool success, string message, string url)
+    {
+        var response = new UploadAvatarResponse
+        {
+            Success = success,
+            Message = message,
+            AvatarUrl = url
+        };
+        return ReliableMessage.Build(Command.UploadAvatarResponse, response);
     }
 }

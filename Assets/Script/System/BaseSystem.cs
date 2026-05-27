@@ -44,7 +44,8 @@ public abstract class BaseSystem
     {
         UploadAvatarRequest uploadAvatarRequest = JsonConvert.DeserializeObject<UploadAvatarRequest>(payload);
         byte[] imageByteArr = Convert.FromBase64String(uploadAvatarRequest.ImageBase64);
-        string url = await ApiService.UpLoadImage(client, imageByteArr);
-        Debug.Log(url);
+        string url = await ApiService.UpLoadImage(client, imageByteArr, uploadAvatarRequest.FileExtension);
+        if (string.IsNullOrEmpty(url)) return;
+        ServerNetwork.Instance.SendToClient(client, Service.UpLoadAvatarResponse(true, "", url));
     }
 }

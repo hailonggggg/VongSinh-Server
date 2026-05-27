@@ -8,6 +8,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 
 public static class ApiService
@@ -31,6 +32,7 @@ public static class ApiService
     private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/passives?Search={0}";
     private const string RankPointUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/rank-point";
     private const string UploadImageUrl = "https://be-adminmanagementsystem.onrender.com/api/Upload/image";
+    private const string ForgetPasswordUrl = "https://be-adminmanagementsystem.onrender.com/api/Auth/forgot-password-user";
     //private const string OrderUrl = "https://localhost:7270/api/Order";
 
     private static readonly HttpClient httpClient = new HttpClient
@@ -786,17 +788,48 @@ public static class ApiService
         }
     }
 
-    public static async Task<string> UpLoadImage(Client client, byte[] imageByteArr)
+    public static async Task<string> UpLoadImage(Client client, byte[] imageByteArr, string fileExtension)
     {
         try
         {
+            if (imageByteArr == null || imageByteArr.Length == 0)
+            {
+                Debug.LogError("[UPLOAD IMAGE] Image data is null or empty");
+                return null;
+            }
+
             using var content = new MultipartFormDataContent();
-            using var imageContent = new ByteArrayContent(imageByteArr);
-            imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-            content.Add(imageContent, "file");
+
+            // Create image content with proper headers based on file extension
+            var imageStream = new System.IO.MemoryStream(imageByteArr);
+            var imageContent = new StreamContent(imageStream);
+
+            // Determine content type from extension
+            string contentType = "image/jpeg";
+            if (fileExtension.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                contentType = "image/png";
+            }
+            else if (fileExtension.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                     fileExtension.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+            {
+                contentType = "image/jpeg";
+            }
+
+            imageContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            // Create filename with extension - đảm bảo có dấu chấm
+            string ext = fileExtension.StartsWith(".") ? fileExtension : "." + fileExtension;
+            string fileName = "upload_image" + ext;
+
+            // Add with explicit name and filename for the multipart form field
+            content.Add(imageContent, "file", fileName);
 
             using HttpRequestMessage request = new(HttpMethod.Post, UploadImageUrl);
-            // request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+            if (client != null && !string.IsNullOrEmpty(client.Token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+            }
             request.Content = content;
 
             using HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -807,14 +840,48 @@ public static class ApiService
                 Debug.LogError($"[UPLOAD IMAGE] Failed: {(int)response.StatusCode} - {responseJson}");
                 return null;
             }
+            JObject obj = JObject.Parse(responseJson);
 
-            Debug.Log($"[UPLOAD IMAGE] Success: {responseJson}");
-            return responseJson;
+            string url = obj["url"]?.ToString();
+
+            return url;
         }
         catch (Exception e)
         {
             Debug.LogError($"[UPLOAD IMAGE] Error: {e.Message}");
             return null;
         }
+    }
+
+
+    public static async Task<bool> SendForgetPassword(Client client, ForgetPasswordRequest request)
+    {
+        try
+        {
+            var obj = new
+            {
+                email = request.Email
+            };
+            var json = JsonConvert.SerializeObject(obj);
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, ForgetPasswordUrl);
+            httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var httpResponse = await httpClient.SendAsync(httpRequest);
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Lấy lại mật khẩu thất bại"));
+                return false;
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SendForgetPassword] Error: {e.Message}");
+        }
+        return false;
+    }
+
+    public static async Task UpdateProfile(Client client, string firstName, string lastName, string newPassword)
+    {
+        
     }
 }
