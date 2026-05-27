@@ -33,7 +33,6 @@ public class RoomSystem : BaseSystem
 
     public override void HandlePackage(Client client, Command messageType, string payload)
     {
-        base.HandlePackage(client, messageType, payload);
         switch (messageType)
         {
             case Command.RequestRoomList:

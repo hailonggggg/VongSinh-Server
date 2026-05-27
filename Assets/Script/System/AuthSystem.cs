@@ -12,7 +12,6 @@ public class AuthSystem : BaseSystem
 {
     public override void HandlePackage(Client client, Command messageType, string payload)
     {
-        base.HandlePackage(client, messageType, payload);
         switch (messageType)
         {
             case Command.RequestLogin:
@@ -43,26 +42,14 @@ public class AuthSystem : BaseSystem
     private async Task HandleUpdateProfile(Client client, string payload)
     {
         UpdateProfileRequest request = JsonConvert.DeserializeObject<UpdateProfileRequest>(payload);
-        if (string.IsNullOrEmpty(request.FirstName)
-        || string.IsNullOrEmpty(request.LastName)
-        || string.IsNullOrEmpty(request.NewPassword)
-        || string.IsNullOrEmpty(request.CurrentPassword)
-        || string.IsNullOrEmpty(request.ConfirmNewPassword))
+        string firstName = string.IsNullOrEmpty(request.FirstName) ? client.User.FirstName : request.FirstName;
+        string lastName = string.IsNullOrEmpty(request.LastName) ? client.User.LastName : request.LastName;
+        string password = client.Password;
+        if (request.ConfirmNewPassword.Equals(request.NewPassword) && request.CurrentPassword.Equals(client.Password))
         {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Vui lòng điền đủ thông tin!"));
-            return;
+            password = request.NewPassword;
         }
-        if (!request.ConfirmNewPassword.Equals(request.NewPassword))
-        {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Mật khẩu xác nhận không khớp với mật khẩu mới!"));
-            return;
-        }
-        if (!request.CurrentPassword.Equals(client.Password))
-        {
-            ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Mật khẩu hiện tại không khớp!"));
-            return;
-        }
-        await ApiService.UpdateProfile(client, request.FirstName, request.LastName, request.NewPassword);
+        await ApiService.UpdateProfile(client, firstName, lastName, password);
     }
 
     private async Task HandleForgetPasswordRequest(Client client, string payload)

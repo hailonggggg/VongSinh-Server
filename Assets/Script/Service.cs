@@ -407,4 +407,9 @@ public static class Service
         };
         return ReliableMessage.Build(Command.UploadAvatarResponse, response);
     }
+
+    public static byte[] RankingLeaderBoardResponse(LeaderboardResponse response)
+    {
+        return ReliableMessage.Build(Command.RankList, response);
+    }
 }

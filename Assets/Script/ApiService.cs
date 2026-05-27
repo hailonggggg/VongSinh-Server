@@ -31,13 +31,14 @@ public static class ApiService
     private const string SearchCharacterAttackUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/attacks?Search={0}";
     private const string SearchCharacterPassiveUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/passives?Search={0}";
     private const string RankPointUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/rank-point";
-    private const string UploadImageUrl = "https://be-adminmanagementsystem.onrender.com/api/Upload/image";
+    private const string UploadImageUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/avatar";
     private const string ForgetPasswordUrl = "https://be-adminmanagementsystem.onrender.com/api/Auth/forgot-password-user";
-    //private const string OrderUrl = "https://localhost:7270/api/Order";
+    private const string UpdatePlayerProfileUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/profile";
+    private const string RankingLeaderBoardUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/rankingLeaderBoard?limit={0}&direction={1}&cursorRank={2}";
 
     private static readonly HttpClient httpClient = new HttpClient
     {
-        Timeout = TimeSpan.FromSeconds(5)
+        Timeout = TimeSpan.FromSeconds(30)
     };
 
     public static async Task<LoginApiResponse> Login(LoginRequest request)
@@ -790,46 +791,27 @@ public static class ApiService
 
     public static async Task<string> UpLoadImage(Client client, byte[] imageByteArr, string fileExtension)
     {
+        if (imageByteArr == null || imageByteArr.Length == 0)
+        {
+            Debug.LogError("[UPLOAD IMAGE] Image data is null or empty");
+            return null;
+        }
+
         try
         {
-            if (imageByteArr == null || imageByteArr.Length == 0)
-            {
-                Debug.LogError("[UPLOAD IMAGE] Image data is null or empty");
-                return null;
-            }
+            string ext = fileExtension.Replace(".", "").ToLower();
 
-            using var content = new MultipartFormDataContent();
+            string contentType = ext == "png" ? "image/png" : "image/jpeg";
+            string fileName = $"upload_image.{ext}";
 
-            // Create image content with proper headers based on file extension
-            var imageStream = new System.IO.MemoryStream(imageByteArr);
-            var imageContent = new StreamContent(imageStream);
-
-            // Determine content type from extension
-            string contentType = "image/jpeg";
-            if (fileExtension.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-            {
-                contentType = "image/png";
-            }
-            else if (fileExtension.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                     fileExtension.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
-            {
-                contentType = "image/jpeg";
-            }
-
+            var imageContent = new ByteArrayContent(imageByteArr);
             imageContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-            // Create filename with extension - đảm bảo có dấu chấm
-            string ext = fileExtension.StartsWith(".") ? fileExtension : "." + fileExtension;
-            string fileName = "upload_image" + ext;
-
-            // Add with explicit name and filename for the multipart form field
+            using var content = new MultipartFormDataContent();
             content.Add(imageContent, "file", fileName);
 
             using HttpRequestMessage request = new(HttpMethod.Post, UploadImageUrl);
-            if (client != null && !string.IsNullOrEmpty(client.Token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
-            }
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
             request.Content = content;
 
             using HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -840,15 +822,16 @@ public static class ApiService
                 Debug.LogError($"[UPLOAD IMAGE] Failed: {(int)response.StatusCode} - {responseJson}");
                 return null;
             }
-            JObject obj = JObject.Parse(responseJson);
+            Debug.Log(responseJson);
 
-            string url = obj["url"]?.ToString();
+            JObject obj = JObject.Parse(responseJson);
+            string url = obj["avatarUrl"]?.ToString();
 
             return url;
         }
         catch (Exception e)
         {
-            Debug.LogError($"[UPLOAD IMAGE] Error: {e.Message}");
+            Debug.LogError($"[UPLOAD IMAGE] Exception: {e.Message}");
             return null;
         }
     }
@@ -882,6 +865,78 @@ public static class ApiService
 
     public static async Task UpdateProfile(Client client, string firstName, string lastName, string newPassword)
     {
-        
+        try
+        {
+            var obj = new
+            {
+                email = "",
+                password = newPassword,
+                firstName,
+                lastName,
+                userName = "",
+                avatarUrl = "",
+                banned = -1,
+                bannedUntil = DateTimeOffset.UtcNow,
+                lastOnline = DateTimeOffset.UtcNow,
+                isOnline = -1,
+                rankPoint = -1,
+            };
+            var json = JsonConvert.SerializeObject(obj);
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Put, UpdatePlayerProfileUrl);
+            httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest);
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Thay đổi thông tin thất bại"));
+                return;
+            }
+            client.User.FirstName = firstName;
+            client.User.LastName = lastName;
+            client.Password = newPassword;
+            ServerNetwork.Instance.SendToClient(
+                client,
+                Service.SendLoginResponse(
+                    firstName,
+                    lastName,
+                    client.User.AvatarUrl,
+                    client.User.RankPoint
+                )
+            );
+            ServerNetwork.Instance.SendToClient(
+                client,
+                Service.ShowNotification("Thay đổi thông tin thành công")
+            );
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SendForgetPassword] Error: {e.Message}");
+        }
+    }
+
+    public static async Task<LeaderboardResponse> GetRankingLeaderBoard(Client client, RankingLeaderBoardRequest request)
+    {
+        try
+        {
+            string url = string.Format(RankingLeaderBoardUrl, 10, request.Direction, request.CursorRank);
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
+
+            using var httpResponse = await httpClient.SendAsync(httpRequest);
+            string jsonResponse = await httpResponse.Content.ReadAsStringAsync();
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                ServerNetwork.Instance.SendToClient(client, Service.ShowNotification("Lấy dữ liệu bảng xếp hạng thất bại"));
+                return null;
+            }
+            return JsonConvert.DeserializeObject<LeaderboardResponse>(jsonResponse);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[GetRankingLeaderBoard] Error: {e.Message}");
+        }
+        return null;
     }
 }
