@@ -146,16 +146,20 @@ public class BattlePlayer
 
     public void HandleBanPickTurnStart(Battle battle, bool hasBanPhase)
     {
-        ServerNetwork.Instance.SendToClients(
-            Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Client.PlayerRef.PlayerId),
-            battle.PlayerClients);
 
         bool banComplete = !hasBanPhase || bannedUnitIds.Count >= battle.CurrentTurnCount * MaxUnitBanPerTurn;
-        bool pickComplete = pickedUnitIds.Count >= battle.CurrentTurnCount;
+
+        bool pickComplete = pickedUnitIds.Count >= battle.CurrentTurnCount || ownerUnlockedUnitId.Count < battle.CurrentTurnCount;
 
         if (banComplete && pickComplete)
         {
             battle.HandlePlayerTurnDone();
+        }
+        else
+        {
+            ServerNetwork.Instance.SendToClients(
+                Service.SendPlayerTurnToDeploy(battle.CurrentTurnCount, Client.PlayerRef.PlayerId),
+                battle.PlayerClients);
         }
     }
 

@@ -10,6 +10,7 @@ public class BattlePlayerInfo
     public bool IsHost;
     public bool IsReady;
     public string AvatarUrl;
+    public List<int> OwnedUnits = new();
     public List<int> PickedUnitIds = new();
     public List<int> BannedUnitIds = new();
     [NonSerialized]

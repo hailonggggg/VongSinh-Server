@@ -149,19 +149,6 @@ public class Battle
         return true;
     }
 
-    public void ForcePickUnit(BattlePlayer player, int unitId)
-    {
-        player.ApplyUnitIdPicked(unitId);
-        ServerNetwork.Instance.SendToClients(Service.SendPlayerBanPickInfo(player), playerClients);
-        if (playersById.Values.All(x => x.HasReachedDeployLimit(config.MaxUnitsPerPlayer)))
-        {
-            LoadGameData();
-            return;
-        }
-
-        ProcessPlayersTurn();
-    }
-
     private void LoadGameData()
     {
         foreach (BattlePlayer player in playersById.Values)
@@ -328,7 +315,8 @@ public class Battle
             Name = player.Name,
             AvatarUrl = player.Client.User.AvatarUrl,
             PickedUnitIds = player.PickedUnitIds.ToList(),
-            BannedUnitIds = player.BannedUnitIds.ToList()
+            BannedUnitIds = player.BannedUnitIds.ToList(),
+            OwnedUnits = player.OwnerUnlockedUnitId.ToList()
         })
         .ToArray();
 
@@ -339,14 +327,13 @@ public class Battle
             {
                 continue;
             }
-            int[] allowUnitIds = battlePlayer.OwnerUnlockedUnitId.Select(id => config.ListUnitIdHasData.Contains(id) ? id : -1).ToArray();
             ServerNetwork.Instance.SendToClient(client, Service.SendBanPickStartInfo(new BattleBanPickInfo
             {
                 LeftSidePlayerId = battlePlayer.IsLeftSide ? battlePlayer.Client.PlayerRef.PlayerId : -1,
                 HasBanPhase = config.HasBanPhase,
                 MapIndexSelected = mapIndex,
                 MaxUnitsPerPlayer = Mathf.Min(battlePlayer.OwnerUnlockedUnitId.Count, config.MaxUnitsPerPlayer),
-                AllowCharacterSelectables = allowUnitIds,
+                AllowCharacterSelectables = config.ListUnitIdHasData,
                 Players = playerInfos
             }));
         }
@@ -365,11 +352,7 @@ public class Battle
         {
             return;
         }
-        if (currentTurnPlayer.PickedUnitIds.Count < CurrentTurnCount)
-        {
-            ForcePickUnit(currentTurnPlayer, -1);
-        }
-        // HandlePlayerTurnDone();
+        HandlePlayerTurnDone();
     }
 
     private void ProcessPlayersTurn()
@@ -438,7 +421,6 @@ public class Battle
             {
                 continue;
             }
-
 
             ServerNetwork.Instance.SendToClient(battlePlayer.Client, Service.LoadDeploymentPhase(new DeploymentPhaseInfo
             {
