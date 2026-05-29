@@ -807,8 +807,10 @@ public static class ApiService
             var imageContent = new ByteArrayContent(imageByteArr);
             imageContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-            using var content = new MultipartFormDataContent();
-            content.Add(imageContent, "file", fileName);
+            var content = new MultipartFormDataContent
+            {
+                { imageContent, "file", fileName }
+            };
 
             using HttpRequestMessage request = new(HttpMethod.Post, UploadImageUrl);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", client.Token);
@@ -822,18 +824,19 @@ public static class ApiService
                 Debug.LogError($"[UPLOAD IMAGE] Failed: {(int)response.StatusCode} - {responseJson}");
                 return null;
             }
-            Debug.Log(responseJson);
+            ImageUrl imageUrl = JsonConvert.DeserializeObject<ImageUrl>(responseJson);
 
-            JObject obj = JObject.Parse(responseJson);
-            string url = obj["avatarUrl"]?.ToString();
-
-            return url;
+            return imageUrl.AvatarUrl;
         }
         catch (Exception e)
         {
-            Debug.LogError($"[UPLOAD IMAGE] Exception: {e.Message}");
+            Debug.LogError($"[UPLOAD IMAGE] Exception: {e.Message} {e.StackTrace}");
             return null;
         }
+    }
+    class ImageUrl
+    {
+        public string AvatarUrl;
     }
 
 
