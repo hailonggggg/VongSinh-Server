@@ -98,8 +98,14 @@ public class BundleSystem : BaseSystem
                     client,
                     Service.ShowNotification("Không tải được shop vật phẩm.")
                 );
-
                 return;
+            }
+
+            foreach (var bundle in bundles)
+            {
+                ItemDetail item = await ApiService.GetItemById(client, bundle.itemId);
+                if (item != null)
+                    bundle.itemName = item.itemName;
             }
 
             ServerNetwork.Instance.SendToClient(

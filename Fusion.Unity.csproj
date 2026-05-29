@@ -656,6 +656,10 @@
       <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Ookii.Dialogs">
+      <HintPath>Assets\StandaloneFileBrowser\Plugins\Ookii.Dialogs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="log4netPlastic">
       <HintPath>Library\PackageCache\com.unity.collab-proxy@3351acaba9c9\Lib\Editor\log4netPlastic.dll</HintPath>
       <Private>False</Private>
@@ -766,6 +770,10 @@
     </Reference>
     <Reference Include="Fusion.Realtime">
       <HintPath>Assets\Photon\Fusion\Assemblies\Fusion.Realtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>Assets\StandaloneFileBrowser\Plugins\System.Windows.Forms.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Connections.Abstractions">

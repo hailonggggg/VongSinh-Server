@@ -95,28 +95,37 @@
     <Compile Include="Assets\Script\Shared\Core\BattleConfig.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveJsonData.cs" />
     <Compile Include="Assets\Script\Api\ItemDetail.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\UploadAvatarRequest.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserWindows.cs" />
     <Compile Include="Assets\Script\JsonDatas\BasicAttackSkillJsonData.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\MatchmakingModels.cs" />
     <Compile Include="Assets\Script\NetworkEvent\YuanPressureUpdate.cs" />
     <Compile Include="Assets\Script\ServerNetwork.cs" />
     <Compile Include="Assets\Script\Api\SkinAndCharacterBundleResponse.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitDeploySelectedSkillResponse.cs" />
     <Compile Include="Assets\Script\Battle\YuanSkill.cs" />
     <Compile Include="Assets\Script\Shared\Commands\BattleCommand.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\BattleConfigResponse.cs" />
     <Compile Include="Assets\Script\Battle\ActionPointSystem.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowser.cs" />
     <Compile Include="Assets\Script\NetworkEvent\BattleInputRequest.cs" />
     <Compile Include="Assets\Script\Api\PurchaseOrderResponse.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitDeploySelectedSkillRequest.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\UploadAvatarResponse.cs" />
     <Compile Include="Assets\Script\JsonDatas\MapDataJsonData.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileText.cs" />
     <Compile Include="Assets\Script\NetworkEvent\DeploymentPhaseInfo.cs" />
     <Compile Include="Assets\Script\Client.cs" />
     <Compile Include="Assets\Script\Player.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitHealResult.cs" />
+    <Compile Include="Assets\Script\System\MatchmakingQueue.cs" />
     <Compile Include="Assets\Script\System\BundleSystem.cs" />
     <Compile Include="Assets\Script\Enums\GridFacing.cs" />
     <Compile Include="Assets\Script\NetworkEvent\LeaveRoomRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\CombatTurnInfo.cs" />
     <Compile Include="Assets\Script\NetworkEvent\BattlePlayerInfo.cs" />
     <Compile Include="Assets\Script\ApiService.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserEditor.cs" />
     <Compile Include="Assets\Script\JsonDatas\SkillOptionJsonData.cs" />
     <Compile Include="Assets\Script\Enums\PassiveEffectType.cs" />
     <Compile Include="Assets\Script\NetworkEvent\JoinRoomRequest.cs" />
@@ -138,8 +147,13 @@
     <Compile Include="Assets\Script\JsonDatas\TileDataJsonData.cs" />
     <Compile Include="Assets\Script\Api\CharacterPassive.cs" />
     <Compile Include="Assets\Script\Battle\BattlePlayer.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\IStandaloneFileBrowser.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserLinux.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileText.cs" />
+    <Compile Include="Assets\Script\RankPointHandler.cs" />
     <Compile Include="Assets\Script\System\CharacterSystem.cs" />
     <Compile Include="Assets\Script\Battle\SkillPattern.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\StandaloneFileBrowserMac.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveEffectJsonData.cs" />
     <Compile Include="Assets\Script\Battle\SkillOption.cs" />
     <Compile Include="Assets\Script\Battle\StatusEffect.cs" />
@@ -151,11 +165,14 @@
     <Compile Include="Assets\Script\NetworkEvent\UnitMoveResponse.cs" />
     <Compile Include="Assets\Script\Enums\SkillTileColor.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitPlaced.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\RankPlayerInfo.cs" />
+    <Compile Include="Assets\Script\Enums\Rank.cs" />
+    <Compile Include="Assets\Script\Api\LeaderboardResponse.cs" />
     <Compile Include="Assets\Script\System\RoomSystem.cs" />
-    <Compile Include="Assets\Script\RoomPlayer.cs" />
     <Compile Include="Assets\Script\System\AnnouncementSystem.cs" />
     <Compile Include="Assets\Script\NetworkEvent\PlayerTurnToDeploy.cs" />
     <Compile Include="Assets\Script\BanPickUnitHandler.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\RankingLeaderBoardRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\PlayerReadyRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\PlaceUnit.cs" />
     <Compile Include="Assets\Script\SignalRManager.cs" />
@@ -165,11 +182,13 @@
     <Compile Include="Assets\Script\System\BaseSystem.cs" />
     <Compile Include="Assets\Script\NetworkEvent\CreateRoomRequest.cs" />
     <Compile Include="Assets\Script\JsonDatas\SkillPatternJsonData.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\ForgetPasswordRequest.cs" />
     <Compile Include="Assets\Script\NetworkEvent\ReceiveDamageResult.cs" />
     <Compile Include="Assets\Script\MainThreadDispatcher.cs" />
     <Compile Include="Assets\Script\Battle\Passive.cs" />
     <Compile Include="Assets\Script\NetworkEvent\RoomInfo.cs" />
     <Compile Include="Assets\Script\Api\UserItemWithDetail.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\ForgetPasswordResponse.cs" />
     <Compile Include="Assets\Script\JsonDatas\SkillInfoJsonData.cs" />
     <Compile Include="Assets\Script\Service.cs" />
     <Compile Include="Assets\Script\Enums\SpawnTeam.cs" />
@@ -178,8 +197,11 @@
     <Compile Include="Assets\Script\NetworkEvent\CreateBattleRequest.cs" />
     <Compile Include="Assets\Script\System\InventorySystem.cs" />
     <Compile Include="Assets\Script\Enums\PassiveTriggerType.cs" />
+    <Compile Include="Assets\Script\Api\LeaderboardMeta.cs" />
     <Compile Include="Assets\Script\ClientManager.cs" />
     <Compile Include="Assets\Script\JsonDatas\UnitDataJsonData.cs" />
+    <Compile Include="Assets\Script\Api\LeaderboardData.cs" />
+    <Compile Include="Assets\Script\Api\PlayerRankDto.cs" />
     <Compile Include="Assets\Script\UserItem.cs" />
     <Compile Include="Assets\Script\Master.cs" />
     <Compile Include="Assets\Script\Battle\TileData.cs" />
@@ -187,6 +209,7 @@
     <Compile Include="Assets\Script\Api\UserApiResponse.cs" />
     <Compile Include="Assets\Script\Battle\PassiveEffect.cs" />
     <Compile Include="Assets\Script\Api\CharacterStats.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileTextMultiple.cs" />
     <Compile Include="Assets\Script\Battle\Unit.cs" />
     <Compile Include="Assets\Script\NetworkEvent\BattleStartInfo.cs" />
     <Compile Include="Assets\Script\NetworkEvent\GameDataResponse.cs" />
@@ -196,19 +219,25 @@
     <Compile Include="Assets\Script\Battle\PassiveCondition.cs" />
     <Compile Include="Assets\Script\JsonDatas\TacticalSOExportData.cs" />
     <Compile Include="Assets\Script\NetworkEvent\LoginResponse.cs" />
+    <Compile Include="Assets\Script\Api\CharacterBasicAttack.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleSaveFileImage.cs" />
     <Compile Include="Assets\Script\ReliableMessage.cs" />
     <Compile Include="Assets\Script\Shared\Interfaces\IBattleCommand.cs" />
     <Compile Include="Assets\Script\NetworkEvent\BanPickTurnCountDown.cs" />
     <Compile Include="Assets\Script\JsonDatas\StatusEffectJsonData.cs" />
     <Compile Include="Assets\Script\NetworkEvent\RemoveUnit.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\BasicSample.cs" />
     <Compile Include="Assets\Script\System\OrderSystem.cs" />
     <Compile Include="Assets\Script\NetworkEvent\LoginRequest.cs" />
     <Compile Include="Assets\Script\Shared\Core\BattleState.cs" />
+    <Compile Include="Assets\StandaloneFileBrowser\Sample\CanvasSampleOpenFileImage.cs" />
     <Compile Include="Assets\Script\NetworkEvent\UnitDeathResult.cs" />
     <Compile Include="Assets\Script\Battle\Battle.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\BattleCombatResult.cs" />
     <Compile Include="Assets\Script\NetworkEvent\PlayerResourceInfo.cs" />
     <Compile Include="Assets\Script\Api\PurchaseOrderRequest.cs" />
     <Compile Include="Assets\Script\System\AuthSystem.cs" />
+    <Compile Include="Assets\Script\NetworkEvent\UpdateProfileRequest.cs" />
     <Compile Include="Assets\Script\Shared\BattleEnums.cs" />
     <Compile Include="Assets\Script\JsonDatas\CharacterDataJsonData.cs" />
     <Compile Include="Assets\Script\JsonDatas\PassiveConditionJsonData.cs" />
@@ -305,6 +334,7 @@
     <None Include="Assets\Packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\analyzers\dotnet\roslyn4.4\cs\cs\Microsoft.Extensions.Logging.Generators.resources.dll" />
     <None Include="Assets\Packages\Microsoft.AspNetCore.Connections.Abstractions.10.0.7\lib\netstandard2.1\Microsoft.AspNetCore.Connections.Abstractions.xml" />
     <None Include="Assets\Packages\Microsoft.AspNetCore.SignalR.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll" />
+    <None Include="Assets\StandaloneFileBrowser\Plugins\Ookii.Dialogs.dll" />
     <None Include="Assets\Packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\analyzers\dotnet\roslyn4.4\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll" />
     <None Include="Assets\Packages\System.Text.Json.10.0.7\analyzers\dotnet\roslyn3.11\cs\pt-BR\System.Text.Json.SourceGeneration.resources.dll" />
     <None Include="Assets\Packages\Microsoft.Extensions.Primitives.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll" />
@@ -404,6 +434,7 @@
     <None Include="Assets\Photon\Fusion\build_info.txt" />
     <None Include="Assets\Packages\Microsoft.Extensions.Options.10.0.7\analyzers\dotnet\roslyn4.4\cs\zh-Hant\Microsoft.Extensions.Options.SourceGeneration.resources.dll" />
     <None Include="Assets\Photon\Fusion\Assemblies\Fusion.Realtime.dll" />
+    <None Include="Assets\StandaloneFileBrowser\Plugins\System.Windows.Forms.dll" />
     <None Include="Assets\Photon\Fusion\Plugins\NanoSockets\Metro\ARM64\libnanosockets.dll" />
     <None Include="Assets\Photon\Fusion\Assemblies\Fusion.Log.xml" />
     <None Include="Assets\Packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\analyzers\dotnet\roslyn3.11\cs\pt-BR\Microsoft.Extensions.Logging.Generators.resources.dll" />
@@ -948,6 +979,10 @@
       <HintPath>Assets\Packages\Microsoft.AspNetCore.SignalR.Common.10.0.7\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Ookii.Dialogs">
+      <HintPath>Assets\StandaloneFileBrowser\Plugins\Ookii.Dialogs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.Extensions.Primitives">
       <HintPath>Assets\Packages\Microsoft.Extensions.Primitives.10.0.7\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
       <Private>False</Private>
@@ -1038,6 +1073,10 @@
     </Reference>
     <Reference Include="Fusion.Realtime">
       <HintPath>Assets\Photon\Fusion\Assemblies\Fusion.Realtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>Assets\StandaloneFileBrowser\Plugins\System.Windows.Forms.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Connections.Abstractions">
