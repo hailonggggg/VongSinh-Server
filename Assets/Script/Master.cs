@@ -132,10 +132,10 @@ public class Master : MonoBehaviour
                 }
             }
 
-            skillData.IsUnlocked = true;
             if (BasicAttackSkillsById.ContainsKey(skillData.Id))
                 continue;
 
+            skillData.IsUnlocked = true;
             BasicAttackSkillsById[skillData.Id] = BasicAttackSkill.FromJson(skillData);
             ApplyBasicAttackStatsFromDatabase(BasicAttackSkillsById[skillData.Id]);
         }
@@ -150,10 +150,10 @@ public class Master : MonoBehaviour
                 yuanSkillData.YuanLiCost = skill.YuanPressure;
                 yuanSkillData.CritRate = skill.CritRate;
             }
-            yuanSkillData.IsUnlocked = true;
             if (YuanSkillsById.ContainsKey(yuanSkillData.Id))
                 continue;
 
+            yuanSkillData.IsUnlocked = true;
             YuanSkillsById[yuanSkillData.Id] = YuanSkill.FromJson(yuanSkillData);
             ApplyYuanSkillStatsFromDatabase(YuanSkillsById[yuanSkillData.Id]);
         }

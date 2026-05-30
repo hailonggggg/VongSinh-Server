@@ -11,6 +11,9 @@ public class RoomSystem : BaseSystem
 
     private static readonly Dictionary<string, PendingMatch> pendingMatches = new();
 
+    public static IEnumerable<Room> AllRooms => rooms.Values;
+    public static Dictionary<string, PendingMatch> AllPendingMatches => pendingMatches;
+
     public class PendingMatch
     {
         public Client Player1 { get; set; }

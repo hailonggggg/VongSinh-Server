@@ -8,7 +8,9 @@ public class ClientManager
 {
     private static readonly Dictionary<PlayerRef, Client> clients = new Dictionary<PlayerRef, Client>();
 
-    public static void AddClient(Client client)
+    public static IReadOnlyDictionary<PlayerRef, Client> AllClients => clients;
+
+public static void AddClient(Client client)
     {
         if (clients.TryAdd(client.PlayerRef, client))
         {

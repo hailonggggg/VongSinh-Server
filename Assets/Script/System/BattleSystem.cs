@@ -13,7 +13,9 @@ namespace Assets.Script.System
         private static int nextBattleId = 1;
         private readonly static ConcurrentDictionary<int, Battle> battles = new();
 
-        public void Tick(float deltaTime)
+        public static IEnumerable<Battle> AllBattles => battles.Values;
+
+public void Tick(float deltaTime)
         {
             foreach (Battle battle in battles.Values)
             {
