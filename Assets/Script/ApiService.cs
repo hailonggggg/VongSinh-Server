@@ -771,7 +771,7 @@ public static class ApiService
             var body = new
             {
                 points = newRankPoint,
-                isAddition = true
+                isAddition = false
             };
 
             string json = JsonConvert.SerializeObject(body);

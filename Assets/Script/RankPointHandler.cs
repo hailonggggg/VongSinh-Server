@@ -8,7 +8,7 @@ public static class RankPointHandler
     public static void UpRankPoint(int currentRankPoint, out int currentRank, int rankPointRequireToUpRank, out int newRankPoint)
     {
         currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        currentRank = Mathf.Clamp(currentRank, 0, Master.Instance.Config.PointDeductions.Length - 1);
+        currentRank = Mathf.Clamp(currentRank, 0, Master.Instance.Config.PointReceives.Length - 1);
         int pointReceive = Master.Instance.Config.PointReceives[currentRank];
         newRankPoint = currentRankPoint + pointReceive;
         currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
