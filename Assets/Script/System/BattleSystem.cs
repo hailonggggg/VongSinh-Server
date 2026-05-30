@@ -15,7 +15,7 @@ namespace Assets.Script.System
 
         public static IEnumerable<Battle> AllBattles => battles.Values;
 
-public void Tick(float deltaTime)
+        public void Tick(float deltaTime)
         {
             foreach (Battle battle in battles.Values)
             {
@@ -255,11 +255,7 @@ public void Tick(float deltaTime)
             {
                 info.Client.CurrentBattleId = battleId;
                 info.IsReady = false;
-                info.Client.PendingPacket.Enqueue(() =>
-                {
-                    BattleSceneLoaded(info.Client);
-                });
-                ServerNetwork.Instance.SendToClient(info.Client, Service.LoadBattleScene());
+                BattleSceneLoaded(info.Client);
             }
         }
 
@@ -294,11 +290,7 @@ public void Tick(float deltaTime)
             foreach (Client client in clients)
             {
                 client.CurrentBattleId = battleId;
-                client.PendingPacket.Enqueue(() =>
-                {
-                    BattleSceneLoaded(client);
-                });
-                ServerNetwork.Instance.SendToClient(client, Service.LoadBattleScene());
+                BattleSceneLoaded(client);
             }
         }
 

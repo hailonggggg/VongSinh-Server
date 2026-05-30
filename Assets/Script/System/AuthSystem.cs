@@ -196,8 +196,7 @@ public class AuthSystem : BaseSystem
                     userApiResponse.RankPoint
                 ),
                 Service.SendBattleConfig(Master.Instance.Config),
-                Service.SendAnnouncementResponse(announcements),
-                Service.LoadLobbyScene());
+                Service.SendAnnouncementResponse(announcements));
         }
         catch (Exception e)
         {

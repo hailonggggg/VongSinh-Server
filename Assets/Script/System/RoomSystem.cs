@@ -264,6 +264,11 @@ public class RoomSystem : BaseSystem
             return;
         }
 
+        if(room.Players.Count < 2)
+        {
+            return;
+        }
+
         me.IsReady = !me.IsReady;
         if (room.Players.All(x => x.IsReady))
         {

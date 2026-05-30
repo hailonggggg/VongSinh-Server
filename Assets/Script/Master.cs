@@ -85,16 +85,14 @@ public class Master : MonoBehaviour
 
     private void LoadTacticalSODataFromJson()
     {
-        string filePath = Path.Combine(Application.dataPath, "tactical_so_data.json");
+        TextAsset data = Resources.Load<TextAsset>("tactical_so_data");
 
-        if (!File.Exists(filePath))
+        if (data == null)
         {
-            Debug.LogError($"File not found: {filePath}");
             return;
         }
 
-        string json = File.ReadAllText(filePath);
-        TacticalSOExportData = JsonConvert.DeserializeObject<TacticalSOExportData>(json);
+        TacticalSOExportData = JsonConvert.DeserializeObject<TacticalSOExportData>(data.text);
 
         foreach (var characterData in TacticalSOExportData.Characters)
         {

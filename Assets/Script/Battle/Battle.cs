@@ -255,36 +255,6 @@ public class Battle
                 }
                 await ApiService.SetRankPoint(battlePlayer.Client, newRankPoint);
             }
-
-            player.PendingPacket.Enqueue(() =>
-            {
-                if (RoomSystem.TryGetRoomById(player.CurrentRoomId, out Room room))
-                {
-                    ServerNetwork.Instance.SendToClient(player, Service.UpdateRoom(room));
-                }
-                if (isWinner)
-                {
-                    string msg = loseReason switch
-                    {
-                        LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
-                        LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
-                        LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
-                        _ => "Bạn đã thắng!"
-                    };
-                    ServerNetwork.Instance.SendToClient(player, Service.ShowNotification(msg));
-                }
-                else
-                {
-                    string msg = loseReason switch
-                    {
-                        LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thua, đối phương thắng do bạn không có nhân vật nào trong đội hình.",
-                        LoseReason.OpponentDisconnected => "Bạn đã thua do rời trận",
-                        LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thua do không sắp đặt bất kì nhân vật nào",
-                        _ => "Bạn đã thua!"
-                    };
-                    ServerNetwork.Instance.SendToClient(player, Service.ShowNotification(msg));
-                }
-            });
             ServerNetwork.Instance.SendToClient(player, Service.BattleResult(
                 player.PlayerRef.PlayerId,
                 isRank,
@@ -293,6 +263,35 @@ public class Battle
                 currentRankPoint,
                 config.RankPointLimitToUpRank
             ));
+
+            if (RoomSystem.TryGetRoomById(player.CurrentRoomId, out Room room))
+            {
+                ServerNetwork.Instance.SendToClient(player, Service.UpdateRoom(room));
+            }
+            if (isWinner)
+            {
+                string msg = loseReason switch
+                {
+                    LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thắng, đối phương bị xử thua do không có nhân vật nào trong đội hình.",
+                    LoseReason.OpponentDisconnected => "Bạn đã thắng, đối phương bị xử thua do rời trận",
+                    LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thắng, đối phương bị xử thua do không sắp đặt bất kì nhân vật nào",
+                    _ => ""
+                };
+                if (!string.IsNullOrWhiteSpace(msg))
+                    ServerNetwork.Instance.SendToClient(player, Service.ShowNotification(msg));
+            }
+            else
+            {
+                string msg = loseReason switch
+                {
+                    LoseReason.OpponentNotHaveAnyPickedUnit => "Bạn đã thua, đối phương thắng do bạn không có nhân vật nào trong đội hình.",
+                    LoseReason.OpponentDisconnected => "Bạn đã thua do rời trận",
+                    LoseReason.OpponentNotDeployAnyUnit => "Bạn đã thua do không sắp đặt bất kì nhân vật nào",
+                    _ => ""
+                };
+                if (!string.IsNullOrWhiteSpace(msg))
+                    ServerNetwork.Instance.SendToClient(player, Service.ShowNotification(msg));
+            }
         }
         OnBattleEnded?.Invoke(BattleId);
     }
