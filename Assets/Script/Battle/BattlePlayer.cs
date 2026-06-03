@@ -42,6 +42,8 @@ public class BattlePlayer
     private readonly List<SkillTileData> selectedTileAffectedTargets = new();
     private readonly ActionPointSystem apSystem = new();
     private readonly YuanPressureSystem yuanPressureSystem = new();
+    private Unit lastUnitUsedSkill;
+    private Skill selectedSkill;
 
     #endregion
 
@@ -408,11 +410,9 @@ public class BattlePlayer
             enemy.ApplySkillDebuff(selectedSkill.Debuffs);
             affectedUnits.Add(enemy);
         }
+        lastUnitUsedSkill = unit;
         listUnitHavePendingDamage.Clear();
         listUnitHavePendingDamage.AddRange(affectedUnits);
-        yuanPressureSystem.AdjustValue(selectedSkill.YuanLiCost);
-        TriggerYuanBuff(unit);
-        unit.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(unit), battle.CreateBattleContext(this, unit));
         ServerNetwork.Instance.SendToClient(Client, Service.YuanPressureUpdate(yuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(
            Service.UseSkillResult(
@@ -434,6 +434,19 @@ public class BattlePlayer
 
             unit.ExecuteSkillDebuff();
         }
+    }
+
+    public void HandleOnFrameHit(Battle battle)
+    {
+        foreach (Unit unit in ListUnitHavePendingDamage)
+        {
+            unit.ApplyPendingDamage();
+        }
+        ListUnitHavePendingDamage.Clear();
+
+        yuanPressureSystem.AdjustValue(selectedSkill.YuanLiCost);
+        TriggerYuanBuff(lastUnitUsedSkill);
+        lastUnitUsedSkill.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(lastUnitUsedSkill), battle.CreateBattleContext(this, lastUnitUsedSkill));
     }
 }
 

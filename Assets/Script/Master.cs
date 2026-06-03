@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Assets.Script.System;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -44,6 +45,7 @@ public class Master : MonoBehaviour
         inventorySystem = new InventorySystem();
         characterSystem = new CharacterSystem();
         await characterSystem.FetchCharacterStatsAndSkill();
+        await characterSystem.FetchCharacterPvPs();
         LoadTacticalSODataFromJson();
     }
 
@@ -96,64 +98,32 @@ public class Master : MonoBehaviour
 
         foreach (var characterData in TacticalSOExportData.Characters)
         {
-            if (CharacterSystem.CharacterStats.TryGetValue(characterData.Id, out CharacterStats characterStats))
-            {
-                characterData.MoveRange = characterStats.MoveRange;
-                characterData.MaxHP = characterStats.MaxHealth;
-            }
+            ApplyCharacterFromDatabase(characterData);
 
             if (CharactersById.ContainsKey(characterData.Id))
                 continue;
 
             CharactersById[characterData.Id] = new Unit(characterData);
-            ApplyCharacterStatsFromDatabase(CharactersById[characterData.Id]);
         }
         foreach (var skillData in TacticalSOExportData.BasicAttackSkillJsonDatas)
         {
-            if (CharacterSystem.CharacterBasicAttacks.TryGetValue(skillData.Id, out CharacterBasicAttack attack))
-            {
-                skillData.SkillName = attack.Name;
-                skillData.Description = attack.Description;
-                skillData.Damage = attack.Damage;
-                skillData.CritRate = attack.CritRate;
-                if (skillData.NormalInfo != null && attack.NormalInfo != null)
-                {
-                    skillData.NormalInfo.ActionPointCost = attack.NormalInfo.ActionPointCost;
-                    skillData.NormalInfo.SkillPointCost = attack.NormalInfo.SkillPointCost;
-                    skillData.NormalInfo.YuanLiCost = attack.NormalInfo.YuanLiCost;
-                }
-                if (skillData.YuanInfo != null && attack.YuanInfo != null)
-                {
-                    skillData.YuanInfo.ActionPointCost = attack.YuanInfo.ActionPointCost;
-                    skillData.YuanInfo.SkillPointCost = attack.YuanInfo.SkillPointCost;
-                    skillData.YuanInfo.YuanLiCost = attack.YuanInfo.YuanLiCost;
-                }
-            }
+            ApplyBasicAttackFromDatabase(skillData);
 
             if (BasicAttackSkillsById.ContainsKey(skillData.Id))
                 continue;
 
             skillData.IsUnlocked = true;
             BasicAttackSkillsById[skillData.Id] = BasicAttackSkill.FromJson(skillData);
-            ApplyBasicAttackStatsFromDatabase(BasicAttackSkillsById[skillData.Id]);
         }
         foreach (var yuanSkillData in TacticalSOExportData.YuanSkillJsonDatas)
         {
-            if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkillData.Id, out CharacterSkill skill))
-            {
-                yuanSkillData.SkillName = skill.Name;
-                yuanSkillData.Description = skill.Description;
-                yuanSkillData.Damage = skill.Damage;
-                yuanSkillData.SkillPointCost = skill.SP;
-                yuanSkillData.YuanLiCost = skill.YuanPressure;
-                yuanSkillData.CritRate = skill.CritRate;
-            }
+            ApplySkillFromDatabase(yuanSkillData);
+
             if (YuanSkillsById.ContainsKey(yuanSkillData.Id))
                 continue;
 
             yuanSkillData.IsUnlocked = true;
             YuanSkillsById[yuanSkillData.Id] = YuanSkill.FromJson(yuanSkillData);
-            ApplyYuanSkillStatsFromDatabase(YuanSkillsById[yuanSkillData.Id]);
         }
         foreach (var statusEffectData in TacticalSOExportData.StatusEffects)
         {
@@ -179,29 +149,78 @@ public class Master : MonoBehaviour
             {PassiveByIds.Count} Passives");
     }
 
-    private void ApplyYuanSkillStatsFromDatabase(YuanSkill yuanSkill)
+    private static void ApplySkillFromDatabase(YuanSkillJsonData yuanSkillData)
     {
-        if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkill.Id, out CharacterSkill characterSkill))
+        if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkillData.Id, out CharacterSkill skill))
         {
-            yuanSkill.SetStats(characterSkill);
+            yuanSkillData.SkillName = skill.Name;
+            yuanSkillData.Description = skill.Description;
+            yuanSkillData.Damage = skill.Damage;
+            yuanSkillData.SkillPointCost = skill.SP;
+            yuanSkillData.YuanLiCost = skill.YuanPressure;
+            yuanSkillData.CritRate = skill.CritRate;
         }
     }
 
-    private void ApplyBasicAttackStatsFromDatabase(BasicAttackSkill basicAttackSkill)
+    private static void ApplyCharacterFromDatabase(CharacterDataJsonData characterData)
     {
-        if (CharacterSystem.CharacterBasicAttacks.TryGetValue(basicAttackSkill.Id, out CharacterBasicAttack basicAttackStats))
+        if (CharacterSystem.CharacterStats.TryGetValue(characterData.Id, out CharacterStats characterStats))
         {
-            basicAttackSkill.SetStats(basicAttackStats);
+            characterData.MoveRange = characterStats.MoveRange;
+            characterData.MaxHP = characterStats.MaxHealth;
+        }
+        if(CharacterSystem.CharacterPvPs.TryGetValue(characterData.Id, out CharacterPvP characterPvP))
+        {
+            characterData.DisplayName = characterPvP.Name;
         }
     }
 
-    private void ApplyCharacterStatsFromDatabase(Unit unit)
+    private static void ApplyBasicAttackFromDatabase(BasicAttackSkillJsonData skillData)
     {
-        if (CharacterSystem.CharacterStats.TryGetValue(unit.Id, out CharacterStats characterStats))
+        if (CharacterSystem.CharacterBasicAttacks.TryGetValue(skillData.Id, out CharacterBasicAttack attack))
         {
-            unit.SetCharacterStats(characterStats);
+            skillData.SkillName = attack.Name;
+            skillData.Description = attack.Description;
+            skillData.Damage = attack.Damage;
+            skillData.CritRate = attack.CritRate;
+            if (skillData.NormalInfo != null && attack.NormalInfo != null)
+            {
+                skillData.NormalInfo.ActionPointCost = attack.NormalInfo.ActionPointCost;
+                skillData.NormalInfo.SkillPointCost = attack.NormalInfo.SkillPointCost;
+                skillData.NormalInfo.YuanLiCost = attack.NormalInfo.YuanLiCost;
+            }
+            if (skillData.YuanInfo != null && attack.YuanInfo != null)
+            {
+                skillData.YuanInfo.ActionPointCost = attack.YuanInfo.ActionPointCost;
+                skillData.YuanInfo.SkillPointCost = attack.YuanInfo.SkillPointCost;
+                skillData.YuanInfo.YuanLiCost = attack.YuanInfo.YuanLiCost;
+            }
         }
     }
+
+    // private void ApplyYuanSkillStatsFromDatabase(YuanSkill yuanSkill)
+    // {
+    //     if (CharacterSystem.CharacterSkills.TryGetValue(yuanSkill.Id, out CharacterSkill characterSkill))
+    //     {
+    //         yuanSkill.SetStats(characterSkill);
+    //     }
+    // }
+
+    // private void ApplyBasicAttackStatsFromDatabase(BasicAttackSkill basicAttackSkill)
+    // {
+    //     if (CharacterSystem.CharacterBasicAttacks.TryGetValue(basicAttackSkill.Id, out CharacterBasicAttack basicAttackStats))
+    //     {
+    //         basicAttackSkill.SetStats(basicAttackStats);
+    //     }
+    // }
+
+    // private void ApplyCharacterStatsFromDatabase(Unit unit)
+    // {
+    //     if (CharacterSystem.CharacterStats.TryGetValue(unit.Id, out CharacterStats characterStats))
+    //     {
+    //         unit.SetCharacterStats(characterStats);
+    //     }
+    // }
 
     public Map LoadMap(int mapIndexSelected)
     {

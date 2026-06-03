@@ -593,12 +593,7 @@ public class Battle
         {
             return;
         }
-
-        foreach (Unit unit in currentTurnPlayer.ListUnitHavePendingDamage)
-        {
-            unit.ApplyPendingDamage();
-        }
-        currentTurnPlayer.ListUnitHavePendingDamage.Clear();
+        currentTurnPlayer.HandleOnFrameHit(this);
 
         CheckTeamElimination();
 

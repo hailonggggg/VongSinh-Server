@@ -15,9 +15,4 @@ public class SkillOption
             owner.TakeDamage(Value);
         }
     }
-
-    public void FromJson()
-    {
-
-    }
 }

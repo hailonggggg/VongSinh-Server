@@ -35,6 +35,7 @@ public static class ApiService
     private const string ForgetPasswordUrl = "https://be-adminmanagementsystem.onrender.com/api/Auth/forgot-password-user";
     private const string UpdatePlayerProfileUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/profile";
     private const string RankingLeaderBoardUrl = "https://be-adminmanagementsystem.onrender.com/api/Player/rankingLeaderBoard?limit={0}&direction={1}&cursorRank={2}";
+    private const string CharacterPvPUrl = "https://be-adminmanagementsystem.onrender.com/api/Character/pvp";
 
     private static readonly HttpClient httpClient = new HttpClient
     {
@@ -834,6 +835,7 @@ public static class ApiService
             return null;
         }
     }
+    [Serializable]
     class ImageUrl
     {
         public string AvatarUrl;
@@ -941,5 +943,29 @@ public static class ApiService
             Debug.LogError($"[GetRankingLeaderBoard] Error: {e.Message}");
         }
         return null;
+    }
+
+    public static async Task<Dictionary<int,CharacterPvP>> GetAllCharacterPvP()
+    {
+        try
+        {
+            using HttpRequestMessage request = new(HttpMethod.Get, CharacterPvPUrl);
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Debug.LogError($"[API] Get Character PvP failed: {(int)response.StatusCode} - {responseJson}");
+                return null;
+            }
+
+            List<CharacterPvP> characterPvPs = JsonConvert.DeserializeObject<List<CharacterPvP>>(responseJson);
+            return characterPvPs.ToDictionary(x => x.CharacterTacticId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[API] Get Character PvP error: {e.Message}");
+        }
+        return new Dictionary<int, CharacterPvP>();
     }
 }

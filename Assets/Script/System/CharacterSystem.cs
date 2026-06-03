@@ -6,23 +6,27 @@ using UnityEngine;
 
 public class CharacterSystem : BaseSystem
 {
-    public static Dictionary<int, CharacterStats> CharacterStats => characterStats.ToDictionary(x => x.Key, x => x.Value);
-    public static Dictionary<int, CharacterSkill> CharacterSkills => characterSkills.ToDictionary(x => x.Key, x => x.Value);
-    public static Dictionary<int, CharacterBasicAttack> CharacterBasicAttacks => characterBasicAttacks.ToDictionary(x => x.Key, x => x.Value);
-    private static Dictionary<int, CharacterStats> characterStats;
-    private static Dictionary<int, CharacterSkill> characterSkills;
-    private static Dictionary<int, CharacterBasicAttack> characterBasicAttacks;
+    public static Dictionary<int, CharacterStats> CharacterStats {get; private set; } = new();
+    public static Dictionary<int, CharacterSkill> CharacterSkills { get; private set; } = new();
+    public static Dictionary<int, CharacterBasicAttack> CharacterBasicAttacks { get; private set; } = new();
+    public static Dictionary<int, CharacterPvP> CharacterPvPs { get; private set; } = new();
     public CharacterSystem()
     {
     }
 
     public async Task FetchCharacterStatsAndSkill()
     {
-        characterStats = await ApiService.FetchAllCharacterStats();
-        characterSkills = await ApiService.FetchAllCharacterSkill();
-        characterBasicAttacks = await ApiService.FetchAllCharacterBasicAttacks();
-        Debug.Log($"Done fetch ChacracterStats, count:{characterStats.Count}");
-        Debug.Log($"Done fetch ChacracterSkill, count:{characterSkills.Count}");
-        Debug.Log($"Done fetch ChacracterBasicAttack, count:{characterBasicAttacks.Count}");
+        CharacterStats = await ApiService.FetchAllCharacterStats();
+        CharacterSkills = await ApiService.FetchAllCharacterSkill();
+        CharacterBasicAttacks = await ApiService.FetchAllCharacterBasicAttacks();
+        Debug.Log($"Done fetch ChacracterStats, count:{CharacterStats.Count}");
+        Debug.Log($"Done fetch ChacracterSkill, count:{CharacterSkills.Count}");
+        Debug.Log($"Done fetch ChacracterBasicAttack, count:{CharacterBasicAttacks.Count}");
+    }
+
+    public async Task FetchCharacterPvPs()
+    {
+        CharacterPvPs = await ApiService.GetAllCharacterPvP();
+        Debug.Log($"Done fetch CharacterPvP, count:{CharacterPvPs.Count}");
     }
 }
