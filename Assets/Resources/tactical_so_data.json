@@ -32,7 +32,7 @@
       "Id": 1,
       "AssetName": "MC",
       "DisplayName": "Bình Tân",
-      "MaxHP": 18,
+      "MaxHP": 22,
       "MoveRange": 5
     },
     {
@@ -300,7 +300,7 @@
       "AssetName": "MC_Attack_1",
       "SkillType": "BasicAttackSkillSO",
       "SkillName": "Chém ngang",
-      "Description": "Bình Tân vung kiếm ngang và gây sát thương cho kẻ địch trong vùng. ",
+      "Description": "Bình Tân vung kiếm ngang và gây sát thương cho kẻ địch trong vùng.",
       "IsDirectional": true,
       "IsUnlocked": true,
       "Damage": 3,
@@ -529,8 +529,8 @@
       "SkillName": "Chém thẳng",
       "Description": "Bình Tân vung kiếm thẳng và gây sát thương cho kẻ địch trong vùng.",
       "IsDirectional": true,
-      "IsUnlocked": false,
-      "Damage": 4,
+      "IsUnlocked": true,
+      "Damage": 6,
       "CritRate": 5,
       "SkillOrigin": "CharacterPosition",
       "MoveRange": 1,
@@ -562,7 +562,7 @@
       "SkillName": "Nguội",
       "Description": "Bình Tân giảm Nguyện Áp đi 4 điểm.",
       "IsDirectional": false,
-      "IsUnlocked": false,
+      "IsUnlocked": true,
       "Damage": 0,
       "CritRate": 0,
       "SkillOrigin": "CharacterPosition",
@@ -632,8 +632,8 @@
         }
       },
       "YuanInfo": {
-        "ActionPointCost": 0,
-        "YuanLiCost": -10,
+        "ActionPointCost": 1,
+        "YuanLiCost": 0,
         "SkillPointCost": 0,
         "AnimationTrigger": "Idle",
         "SkillPattern": null
@@ -1068,7 +1068,7 @@
       "AssetName": "MC_Passive_2",
       "PassiveName": "Linh Vực Hồi Thiên",
       "Description": "Mỗi khi hành động, toàn bộ đồng đội trong vùng 3x3 xoay quanh MC sẽ hồi 2 hp.",
-      "IsUnlocked": false,
+      "IsUnlocked": true,
       "TriggerType": "ActionPerformed",
       "Conditions": [
         {
@@ -1119,7 +1119,7 @@
       "AssetName": "No1_Passive_3",
       "PassiveName": "Diệt Chúng Tụ Linh",
       "Description": "Mỗi khi tấn công trúng 4 kẻ địch trở lên, sẽ hồi phục 1 SP.",
-      "IsUnlocked": false,
+      "IsUnlocked": true,
       "TriggerType": "AttackHit",
       "Conditions": [
         {

@@ -84,5 +84,6 @@ public enum Command : byte
     RequestUploadAvatar,
     UploadAvatarResponse,
     ForgetPasswordRequest,
-    ForgetPasswordResponse
+    ForgetPasswordResponse,
+    OnFrameFinished
 }

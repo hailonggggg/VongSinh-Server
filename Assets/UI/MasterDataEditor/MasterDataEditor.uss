@@ -1,0 +1,256 @@
+/*
+2026-06-04 AI-Tag
+This was created with the help of Assistant, a Unity Artificial Intelligence product.
+*/
+/*
+2026-06-04 AI-Tag
+This was created with the help of Assistant, a Unity Artificial Intelligence product.
+*/
+:root {
+    --bg-color: #1e1e1e;
+    --col-color: #252526;
+    --header-color: #2d2d30;
+    --accent-color: #007acc;
+    --text-color: #cccccc;
+    --text-header: #ffffff;
+    --border-color: #3e3e42;
+    --hover-color: #37373d;
+    --input-bg: #1a1a1a;
+}
+
+.editor-root {
+    flex-grow: 1;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    flex-direction: row;
+    font-size: 13px;
+}
+
+.column {
+    background-color: var(--col-color);
+    border-right-width: 1px;
+    border-right-color: var(--border-color);
+}
+
+.category-column {
+    width: 180px;
+    padding: 8px;
+}
+
+.entry-column {
+    width: 240px;
+    padding: 0;
+}
+
+.detail-column {
+    flex-grow: 1;
+    border-right-width: 0;
+    padding: 0;
+}
+
+.column-title {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: var(--text-header);
+    padding: 8px;
+    background-color: var(--header-color);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-color);
+}
+
+.sidebar-header {
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-bottom: 12px;
+    color: var(--text-header);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-color);
+    padding-bottom: 6px;
+}
+
+.nav-button {
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background-color: transparent;
+    border-width: 0;
+    color: var(--text-color);
+    -unity-text-align: middle-left;
+}
+
+.nav-button:hover {
+    background-color: var(--hover-color);
+}
+
+.nav-button--active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.list-scroll {
+    flex-grow: 1;
+}
+
+.entry-button {
+    padding: 7px 10px;
+    border-width: 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-color);
+    background-color: transparent;
+    color: var(--text-color);
+    -unity-text-align: middle-left;
+    border-radius: 0;
+    margin: 0;
+}
+
+.entry-button:hover {
+    background-color: var(--hover-color);
+}
+
+.entry-button--active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.detail-scroll {
+    flex-grow: 1;
+    padding: 12px;
+}
+
+.detail-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: var(--text-header);
+    margin-bottom: 12px;
+}
+
+.field-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.field-label {
+    width: 180px;
+    flex-shrink: 0;
+    color: var(--text-color);
+}
+
+.field-input {
+    flex-grow: 1;
+}
+
+.sub-section {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 6px;
+    background-color: var(--header-color);
+    border-radius: 4px;
+    border-left-width: 2px;
+    border-left-color: var(--accent-color);
+}
+
+.empty-hint {
+    color: #888888;
+    -unity-font-style: italic;
+    padding: 12px;
+}
+
+.toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding: 6px 12px;
+    background-color: var(--header-color);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--border-color);
+}
+
+.status-text {
+    color: #6cc24a;
+    margin-left: 12px;
+}
+
+/* Dark styling for the inner input elements of UI Toolkit fields */
+.field-input .unity-base-field__input {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+.field-input .unity-text-element,
+.field-input .unity-text-field__input {
+    color: var(--text-color);
+}
+
+.field-input .unity-base-text-field__input {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+/* Enum dropdown */
+.field-input .unity-enum-field__input {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+/* Toggle checkbox */
+.field-input .unity-toggle__checkmark {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+}
+
+/* List editor (Conditions / Effects elements) */
+.list-item {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background-color: var(--col-color);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--border-color);
+}
+
+.list-item-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.list-item-title {
+    -unity-font-style: bold;
+    color: var(--text-header);
+}
+
+.list-remove-button {
+    padding: 2px 10px;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: #5a2a2a;
+    color: #ffd0d0;
+}
+
+.list-remove-button:hover {
+    background-color: #7a3535;
+}
+
+.list-add-button {
+    margin-top: 6px;
+    padding: 5px 10px;
+    border-width: 0;
+    border-radius: 3px;
+    background-color: var(--accent-color);
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.list-add-button:hover {
+    background-color: #1c8ad6;
+}

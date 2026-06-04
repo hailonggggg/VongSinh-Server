@@ -41,6 +41,8 @@ public abstract class Skill
         SkillOrigin = skill.SkillOrigin;
         MoveRange = skill.MoveRange;
         CooldownTurns = skill.CooldownTurns;
+        Buffs = skill.Buffs;
+        Debuffs = skill.Debuffs;
     }
 
     public Skill()
@@ -72,7 +74,7 @@ public abstract class Skill
         {
             Buffs = data.BuffOptions.Select(x => new SkillOption
             {
-                EffectType = (SkillEffectType)x.StatusEffectId,
+                StatusEffect = Master.Instance.StatusEffectByIds[x.StatusEffectId],
                 TurnApply = x.TurnApply,
                 Value = x.Value
             }).ToList();
@@ -81,7 +83,7 @@ public abstract class Skill
         {
             Debuffs = data.DebuffOptions.Select(x => new SkillOption
             {
-                EffectType = (SkillEffectType)x.StatusEffectId,
+                StatusEffect = Master.Instance.StatusEffectByIds[x.StatusEffectId],
                 TurnApply = x.TurnApply,
                 Value = x.Value
             }).ToList();

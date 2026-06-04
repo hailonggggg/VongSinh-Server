@@ -1,0 +1,86 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:engine="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/ServerDashboard/ServerDashboard.uss?fileID=7433441132597879392&amp;guid=3e763131b410f7d4c84991541e1b9eee&amp;type=3#ServerDashboard"/>
+    <ui:VisualElement name="root" class="dashboard-root">
+        <ui:VisualElement class="sidebar">
+            <ui:Label text="SERVER DASHBOARD" class="sidebar-header"/>
+            <ui:Button name="tabOverview" text="Overview" class="tab-button tab-button--active"/>
+            <ui:Button name="tabClients" text="Clients" class="tab-button"/>
+            <ui:Button name="tabRooms" text="Rooms" class="tab-button"/>
+            <ui:Button name="tabMatchmaking" text="Matchmaking" class="tab-button"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="VisualElement" class="content-area">
+            <ui:Label name="activeTabTitle" text="Overview" class="content-header"/>
+            <ui:VisualElement name="pageOverview">
+                <ui:VisualElement class="stats-grid">
+                    <ui:VisualElement class="stat-card">
+                        <ui:Label text="UPTIME" class="stat-label"/>
+                        <ui:Label name="uptimeLabel" text="00:00:00" class="stat-value">
+                            <Bindings>
+                                <ui:DataBinding property="text" data-source-path="Uptime"/>
+                            </Bindings>
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat-card">
+                        <ui:Label text="CLIENTS" class="stat-label"/>
+                        <ui:Label name="clientsLabel" text="0" class="stat-value">
+                            <Bindings>
+                                <ui:DataBinding property="text" data-source-path="TotalClients"/>
+                            </Bindings>
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat-card">
+                        <ui:Label text="ROOMS" class="stat-label"/>
+                        <ui:Label name="roomsLabel" text="0" class="stat-value">
+                            <Bindings>
+                                <ui:DataBinding property="text" data-source-path="ActiveRooms"/>
+                            </Bindings>
+                        </ui:Label>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat-card">
+                        <ui:Label text="BATTLES" class="stat-label"/>
+                        <ui:Label name="battlesLabel" text="0" class="stat-value">
+                            <Bindings>
+                                <ui:DataBinding property="text" data-source-path="BattlesInProgress"/>
+                            </Bindings>
+                        </ui:Label>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="stat-card" style="width: auto;">
+                    <ui:Label text="SERVER STATUS" class="stat-label"/>
+                    <ui:Label name="statusLabel" text="Running" class="stat-value">
+                        <Bindings>
+                            <ui:DataBinding property="text" data-source-path="ServerStatus"/>
+                        </Bindings>
+                    </ui:Label>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="pageClients" class="hidden" style="flex-grow: 1;">
+                <ui:VisualElement class="row-item column-header">
+                    <ui:Label text="ID" class="cell"/>
+                    <ui:Label text="NAME" class="cell" style="flex-grow: 2;"/>
+                    <ui:Label text="ROOM" class="cell"/>
+                    <ui:Label text="BATTLE" class="cell"/>
+                </ui:VisualElement>
+                <ui:ListView name="clientsList" fixed-item-height="35" class="list-view-container"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="pageRooms" class="hidden" style="flex-grow: 1;">
+                <ui:VisualElement class="row-item column-header">
+                    <ui:Label text="ID" class="cell"/>
+                    <ui:Label text="NAME" class="cell" style="flex-grow: 2;"/>
+                    <ui:Label text="PLAYERS" class="cell"/>
+                    <ui:Label text="MAP" class="cell"/>
+                </ui:VisualElement>
+                <ui:ListView name="roomsList" fixed-item-height="35" class="list-view-container"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="pageMatchmaking" class="hidden" style="flex-grow: 1;">
+                <ui:Label text="Pending Matches" class="stat-label" style="margin-top: 10px;"/>
+                <ui:VisualElement class="row-item column-header">
+                    <ui:Label text="PLAYER 1" class="cell"/>
+                    <ui:Label text="PLAYER 2" class="cell"/>
+                    <ui:Label text="READY" class="cell"/>
+                </ui:VisualElement>
+                <ui:ListView name="pendingList" fixed-item-height="35" class="list-view-container"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

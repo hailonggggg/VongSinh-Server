@@ -353,7 +353,6 @@ public class BattlePlayer
             ServerNetwork.Instance.SendToClient(Client, Service.ShowNotification("Bạn không có nhân vật này trong đội hình."));
             return;
         }
-        Skill selectedSkill = null;
         SkillLoadoutType skillLoadoutType = (SkillLoadoutType)request.SkillType;
         Vector3Int previewDirection = Vector3Int.zero;
 
@@ -395,25 +394,26 @@ public class BattlePlayer
 
         List<SkillTileData> selectedTileAffectedTargets = selectedSkill.GetAffectedTileData(previewDirection);
         BattleContext battleContext = battle.CreateBattleContext(this, unit);
-
-        List<Unit> affectedUnits = new();
-        foreach (SkillTileData tileData in selectedTileAffectedTargets)
+        if (selectedTileAffectedTargets != null && selectedTileAffectedTargets.Count > 0 && selectedSkill.Damage > 0)
         {
-            Vector3Int cell = tileData.offset + request.TargetCell;
-            Unit enemy = battleContext.Enemies.FirstOrDefault(x => x.CurrentGridPosition == cell);
-            if (enemy == null)
+            List<Unit> affectedUnits = new();
+            foreach (SkillTileData tileData in selectedTileAffectedTargets)
             {
-                continue;
+                Vector3Int cell = tileData.offset + request.TargetCell;
+                Unit enemy = battleContext.Enemies.FirstOrDefault(x => x.CurrentGridPosition == cell);
+                if (enemy == null)
+                {
+                    continue;
+                }
+                enemy.PendingDamage += (int)(tileData.damageMultiplier * selectedSkill.Damage);
+                enemy.ApplySkillDebuff(selectedSkill.Debuffs);
+                affectedUnits.Add(enemy);
             }
-            enemy.PendingDamage += (int)(tileData.damageMultiplier * selectedSkill.Damage);
-            enemy.ApplySkillBuff(selectedSkill.Buffs);
-            enemy.ApplySkillDebuff(selectedSkill.Debuffs);
-            affectedUnits.Add(enemy);
+            listUnitHavePendingDamage.Clear();
+            listUnitHavePendingDamage.AddRange(affectedUnits);
         }
         lastUnitUsedSkill = unit;
-        listUnitHavePendingDamage.Clear();
-        listUnitHavePendingDamage.AddRange(affectedUnits);
-        ServerNetwork.Instance.SendToClient(Client, Service.YuanPressureUpdate(yuanPressureSystem.Current));
+        ServerNetwork.Instance.SendToClient(Client, Service.PlayerResourceInfo(ApSystem.Current, yuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(
            Service.UseSkillResult(
                Client.PlayerRef.PlayerId,
@@ -443,10 +443,20 @@ public class BattlePlayer
             unit.ApplyPendingDamage();
         }
         ListUnitHavePendingDamage.Clear();
+    }
 
+    public void HandleOnFrameFinished(Battle battle)
+    {
+        if(selectedSkill == null || lastUnitUsedSkill == null)
+        {
+            return;
+        }
         yuanPressureSystem.AdjustValue(selectedSkill.YuanLiCost);
         TriggerYuanBuff(lastUnitUsedSkill);
         lastUnitUsedSkill.TriggerPassives(PassiveTriggerType.ActionPerformed, new ActionPerformedEvent(lastUnitUsedSkill), battle.CreateBattleContext(this, lastUnitUsedSkill));
+        ServerNetwork.Instance.SendToClient(Client, Service.PlayerResourceInfo(ApSystem.Current, yuanPressureSystem.Current));
+        selectedSkill = null;
+        lastUnitUsedSkill = null;
     }
 }
 

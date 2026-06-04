@@ -309,6 +309,7 @@ public class Unit
 
             if (debuff.TurnApply > 0)
             {
+                Debug.Log("Executing debuff: " + debuff.StatusEffect.EffectType);
                 debuff.Execute(this);
             }
             if (debuff.TurnApply <= 0)

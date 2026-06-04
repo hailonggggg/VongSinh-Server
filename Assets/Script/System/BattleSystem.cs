@@ -28,7 +28,7 @@ namespace Assets.Script.System
             switch (messageType)
             {
                 case Command.UnitDeploySelected:
-                    HandleUnitDeploySelected(client, payload);
+                    HandleUnitPicked(client, payload);
                     break;
                 case Command.BanPickSelected:
                     HandleBanPickSelected(client, payload);
@@ -57,9 +57,20 @@ namespace Assets.Script.System
                 case Command.EndTurn:
                     HandleEndTurn(client);
                     break;
+                case Command.OnFrameFinished:
+                    HandleOnFrameFinished(client);
+                    break;
             }
         }
 
+        private void HandleOnFrameFinished(Client client)
+        {
+            if (!TryGetBattle(client, out Battle battle))
+            {
+                return;
+            }
+            battle.HandleOnFrameFinished(client);
+        }
 
         private void HandleEndTurn(Client client)
         {
@@ -174,7 +185,7 @@ namespace Assets.Script.System
             battle.HandleUnitIdBanned(client, unitBanId);
         }
 
-        private void HandleUnitDeploySelected(Client client, string payload)
+        private void HandleUnitPicked(Client client, string payload)
         {
             if (!TryGetBattle(client, out Battle battle))
             {

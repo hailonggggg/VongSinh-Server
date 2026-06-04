@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="MasterDataEditor.uss" />
+    <ui:VisualElement name="root" class="editor-root">
+
+        <!-- Category Column -->
+        <ui:VisualElement class="column category-column">
+            <ui:Label text="MASTER DATA" class="sidebar-header" />
+            <ui:Button name="catCharacters" text="Characters" class="nav-button nav-button--active" />
+            <ui:Button name="catYuanSkills" text="Yuan Skills" class="nav-button" />
+            <ui:Button name="catBasicAttacks" text="Basic Attacks" class="nav-button" />
+            <ui:Button name="catStatusEffects" text="Status Effects" class="nav-button" />
+            <ui:Button name="catPassives" text="Passives" class="nav-button" />
+        </ui:VisualElement>
+
+        <!-- Entry Column -->
+        <ui:VisualElement class="column entry-column">
+            <ui:Label name="entryColumnTitle" text="Entries" class="column-title" />
+            <ui:ScrollView name="entryScroll" class="list-scroll" />
+        </ui:VisualElement>
+
+        <!-- Detail Column -->
+        <ui:VisualElement class="column detail-column">
+            <ui:VisualElement class="toolbar">
+                <ui:Button name="refreshButton" text="Refresh" class="nav-button" />
+                <ui:Label name="statusLabel" text="" class="status-text" />
+            </ui:VisualElement>
+            <ui:ScrollView name="detailScroll" class="detail-scroll">
+                <ui:Label name="detailTitle" text="Select an entry" class="detail-title" />
+                <ui:VisualElement name="fieldContainer" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

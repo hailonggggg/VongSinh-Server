@@ -666,6 +666,26 @@ public class Battle
         BattleEnd(GetOpponent(client.PlayerRef), LoseReason.OpponentDisconnected);
     }
 
+    public void HandleOnFrameFinished(Client client)
+    {
+        BattlePlayer player = GetPlayer(client.PlayerRef);
+        if (player == null)
+        {
+            return;
+        }
+
+        if (currentTurnPlayer == null)
+        {
+            return;
+        }
+
+        if (!ReferenceEquals(player, currentTurnPlayer))
+        {
+            return;
+        }
+        currentTurnPlayer.HandleOnFrameFinished(this);
+    }
+
 
     #endregion
 }

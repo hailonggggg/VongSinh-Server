@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class SkillOption
 {
-    public SkillEffectType EffectType;
+    public StatusEffect StatusEffect;
     public int Value;
     public int TurnApply;
 
     public void Execute(Unit owner)
     {
         TurnApply--;
-        if (EffectType == SkillEffectType.Bleed)
+        if (StatusEffect.EffectType == SkillEffectType.Bleed)
         {
             owner.TakeDamage(Value);
         }
