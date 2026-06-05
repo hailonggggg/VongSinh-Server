@@ -240,18 +240,17 @@ public class Battle
             battlePlayer.Client.CurrentBattleId = -1;
             bool isWinner = battlePlayer == winner;
             int currentRankPoint = player.User.RankPoint;
-            int currentRank = 0;
             int newRankPoint = currentRankPoint;
 
             if (isRank)
             {
                 if (isWinner)
                 {
-                    RankPointHandler.UpRankPoint(currentRankPoint, out currentRank, config.RankPointLimitToUpRank, out newRankPoint);
+                    RankPointHandler.UpRankPoint(currentRankPoint, config.RankPointLimitToUpRank, out newRankPoint);
                 }
                 else
                 {
-                    RankPointHandler.DownRankPoint(currentRankPoint, out currentRank, config.RankPointLimitToUpRank, out newRankPoint);
+                    RankPointHandler.DownRankPoint(currentRankPoint, config.RankPointLimitToUpRank, out newRankPoint);
                 }
                 await ApiService.SetRankPoint(battlePlayer.Client, newRankPoint);
             }

@@ -5,21 +5,17 @@ public static class RankPointHandler
 {
 
 
-    public static void UpRankPoint(int currentRankPoint, out int currentRank, int rankPointRequireToUpRank, out int newRankPoint)
+    public static void UpRankPoint(int currentRankPoint, int rankPointRequireToUpRank, out int rankPointPlus)
     {
-        currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        currentRank = Mathf.Clamp(currentRank, 0, Master.Instance.Config.PointReceives.Length - 1);
-        int pointReceive = Master.Instance.Config.PointReceives[currentRank];
-        newRankPoint = currentRankPoint + pointReceive;
-        currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
+        var currentRankLevel = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
+        currentRankLevel = Mathf.Clamp(currentRankLevel, 0, Master.Instance.Config.PointReceives.Length - 1);
+        rankPointPlus = Master.Instance.Config.PointReceives[currentRankLevel];
     }
 
-    public static void DownRankPoint(int currentRankPoint, out int currentRank, int rankPointRequireToUpRank, out int newRankPoint)
+    public static void DownRankPoint(int currentRankPoint, int rankPointRequireToUpRank, out int rankPointPlus)
     {
-        currentRank = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        currentRank = Mathf.Clamp(currentRank, 0, Master.Instance.Config.PointDeductions.Length - 1);
-        int pointDeduction = Master.Instance.Config.PointDeductions[currentRank];
-        newRankPoint = Mathf.Max(0, currentRankPoint - pointDeduction);
-        currentRank = Mathf.FloorToInt(newRankPoint / rankPointRequireToUpRank);
+        var currentRankLevel = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
+        currentRankLevel = Mathf.Clamp(currentRankLevel, 0, Master.Instance.Config.PointDeductions.Length - 1);
+        rankPointPlus = -Master.Instance.Config.PointDeductions[currentRankLevel];
     }
 }

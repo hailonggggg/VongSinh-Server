@@ -771,7 +771,7 @@ public static class ApiService
         return new Dictionary<int, CharacterBasicAttack>();
     }
 
-    public static async Task SetRankPoint(Client winner, int newRankPoint)
+    public static async Task SetRankPoint(Client winner, int rankPointPlus)
     {
         try
         {
@@ -779,8 +779,8 @@ public static class ApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", winner.Token);
             var body = new
             {
-                points = newRankPoint,
-                isAddition = false
+                points = rankPointPlus,
+                isAddition = true
             };
 
             string json = JsonConvert.SerializeObject(body);

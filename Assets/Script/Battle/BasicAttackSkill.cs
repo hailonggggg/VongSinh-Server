@@ -9,11 +9,11 @@ public class BasicAttackSkill : Skill
     public SkillInfo NormalInfo;
     public SkillInfo YuanInfo;
 
-    public override int ActionPointCost => GetActiveSkillInfo()?.ActionPointCost ?? 0;
-    public override int YuanLiCost => GetActiveSkillInfo()?.YuanLiCost ?? 0;
-    public override int SkillPointCost => GetActiveSkillInfo()?.SkillPointCost ?? 0;
-    public override SkillPattern SkillPattern => GetActiveSkillInfo()?.SkillPattern;
-    public override UnitAnimationState AnimationTrigger => GetActiveSkillInfo()?.AnimationTrigger ?? UnitAnimationState.Attack_1;
+    public override int ActionPointCost => GetActiveSkillInfo().ActionPointCost;
+    public override int YuanLiCost => GetActiveSkillInfo().YuanLiCost;
+    public override int SkillPointCost => GetActiveSkillInfo().SkillPointCost;
+    public override SkillPattern SkillPattern => GetActiveSkillInfo().SkillPattern;
+    public override UnitAnimationState AnimationTrigger => GetActiveSkillInfo().AnimationTrigger;
 
     public BasicAttackSkill(BasicAttackSkillJsonData basicAttackData) : base()
     {
