@@ -87,6 +87,14 @@ public static class ApiService
                         Message = "Tài khoản hoặc mật khẩu sai"
                     };
                 }
+                if(response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new LoginApiResponse
+                    {
+                        Success = false,
+                        Message = "Tài khoản đã bị khóa"
+                    };
+                }
                 return null;
             }
             LoginApiResponse loginResponse = JsonConvert.DeserializeObject<LoginApiResponse>(responseJson);

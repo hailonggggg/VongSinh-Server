@@ -353,6 +353,7 @@ public class BattlePlayer
             ServerNetwork.Instance.SendToClient(Client, Service.ShowNotification("Bạn không có nhân vật này trong đội hình."));
             return;
         }
+        lastUnitUsedSkill = unit;
         SkillLoadoutType skillLoadoutType = (SkillLoadoutType)request.SkillType;
         Vector3Int previewDirection = Vector3Int.zero;
 
@@ -412,8 +413,6 @@ public class BattlePlayer
             listUnitHavePendingDamage.Clear();
             listUnitHavePendingDamage.AddRange(affectedUnits);
         }
-        lastUnitUsedSkill = unit;
-        ServerNetwork.Instance.SendToClient(Client, Service.PlayerResourceInfo(ApSystem.Current, yuanPressureSystem.Current));
         ServerNetwork.Instance.SendToClients(
            Service.UseSkillResult(
                Client.PlayerRef.PlayerId,
@@ -447,7 +446,7 @@ public class BattlePlayer
 
     public void HandleOnFrameFinished(Battle battle)
     {
-        if(selectedSkill == null || lastUnitUsedSkill == null)
+        if (selectedSkill == null || lastUnitUsedSkill == null)
         {
             return;
         }

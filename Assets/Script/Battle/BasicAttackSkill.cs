@@ -40,7 +40,7 @@ public class BasicAttackSkill : Skill
 
     private SkillInfo GetActiveSkillInfo()
     {
-        if (IsYuanMode && YuanInfo != null)
+        if (HaveYuanMode && IsYuanMode && YuanInfo != null)
         {
             return YuanInfo;
         }

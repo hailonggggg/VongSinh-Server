@@ -594,16 +594,9 @@ public class Battle
             return;
         }
         currentTurnPlayer.HandleOnFrameHit(this);
-
-        CheckTeamElimination();
-
-        if (currentTurnPlayer.ApSystem.IsEmpty)
-        {
-            HandleActionComplete(client);
-        }
     }
 
-    private void CheckTeamElimination()
+    private bool CheckTeamElimination()
     {
         foreach (var player in playersById.Values)
         {
@@ -611,9 +604,10 @@ public class Battle
             {
                 BattlePlayer opponent = GetOpponent(player.Client.PlayerRef);
                 BattleEnd(opponent, LoseReason.OpponentEliminated);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
 
@@ -684,6 +678,16 @@ public class Battle
             return;
         }
         currentTurnPlayer.HandleOnFrameFinished(this);
+
+        if (CheckTeamElimination())
+        {
+            return;
+        }
+
+        if (currentTurnPlayer.ApSystem.IsEmpty)
+        {
+            HandleActionComplete(client);
+        }
     }
 
 
