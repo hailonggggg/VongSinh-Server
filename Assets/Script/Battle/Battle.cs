@@ -240,7 +240,7 @@ public class Battle
             battlePlayer.Client.CurrentBattleId = -1;
             bool isWinner = battlePlayer == winner;
             int currentRankPoint = player.User.RankPoint;
-
+            int newRankPoint = 0;
             if (isRank)
             {
                 int pointPlus = 0;
@@ -252,18 +252,21 @@ public class Battle
                 {
                     pointPlus = RankPointHandler.GetDownRankPoint(currentRankPoint, config.RankPointLimitToUpRank);
                 }
-                int newRankPoint = await ApiService.SetRankPoint(battlePlayer.Client, pointPlus);
+                newRankPoint = await ApiService.SetRankPoint(battlePlayer.Client, pointPlus);
 
-                ServerNetwork.Instance.SendToClient(player, Service.BattleResult(
-                    player.PlayerRef.PlayerId,
-                    isRank,
-                    isWinner,
-                    newRankPoint,
-                    currentRankPoint,
-                    config.RankPointLimitToUpRank
-                ));
             }
-
+            else
+            {
+                newRankPoint = currentRankPoint;
+            }
+            ServerNetwork.Instance.SendToClient(player, Service.BattleResult(
+                player.PlayerRef.PlayerId,
+                isRank,
+                isWinner,
+                newRankPoint,
+                currentRankPoint,
+                config.RankPointLimitToUpRank
+            ));
             if (RoomSystem.TryGetRoomById(player.CurrentRoomId, out Room room))
             {
                 ServerNetwork.Instance.SendToClient(player, Service.UpdateRoom(room));

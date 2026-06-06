@@ -793,7 +793,7 @@ public static class ApiService
                 Debug.LogError("Set new point rank failed");
             }
             string responseJson = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<int>(responseJson);
+            return int.Parse(responseJson);
         }
         catch (Exception e)
         {
