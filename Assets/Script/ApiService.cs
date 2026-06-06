@@ -771,7 +771,7 @@ public static class ApiService
         return new Dictionary<int, CharacterBasicAttack>();
     }
 
-    public static async Task SetRankPoint(Client winner, int rankPointPlus)
+    public static async Task<int> SetRankPoint(Client winner, int rankPointPlus)
     {
         try
         {
@@ -787,15 +787,19 @@ public static class ApiService
 
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             using HttpResponseMessage response = await httpClient.SendAsync(request);
+
             if (!response.IsSuccessStatusCode)
             {
                 Debug.LogError("Set new point rank failed");
             }
+            string responseJson = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<int>(responseJson);
         }
         catch (Exception e)
         {
             Debug.LogError($"Error at SetRankPoint: {e.Message}");
         }
+        return 0;
     }
 
     public static async Task<string> UpLoadImage(Client client, byte[] imageByteArr, string fileExtension)

@@ -35,7 +35,12 @@ public class SignalRManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    async void Start()
+    void Start()
+    {
+        _ = StartConnection();
+    }
+
+    private async System.Threading.Tasks.Task StartConnection()
     {
         connection = new HubConnectionBuilder()
             .WithUrl("https://be-adminmanagementsystem.onrender.com/annoucementHub")

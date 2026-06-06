@@ -8,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(NetworkSceneManagerDefault))]
 public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 {
+    public NetworkRunner Runner => runner;
     public static ServerNetwork Instance { get; private set; }
     public event Action<PlayerRef, ArraySegment<byte>> OnReceiveNetworkData;
     HashSet<string> bannedUsers = new HashSet<string>();
@@ -15,11 +16,16 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 
     private NetworkRunner runner;
 
+
     async void Awake()
     {
         Instance = this;
-        runner = await CreateNetworkRunner();
         DontDestroyOnLoad(gameObject);
+    }
+
+    void Start()
+    {
+        _ = CreateNetworkRunner();
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
@@ -143,7 +149,7 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
 
     public void SendToClient(Client client, byte[] packet)
     {
-        if(client == null) return;
+        if (client == null) return;
         SendToClient(client.PlayerRef, packet);
     }
 
@@ -176,16 +182,19 @@ public class ServerNetwork : MonoBehaviour, INetworkRunnerCallbacks
     public async Task<NetworkRunner> CreateNetworkRunner()
     {
         GameObject obj = new("NetworkRunner");
-        NetworkRunner networkRunner = obj.AddComponent<NetworkRunner>();
-        networkRunner.AddCallbacks(this);
-        await networkRunner.StartGame(new StartGameArgs()
+        runner = obj.AddComponent<NetworkRunner>();
+        runner.AddCallbacks(this);
+        StartGameResult startGameResult = await runner.StartGame(new StartGameArgs()
         {
             GameMode = GameMode.Server,
             SessionName = "DedicatedServer",
             SceneManager = GetComponent<NetworkSceneManagerDefault>(),
         });
-
-        return networkRunner;
+        if (startGameResult.Ok)
+        {
+            Debug.Log("Server is running");
+        }
+        return runner;
     }
 
     public void Disconnect(PlayerRef playerRef)

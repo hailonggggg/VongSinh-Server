@@ -21,5 +21,5 @@ public class DashboardData
     public int BattlesInProgress { get; set; }
 
     [CreateProperty]
-    public string ServerStatus { get; set; } = "Running";
+    public string ServerStatus { get; set; } = "Not Running";
 }

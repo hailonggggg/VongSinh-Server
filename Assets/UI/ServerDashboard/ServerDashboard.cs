@@ -106,16 +106,22 @@ public class ServerDashboard : MonoBehaviour
             _data.ServerStatus = "Master Offline";
             return;
         }
-
-        _data.ServerStatus = "Running";
+        if (ServerNetwork.Instance.Runner == null)
+        {
+            _data.ServerStatus = "Not Running";
+        }
+        else
+        {
+            _data.ServerStatus = "Running";
+        }
         _data.Uptime = FormatTime(Time.realtimeSinceStartup - _startTime);
-        
+
         var clients = ClientManager.AllClients.Values.Where(c => c != null).ToList();
         _data.TotalClients = clients.Count;
-        
+
         var rooms = RoomSystem.AllRooms.ToList();
         _data.ActiveRooms = rooms.Count;
-        
+
         var pending = RoomSystem.AllPendingMatches.Values.ToList();
         _data.PendingMatches = pending.Count;
 
@@ -135,14 +141,15 @@ public class ServerDashboard : MonoBehaviour
     private void SetupClientsList()
     {
         _clientsList = _root.Q<ListView>("clientsList");
-        _clientsList.makeItem = () => {
+        _clientsList.makeItem = () =>
+        {
             var row = new VisualElement();
             row.AddToClassList("row-item");
             row.Add(new Label { name = "id" });
             row.Add(new Label { name = "name" });
             row.Add(new Label { name = "room" });
             row.Add(new Label { name = "battle" });
-            
+
             row.Q<Label>("id").AddToClassList("cell");
             row.Q<Label>("name").AddToClassList("cell");
             row.Q<Label>("name").style.flexGrow = 2;
@@ -150,7 +157,8 @@ public class ServerDashboard : MonoBehaviour
             row.Q<Label>("battle").AddToClassList("cell");
             return row;
         };
-        _clientsList.bindItem = (element, i) => {
+        _clientsList.bindItem = (element, i) =>
+        {
             var client = (Client)_clientsList.itemsSource[i];
             element.Q<Label>("id").text = client.PlayerRef.PlayerId.ToString();
             element.Q<Label>("name").text = client.User?.LastName ?? "Unknown";
@@ -162,14 +170,15 @@ public class ServerDashboard : MonoBehaviour
     private void SetupRoomsList()
     {
         _roomsList = _root.Q<ListView>("roomsList");
-        _roomsList.makeItem = () => {
+        _roomsList.makeItem = () =>
+        {
             var row = new VisualElement();
             row.AddToClassList("row-item");
             row.Add(new Label { name = "id" });
             row.Add(new Label { name = "name" });
             row.Add(new Label { name = "players" });
             row.Add(new Label { name = "map" });
-            
+
             row.Q<Label>("id").AddToClassList("cell");
             row.Q<Label>("name").AddToClassList("cell");
             row.Q<Label>("name").style.flexGrow = 2;
@@ -177,7 +186,8 @@ public class ServerDashboard : MonoBehaviour
             row.Q<Label>("map").AddToClassList("cell");
             return row;
         };
-        _roomsList.bindItem = (element, i) => {
+        _roomsList.bindItem = (element, i) =>
+        {
             var room = (Room)_roomsList.itemsSource[i];
             element.Q<Label>("id").text = room.RoomId.ToString();
             element.Q<Label>("name").text = room.Name;
@@ -189,19 +199,21 @@ public class ServerDashboard : MonoBehaviour
     private void SetupPendingList()
     {
         _pendingList = _root.Q<ListView>("pendingList");
-        _pendingList.makeItem = () => {
+        _pendingList.makeItem = () =>
+        {
             var row = new VisualElement();
             row.AddToClassList("row-item");
             row.Add(new Label { name = "p1" });
             row.Add(new Label { name = "p2" });
             row.Add(new Label { name = "ready" });
-            
+
             row.Q<Label>("p1").AddToClassList("cell");
             row.Q<Label>("p2").AddToClassList("cell");
             row.Q<Label>("ready").AddToClassList("cell");
             return row;
         };
-        _pendingList.bindItem = (element, i) => {
+        _pendingList.bindItem = (element, i) =>
+        {
             var match = (RoomSystem.PendingMatch)_pendingList.itemsSource[i];
             element.Q<Label>("p1").text = match.Player1?.User?.LastName ?? "?";
             element.Q<Label>("p2").text = match.Player2?.User?.LastName ?? "Waiting";

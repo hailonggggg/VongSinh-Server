@@ -1,21 +1,35 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class RankPointHandler
 {
-
-
-    public static void UpRankPoint(int currentRankPoint, int rankPointRequireToUpRank, out int rankPointPlus)
+    private static int GetRankLevel(int currentRankPoint, int rankPointRequireToUpRank, int maxLevel)
     {
-        var currentRankLevel = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        currentRankLevel = Mathf.Clamp(currentRankLevel, 0, Master.Instance.Config.PointReceives.Length - 1);
-        rankPointPlus = Master.Instance.Config.PointReceives[currentRankLevel];
+        if (rankPointRequireToUpRank <= 0)
+            return 0;
+
+        var rankLevel = currentRankPoint / rankPointRequireToUpRank;
+        return Mathf.Clamp(rankLevel, 0, maxLevel);
     }
 
-    public static void DownRankPoint(int currentRankPoint, int rankPointRequireToUpRank, out int rankPointPlus)
+    public static int GetUpRankPoint(int currentRankPoint, int rankPointRequireToUpRank)
     {
-        var currentRankLevel = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
-        currentRankLevel = Mathf.Clamp(currentRankLevel, 0, Master.Instance.Config.PointDeductions.Length - 1);
-        rankPointPlus = Mathf.Max(0, -Master.Instance.Config.PointDeductions[currentRankLevel]);
+        var rankLevel = GetRankLevel(
+            currentRankPoint,
+            rankPointRequireToUpRank,
+            Master.Instance.Config.PointReceives.Length - 1);
+
+        return Master.Instance.Config.PointReceives[rankLevel];
+    }
+
+    public static int GetDownRankPoint(int currentRankPoint, int rankPointRequireToUpRank)
+    {
+        var rankLevel = GetRankLevel(
+            currentRankPoint,
+            rankPointRequireToUpRank,
+            Master.Instance.Config.PointDeductions.Length - 1);
+
+        var pointDeduction = Master.Instance.Config.PointDeductions[rankLevel];
+
+        return -Mathf.Min(pointDeduction, currentRankPoint);
     }
 }
