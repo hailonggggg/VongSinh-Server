@@ -16,6 +16,6 @@ public static class RankPointHandler
     {
         var currentRankLevel = Mathf.FloorToInt(currentRankPoint / rankPointRequireToUpRank);
         currentRankLevel = Mathf.Clamp(currentRankLevel, 0, Master.Instance.Config.PointDeductions.Length - 1);
-        rankPointPlus = -Master.Instance.Config.PointDeductions[currentRankLevel];
+        rankPointPlus = Mathf.Max(0, -Master.Instance.Config.PointDeductions[currentRankLevel]);
     }
 }
